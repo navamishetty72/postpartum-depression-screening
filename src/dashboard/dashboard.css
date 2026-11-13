@@ -3517,64 +3517,393 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
+  .dash-topnav-inner {
+    padding: 8px 14px;
+  }
+  .dash-brand-link .brand-wordmark {
+    font-size: 26px;
+  }
+  .dash-popover {
+    position: fixed;
+    top: 56px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+
   .miora-command-shell {
-    padding: 12px;
+    padding: 10px;
   }
   .miora-command-frame {
-    padding: 18px 16px;
+    padding: 16px 14px;
     border-radius: 18px;
+  }
+  .miora-card {
+    padding: 15px 14px;
+  }
+  .miora-card-title {
+    font-size: 18px;
   }
   .miora-dash-header,
   .miora-subpage-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
   }
+  .miora-dash-title {
+    font-size: 28px;
+    margin: 8px 0 6px;
+  }
+  .miora-dash-subtitle {
+    font-size: 13.5px;
+  }
+
+  /* 2x2 Compact Mobile KPI Grid */
   .miora-kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .miora-kpi-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 8px;
+  }
+  .miora-kpi-icon-wrap {
+    width: 36px;
+    height: 36px;
+  }
+  .miora-kpi-icon-wrap svg {
+    width: 18px;
+    height: 18px;
+  }
+  .miora-kpi-content {
+    width: 100%;
+  }
+  .miora-kpi-top {
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+  }
+  .miora-kpi-value {
+    font-size: 22px;
+  }
+  .miora-kpi-label {
+    font-size: 12px;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  /* Screen 01 Priority Cases -> Clean Mobile Case Cards (no horizontal cutoff) */
+  .miora-priority-table thead {
+    display: none;
+  }
+  .miora-priority-table,
+  .miora-priority-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .miora-priority-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+  .miora-priority-table .miora-table-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 11px 12px;
+    border: 1px solid #f2e2e5;
+    border-radius: 12px;
+    background: #fffcfc;
+  }
+  .miora-priority-table .miora-table-row td {
+    padding: 0;
+    border: 0;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 12.5px;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(6) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(4) {
+    grid-column: 2 / span 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .miora-priority-table .miora-table-row td:nth-child(5) {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    font-size: 12.5px;
+    color: #54464b;
+    padding-top: 2px;
+  }
+
+  /* Screen 02 Mothers & Cases Registry -> Clean Mobile Cards (no clipped columns) */
+  .miora-registry-card {
+    padding: 15px 14px;
   }
   .miora-registry-controls,
   .miora-registry-search {
     width: 100%;
     min-width: 0;
   }
+  .miora-registry-controls .miora-select-wrap,
+  .miora-registry-controls .miora-pill-select {
+    width: 100%;
+  }
+  .miora-registry-table thead {
+    display: none;
+  }
+  .miora-registry-table,
+  .miora-registry-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .miora-registry-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+  .miora-registry-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 12px;
+    border: 1px solid #f2e2e5;
+    border-radius: 13px;
+    background: #fffcfc;
+  }
+  .miora-registry-row td {
+    padding: 0;
+    border: 0;
+  }
+  .miora-registry-row td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .miora-registry-row td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .miora-registry-row td:nth-child(7) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .miora-registry-row td:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 12.5px;
+  }
+  .miora-registry-row td:nth-child(4) {
+    grid-column: 2 / span 2;
+    grid-row: 2;
+    font-size: 12px;
+    color: #6b5c61;
+  }
+  .miora-registry-row td:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .miora-registry-row td:nth-child(6) {
+    grid-column: 2 / span 2;
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .miora-pagination-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Recent Screenings & Results List: Clean 2-Line Stack (no "Comp..." truncation) */
+  .miora-recent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+  .miora-recent-left {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 2px;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .miora-recent-avatar {
+    grid-row: span 2;
+  }
+  .miora-recent-id {
+    grid-column: 2;
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .miora-recent-meta {
+    grid-column: 2;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  /* Risk Distribution & Quick Actions */
   .miora-risk-body {
     flex-direction: column;
     align-items: center;
+    gap: 14px;
   }
   .miora-risk-legend {
     width: 100%;
   }
-  .miora-recent-item {
-    flex-wrap: wrap;
+  .miora-quick-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
-  .miora-recent-left {
-    flex: 1 1 180px;
+  .miora-quick-btn {
+    font-size: 12.5px;
+    padding: 0 10px;
+    gap: 7px;
   }
-  .miora-recent-meta {
-    white-space: normal;
+
+  /* Screen 03 & 04 Mode Switch, Patient Strip (compact 2-col grid) & Upload Cards */
+  .miora-mode-switch {
+    width: 100%;
   }
-  .miora-quick-buttons {
-    grid-template-columns: 1fr;
-  }
-  .miora-field-row,
-  .miora-cue-compare,
-  .miora-upload-zones-grid,
-  .miora-modality-pills {
-    grid-template-columns: 1fr;
+  .miora-mode-tab {
+    padding: 8px 10px;
+    font-size: 13px;
   }
   .miora-patient-strip {
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 12px;
+    padding: 13px 14px;
+  }
+  .miora-patient-item:first-child {
+    grid-column: 1 / -1;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1e3e5;
+  }
+  .miora-patient-item:last-child {
+    grid-column: 1 / -1;
   }
   .miora-patient-divider {
     display: none;
   }
-  .miora-live-action-bar,
-  .miora-live-action-right {
+
+  .miora-quick-reply-row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .miora-quick-reply-chip {
+    white-space: normal;
+    text-align: left;
+  }
+
+  /* Compact Horizontal Upload Cards on Mobile */
+  .miora-upload-zones-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+  .miora-upload-dropzone {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 11px;
+    row-gap: 2px;
+    align-items: center;
+    text-align: left;
+    padding: 11px 12px;
+  }
+  .miora-upload-zone-icon {
+    grid-row: span 2;
+    width: 38px;
+    height: 38px;
+  }
+  .miora-upload-zone-title {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+  .miora-upload-zone-formats {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .miora-upload-zone-btn {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    margin: 0;
+  }
+
+  /* Selected Modalities stay compact */
+  .miora-modality-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .miora-modality-toggle {
+    flex: 1 1 auto;
+    padding: 7px 10px;
+    font-size: 12.5px;
+  }
+
+  /* Discordance / Results / Detail Footer Polish */
+  .miora-case-detail-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .miora-detail-footer {
+    display: grid;
+    grid-template-columns: 1fr;
     width: 100%;
-    justify-content: space-between;
+  }
+  .miora-detail-footer button {
+    width: 100%;
+  }
+
+  .miora-field-row,
+  .miora-cue-compare {
+    grid-template-columns: 1fr;
+  }
+
+  /* Balanced Two-Tier Bottom Action Bar */
+  .miora-live-action-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .miora-live-action-bar > button {
+    width: 100%;
+  }
+  .miora-live-action-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  .miora-live-action-right button {
+    width: 100%;
+    padding-inline: 12px;
   }
 }
 

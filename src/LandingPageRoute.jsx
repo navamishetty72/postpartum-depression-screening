@@ -127,7 +127,7 @@ export function LandingPageRoute() {
         img.loading = 'eager';
       });
     };
-    revealElements.forEach((el) => el.classList.add('is-visible'));
+    revealAllForCapture();
     window.addEventListener('beforeprint', revealAllForCapture);
 
     return () => {

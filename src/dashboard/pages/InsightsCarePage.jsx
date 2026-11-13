@@ -16,7 +16,10 @@ export function InsightsCarePage() {
   const { weeklyRecords, metrics } = useClinicalData();
   const navigate = useNavigate();
 
-  const recentEight = weeklyRecords.slice(-8);
+  const recentEight = weeklyRecords.slice(-8).map((item, idx) => ({
+    ...item,
+    shortWeek: `W${idx + 1}`,
+  }));
 
   return (
     <div className="miora-command-shell">
@@ -57,7 +60,7 @@ export function InsightsCarePage() {
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={recentEight} margin={{ top: 10, right: 16, left: -16, bottom: 4 }}>
                   <CartesianGrid vertical={false} stroke="#f1e3e5" />
-                  <XAxis dataKey="week" axisLine={{ stroke: '#ead9dc' }} tickLine={false} />
+                  <XAxis dataKey="shortWeek" axisLine={{ stroke: '#ead9dc' }} tickLine={false} />
                   <YAxis axisLine={false} tickLine={false} />
                   <Tooltip />
                   <Bar dataKey="screenings" name="Completed" fill="#f2b8c9" radius={[6, 6, 0, 0]} />
