@@ -28,6 +28,14 @@ from sklearn.metrics import (
 )
 from sklearn.calibration import calibration_curve
 from scipy.stats import chi2_contingency
+import sys
+
+# Compatibility shim for older scikit-learn Cython unpickling (_loss.CyHalfBinomialLoss)
+try:
+    import sklearn._loss._loss as _loss_mod
+    sys.modules.setdefault("_loss", _loss_mod)
+except ImportError:
+    pass
 
 try:
     from .config import (

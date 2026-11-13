@@ -5,7 +5,7 @@ and prevents leakage by fitting exclusively on training participants.
 """
 
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 import joblib
 import numpy as np
 import pandas as pd
@@ -148,6 +148,24 @@ class ClinicalPreprocessor(BaseEstimator, TransformerMixin):
         joblib.dump(self, filepath)
 
     @classmethod
+    def _fix_imputer_compatibility(cls, obj: Any) -> None:
+        """Fix scikit-learn 1.6 -> 1.9 SimpleImputer _fill_dtype unpickling compatibility."""
+        if hasattr(obj, "transformers_"):
+            for item in obj.transformers_:
+                cls._fix_imputer_compatibility(item[1] if isinstance(item, (tuple, list)) and len(item) > 1 else item)
+        if hasattr(obj, "named_transformers_"):
+            for t in obj.named_transformers_.values():
+                cls._fix_imputer_compatibility(t)
+        if hasattr(obj, "steps"):
+            for s in obj.steps:
+                cls._fix_imputer_compatibility(s[1] if isinstance(s, (tuple, list)) and len(s) > 1 else s)
+        if hasattr(obj, "named_steps"):
+            for s in obj.named_steps.values():
+                cls._fix_imputer_compatibility(s)
+        if not hasattr(obj, "_fill_dtype") and hasattr(obj, "_fit_dtype"):
+            obj._fill_dtype = obj._fit_dtype
+
+    @classmethod
     def load(cls, filepath: Path) -> "ClinicalPreprocessor":
         """Load serialized preprocessor from disk."""
         # Ensure backward compatibility for ColumnTransformer pickled in scikit-learn <1.7
@@ -165,5 +183,6 @@ class ClinicalPreprocessor(BaseEstimator, TransformerMixin):
         preprocessor = joblib.load(filepath)
         if not isinstance(preprocessor, cls):
             raise TypeError(f"Loaded object is not an instance of {cls.__name__}")
+        cls._fix_imputer_compatibility(getattr(preprocessor, "transformer", None))
         return preprocessor
 

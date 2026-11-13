@@ -1,0 +1,18 @@
+{
+  "experiment_name": "Canonical-Aligned BiLSTM Video Model Experiment",
+  "model_type": "bilstm",
+  "seed": 42,
+  "lr": 0.001,
+  "batch_size": 32,
+  "max_epochs": 30,
+  "early_stopping_patience": 7,
+  "hidden_dim": 64,
+  "embedding_dim": 128,
+  "weight_decay": 0.0001,
+  "grad_clip": 1.0,
+  "cv_folds": 5,
+  "device": "cpu",
+  "split_manifest_path": "C:\\Users\\Dell\\Desktop\\postpartum-depression-screening\\data\\processed\\Numerical\\train_test_split_manifest.csv",
+  "target_column": "target_canonical_epds_ge_13",
+  "scientific_notice": "Synthetic Video V2 features are abstract numerical simulations. Video features alone do not represent authentic patient observations or diagnostic biomarkers. Supervised video classification serves strictly as an engineering negative-control experiment."
+}

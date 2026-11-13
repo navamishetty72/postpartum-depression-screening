@@ -157,6 +157,7 @@ from pydantic import ValidationError
 
 from backend.ml.fusion_engine import (
     MultimodalFusionEngine,
+    NonNegativeStackingFusionStrategy,
     fusion_engine,
     get_fusion_engine,
 )
@@ -169,6 +170,11 @@ from backend.schemas.screening import (
     ScreeningAnalysisResponse,
     TextModalityResult,
     VideoModalityResult,
+)
+from backend.services.audio_service import (
+    AudioScreeningService,
+    audio_service,
+    get_audio_service,
 )
 from backend.services.clinical_service import (
     ClinicalScreeningService,
@@ -202,6 +208,30 @@ class MotherValidator:
         return True
 
 
+class EligibilityValidator:
+    """Interface for participant self-declared postpartum eligibility verification.
+
+    Postpartum eligibility (within 12 months of childbirth) is self-declared by the mother
+    before screening. This is a clinical protocol requirement, NOT an automated classification.
+    """
+
+    def validate_eligibility(self, eligibility_confirmed: Optional[Union[bool, str]]) -> bool:
+        """Verify whether the mother confirmed self-declared postpartum eligibility."""
+        if eligibility_confirmed is True:
+            return True
+        if isinstance(eligibility_confirmed, str) and eligibility_confirmed.strip().lower() in ("true", "1", "yes"):
+            return True
+        return False
+
+
+default_eligibility_validator = EligibilityValidator()
+
+
+def get_eligibility_validator() -> EligibilityValidator:
+    """FastAPI dependency provider for EligibilityValidator."""
+    return default_eligibility_validator
+
+
 class ScreeningOrchestrationService:
     """Central orchestrator coordinating multimodal PPD screening inferences."""
 
@@ -211,11 +241,19 @@ class ScreeningOrchestrationService:
         text_svc: Optional[TextNERService] = None,
         mother_val: Optional[MotherValidator] = None,
         fusion_eng: Optional[MultimodalFusionEngine] = None,
+        audio_svc: Optional[AudioScreeningService] = None,
+        elig_val: Optional[EligibilityValidator] = None,
     ) -> None:
         self.clinical_service: ClinicalScreeningService = clinical_svc or clinical_service
         self.text_ner_service: TextNERService = text_svc or text_ner_service
         self.mother_validator: MotherValidator = mother_val or MotherValidator()
-        self.fusion_engine: MultimodalFusionEngine = fusion_eng or fusion_engine
+        self.fusion_engine: MultimodalFusionEngine = (
+            fusion_eng
+            if fusion_eng is not None
+            else MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+        )
+        self.audio_service: AudioScreeningService = audio_svc or audio_service
+        self.eligibility_validator: EligibilityValidator = elig_val or default_eligibility_validator
 
     async def orchestrate_screening(
         self,
@@ -227,23 +265,11 @@ class ScreeningOrchestrationService:
         text_content: Optional[str] = None,
         files_voice_bytes: Optional[bytes] = None,
         files_video_bytes: Optional[bytes] = None,
+        eligibility_confirmed: Optional[Union[bool, str]] = None,
+        audio_features_raw: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> ScreeningAnalysisResponse:
         """Execute multimodal screening analysis preserving partial completion states."""
-        # 1. Validate Consent
-        is_consented = (
-            consent_confirmed is True
-            or (
-                isinstance(consent_confirmed, str)
-                and consent_confirmed.strip().lower() in ("true", "1", "yes")
-            )
-        )
-        if not is_consented:
-            raise HTTPException(
-                status_code=400,
-                detail="Maternal consent must be confirmed before submitting screening files for analysis.",
-            )
-
-        # 2. Validate Mother ID Format & Existence
+        # 1. Validate Mother ID Format (422)
         if not mother_id or not isinstance(mother_id, str) or not mother_id.strip():
             raise HTTPException(
                 status_code=422,
@@ -251,13 +277,7 @@ class ScreeningOrchestrationService:
             )
         clean_mother_id = mother_id.strip()
 
-        if not self.mother_validator.validate_mother_exists(clean_mother_id):
-            raise HTTPException(
-                status_code=404,
-                detail=f"Registered mother record not found for motherId='{clean_mother_id}'.",
-            )
-
-        # 3. Validate Modalities
+        # 2. Validate Modalities Syntax & Selection (422)
         try:
             modalities = ModalitiesSelection.from_raw(modalities_raw)
         except ValueError as exc:
@@ -272,16 +292,14 @@ class ScreeningOrchestrationService:
                 detail="At least one screening modality must be requested.",
             )
 
-        # 4. Clinical Numerical Modality
-        clinical_result: ClinicalModalityResult
+        # 3. Validate Clinical / Text Feature Payloads Schema & Syntax (422)
+        clean_features = None
         if modalities.clinical:
             if not clinical_features_raw:
                 raise HTTPException(
                     status_code=422,
                     detail="clinical_features JSON payload is required when clinical modality is requested.",
                 )
-
-            # Parse JSON if passed as string
             if isinstance(clinical_features_raw, str):
                 try:
                     features_dict = json.loads(clinical_features_raw)
@@ -297,8 +315,6 @@ class ScreeningOrchestrationService:
                     status_code=422,
                     detail="clinical_features must be a valid JSON object string or dictionary.",
                 )
-
-            # Validate against strict 46-feature schema (extra='forbid' blocks target leakage)
             try:
                 validated_features = ClinicalFeatures.model_validate(features_dict)
                 clean_features = validated_features.to_feature_dict()
@@ -308,6 +324,59 @@ class ScreeningOrchestrationService:
                     detail=f"Clinical features schema validation failed: {exc}",
                 )
 
+        raw_text: Optional[str] = None
+        if modalities.text:
+            if files_text_bytes is not None and len(files_text_bytes) > 0:
+                raw_text = files_text_bytes.decode("utf-8", errors="replace").strip()
+            elif text_content is not None and text_content.strip():
+                raw_text = text_content.strip()
+
+            if not raw_text:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Text narrative content or files_text is required when text modality is requested.",
+                )
+
+            if len(raw_text) > TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Text input exceeds safe maximum limit of {TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT} characters.",
+                )
+
+        # 4. Validate Mother Registration / Existence in Database (404)
+        if not self.mother_validator.validate_mother_exists(clean_mother_id):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Registered mother record not found for motherId='{clean_mother_id}'.",
+            )
+
+        # 5. Validate Maternal Consent (400)
+        is_consented = (
+            consent_confirmed is True
+            or (
+                isinstance(consent_confirmed, str)
+                and consent_confirmed.strip().lower() in ("true", "1", "yes")
+            )
+        )
+        if not is_consented:
+            raise HTTPException(
+                status_code=400,
+                detail="Maternal consent must be confirmed before submitting screening files for analysis.",
+            )
+
+        # 6. Validate Self-Declared Postpartum Eligibility (403)
+        if not self.eligibility_validator.validate_eligibility(eligibility_confirmed):
+            raise HTTPException(
+                status_code=403,
+                detail=(
+                    "Screening halted. Participant self-declared postpartum eligibility confirmation is required "
+                    "before screening predictions can be generated."
+                ),
+            )
+
+        # 7. Clinical Numerical Modality
+        clinical_result: ClinicalModalityResult
+        if modalities.clinical:
             # Execute clinical prediction
             try:
                 raw_pred = self.clinical_service.predict(
@@ -347,27 +416,9 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 5. Biomedical Text NER Modality
+        # 8. Biomedical Text NER Modality
         text_result: TextModalityResult
         if modalities.text:
-            raw_text: Optional[str] = None
-            if files_text_bytes is not None and len(files_text_bytes) > 0:
-                raw_text = files_text_bytes.decode("utf-8", errors="replace").strip()
-            elif text_content is not None and text_content.strip():
-                raw_text = text_content.strip()
-
-            if not raw_text:
-                raise HTTPException(
-                    status_code=422,
-                    detail="Text narrative content or files_text is required when text modality is requested.",
-                )
-
-            if len(raw_text) > TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"Text input exceeds safe maximum limit of {TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT} characters.",
-                )
-
             # Execute entity extraction
             try:
                 ner_out = self.text_ner_service.extract_entities(raw_text)
@@ -409,15 +460,55 @@ class ScreeningOrchestrationService:
                 entities=[],
             )
 
-        # 6. Audio Modality (Unimplemented in Phase 3)
+        # 6. Audio Modality (Predictive acoustic feature inference or unavailable placeholder)
         audio_result: AudioModalityResult
         if modalities.audio:
-            audio_result = AudioModalityResult(
-                status="unavailable",
-                prediction=None,
-                model_version=None,
-                message="Audio screening inference model is not yet implemented or trained.",
-            )
+            if audio_features_raw is not None:
+                if isinstance(audio_features_raw, str):
+                    try:
+                        audio_features_dict = json.loads(audio_features_raw)
+                    except Exception as exc:
+                        raise HTTPException(
+                            status_code=422,
+                            detail=f"Invalid audio_features JSON syntax: {exc}",
+                        )
+                elif isinstance(audio_features_raw, dict):
+                    audio_features_dict = audio_features_raw
+                else:
+                    raise HTTPException(
+                        status_code=422,
+                        detail="audio_features must be a valid JSON object string or dictionary.",
+                    )
+                try:
+                    pred_res = self.audio_service.predict(audio_features_dict)
+                    audio_result = AudioModalityResult(
+                        status="completed",
+                        prediction=pred_res,
+                        model_version=pred_res.get("model_utilized", "audio_random_forest_v1"),
+                        message="Clinically conditioned synthetic acoustic feature inference completed.",
+                    )
+                except HTTPException as exc:
+                    status_label = "unavailable" if exc.status_code == 503 else "failed"
+                    audio_result = AudioModalityResult(
+                        status=status_label,
+                        error=str(exc.detail),
+                    )
+                except Exception as exc:
+                    logger.error("Unexpected audio inference error: %s", exc, exc_info=True)
+                    audio_result = AudioModalityResult(
+                        status="failed",
+                        error="Audio inference failed due to an internal error.",
+                    )
+            else:
+                audio_result = AudioModalityResult(
+                    status="unavailable",
+                    prediction=None,
+                    model_version=None,
+                    message=(
+                        "Audio screening model requires extracted acoustic feature payload (7 features). "
+                        "Live acoustic extraction from raw audio is not deployed in production."
+                    ),
+                )
         else:
             audio_result = AudioModalityResult(
                 status="not_requested",
@@ -425,14 +516,17 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 7. Video Modality (Unimplemented in Phase 3)
+        # 7. Video Modality (Isolated simulation fixture notice)
         video_result: VideoModalityResult
         if modalities.video:
             video_result = VideoModalityResult(
                 status="unavailable",
                 prediction=None,
                 model_version=None,
-                message="Video screening inference model is not yet implemented or trained.",
+                message=(
+                    "Video screening model is an experimental synthetic simulation (Video V3). "
+                    "Real camera-derived facial video extraction is not deployed in production."
+                ),
             )
         else:
             video_result = VideoModalityResult(
@@ -504,12 +598,20 @@ def get_screening_service(
     text_svc: TextNERService = Depends(get_text_ner_service),
     mother_val: MotherValidator = Depends(get_mother_validator),
     fusion_eng: MultimodalFusionEngine = Depends(get_fusion_engine),
+    audio_svc: AudioScreeningService = Depends(get_audio_service),
+    elig_val: EligibilityValidator = Depends(get_eligibility_validator),
 ) -> ScreeningOrchestrationService:
     """FastAPI dependency provider for ScreeningOrchestrationService."""
+    active_engine = fusion_eng
+    if active_engine is fusion_engine and active_engine.strategy is None:
+        active_engine = MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+
     return ScreeningOrchestrationService(
         clinical_svc=clinical_svc,
         text_svc=text_svc,
         mother_val=mother_val,
-        fusion_eng=fusion_eng,
+        fusion_eng=active_engine,
+        audio_svc=audio_svc,
+        elig_val=elig_val,
     )
 

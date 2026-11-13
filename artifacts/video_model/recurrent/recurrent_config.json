@@ -1,0 +1,15 @@
+{
+  "experiment_name": "Phase 4B Recurrent Video Model Experiment",
+  "seed": 42,
+  "lr": 0.001,
+  "batch_size": 32,
+  "max_epochs": 30,
+  "early_stopping_patience": 7,
+  "hidden_dim": 64,
+  "embedding_dim": 128,
+  "weight_decay": 0.0001,
+  "grad_clip": 1.0,
+  "cv_folds": 5,
+  "device": "cpu",
+  "scientific_notice": "Synthetic Video V2 features are abstract numerical simulations. Video features alone do not represent authentic patient observations or diagnostic biomarkers. This experiment serves as a negative control and pipeline verification fixture."
+}
