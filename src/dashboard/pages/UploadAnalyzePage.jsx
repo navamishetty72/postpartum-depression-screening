@@ -11,7 +11,6 @@ import {
   readMediaDuration,
   validateUploadFile,
 } from '../utils/uploadValidation.js';
-import { DEFAULT_CLINICAL_SURVEY_FEATURES } from '../data/mockClinicalData.js';
 import { submitMultimodalAnalysis } from '../services/screeningAnalysisService.js';
 
 export function UploadAnalyzePage({ analyzer = submitMultimodalAnalysis }) {
@@ -210,17 +209,11 @@ export function UploadAnalyzePage({ analyzer = submitMultimodalAnalysis }) {
     setAnalysisStatus('processing');
     setAnalysisError('');
 
-    // Attach registered clinical baseline survey features alongside uploaded modalities
-    const modalitiesWithClinical = activeSelectedModalities.includes('clinical')
-      ? activeSelectedModalities
-      : ['clinical', ...activeSelectedModalities];
-
     const response = await analyzer({
       motherId: activeMother.id,
-      selectedModalities: modalitiesWithClinical,
+      selectedModalities: activeSelectedModalities,
       files: uploadedFiles.filter((f) => activeSelectedModalities.includes(f.modality)),
       consentConfirmed,
-      clinicalFeatures: DEFAULT_CLINICAL_SURVEY_FEATURES,
     });
 
     if (!response?.ok) {
@@ -238,54 +231,23 @@ export function UploadAnalyzePage({ analyzer = submitMultimodalAnalysis }) {
     const modalityLabels = activeSelectedModalities.map(
       (m) => m.charAt(0).toUpperCase() + m.slice(1)
     );
-
-    // Extract risk tier from fusion or clinical prediction if available
-    let riskTier = 'Moderate';
-    const rawRisk =
-      result.fusion?.risk_category ||
-      result.clinical?.prediction?.risk_category ||
-      result.riskCategory;
-    if (rawRisk) {
-      if (rawRisk.includes('HIGH')) riskTier = 'High';
-      else if (rawRisk.includes('LOW')) riskTier = 'Low';
-      else riskTier = 'Moderate';
-    }
-
-    const clinProb = result.clinical?.prediction?.predicted_risk_probability;
-    const fusionScore = result.fusion?.combined_score;
-    const effectiveScore =
-      typeof fusionScore === 'number'
-        ? fusionScore
-        : typeof clinProb === 'number'
-          ? clinProb
-          : result.combinedScore || 0.5;
-
     const created = recordScreening({
       motherId: activeMother.id,
-      risk: riskTier,
+      risk: result.riskCategory?.replace(' Risk', '') || 'Moderate',
       modality: `Uploaded (${modalityLabels.join(' · ')})`,
       summary:
         result.indicators?.join('; ') ||
-        result.fusion?.discordance_analysis?.explanation ||
-        `Completed multimodal screening analysis (${modalityLabels.join(', ')}).`,
-      epdsEquivalent:
-        result.fusion?.epds_equivalent ??
-        result.epdsEquivalent ??
-        Math.round(effectiveScore * 20),
-      discordanceDetected: Boolean(
-        result.fusion?.discordance_analysis?.discordance_detected ??
-          result.discordanceDetected
-      ),
+        `Completed uploaded multimodal analysis (${modalityLabels.join(', ')}).`,
+      epdsEquivalent: result.epdsEquivalent ?? Math.round((result.combinedScore || 0.5) * 20),
+      discordanceDetected: Boolean(result.discordanceDetected),
       capturedModalities: {
-        clinical: Boolean(result.clinical?.status === 'completed'),
-        text: activeSelectedModalities.includes('text') || Boolean(result.text?.status === 'completed'),
-        voice: activeSelectedModalities.includes('voice') || Boolean(result.audio?.status === 'completed'),
+        text: activeSelectedModalities.includes('text'),
+        voice: activeSelectedModalities.includes('voice'),
         video: activeSelectedModalities.includes('video'),
       },
-      preliminaryScore: effectiveScore,
-      modalityContributions: result.fusion?.modality_contributions ?? result.modalityContributions,
+      preliminaryScore: result.combinedScore,
+      modalityContributions: result.modalityContributions,
       indicators: result.indicators,
-      backendResult: result,
     });
 
     clearUploadDraft(activeMother.id);

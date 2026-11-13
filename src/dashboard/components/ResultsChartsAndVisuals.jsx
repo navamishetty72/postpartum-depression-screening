@@ -89,43 +89,11 @@ export function OverallRiskCard({ screening }) {
 }
 
 export function ModalityAnalysisCard({ modalities }) {
-  const rows = [];
-  if (modalities?.clinical) {
-    rows.push({
-      key: 'clinical',
-      label: 'Clinical',
-      sub: '(Random Forest)',
-      icon: 'target',
-      data: modalities.clinical,
-      provenanceLabel: 'Held-out dataset evaluation (Not externally clinically validated)',
-    });
-  }
-  rows.push(
-    {
-      key: 'text',
-      label: 'Text',
-      sub: '(NLP)',
-      icon: 'fileText',
-      data: modalities?.text,
-      provenanceLabel: 'Qualitative Entity Extraction (Biomedical NER)',
-    },
-    {
-      key: 'voice',
-      label: 'Voice',
-      sub: '(Acoustic)',
-      icon: 'mic',
-      data: modalities?.voice,
-      provenanceLabel: 'Experimental (Conditional Inference)',
-    },
-    {
-      key: 'video',
-      label: 'Video',
-      sub: '(Facial)',
-      icon: 'video',
-      data: modalities?.video,
-      provenanceLabel: 'Offline Simulation (Unavailable for live inference)',
-    },
-  );
+  const rows = [
+    { key: 'text', label: 'Text', sub: '(NLP)', icon: 'fileText', data: modalities?.text },
+    { key: 'voice', label: 'Voice', sub: '(Acoustic)', icon: 'mic', data: modalities?.voice },
+    { key: 'video', label: 'Video', sub: '(Facial)', icon: 'video', data: modalities?.video },
+  ];
 
   return (
     <section className="miora-card miora-results-card" aria-labelledby="modality-analysis-title">
@@ -153,9 +121,6 @@ export function ModalityAnalysisCard({ modalities }) {
                 </span>
                 <span className="miora-modality-row-label">
                   <strong>{row.label}</strong> <span>{row.sub}</span>
-                  {row.provenanceLabel && (
-                    <small className="miora-modality-provenance-tag">{row.provenanceLabel}</small>
-                  )}
                 </span>
               </div>
 
@@ -196,8 +161,6 @@ export function MultimodalSummaryCard({ screening }) {
   const activeCount = [textReady, voiceReady, videoReady].filter(Boolean).length;
   const hasScore = typeof screening?.combinedScore === 'number';
 
-  const fusionContribs = screening?.fusion?.modality_contributions || screening?.modalityContributions;
-
   return (
     <section className="miora-card miora-results-card" aria-labelledby="multimodal-summary-title">
       <div className="miora-card-header">
@@ -237,20 +200,6 @@ export function MultimodalSummaryCard({ screening }) {
           </strong>
           <RiskBadge risk={`${screening?.risk || 'Moderate'} Risk`} />
           <span className="miora-fusion-count">{activeCount} of 3 modalities processed</span>
-
-          {fusionContribs && (
-            <div className="miora-fusion-weights-strip" style={{ marginTop: '0.45rem', fontSize: '0.74rem', color: '#666' }}>
-              <span>Stacking Weights: </span>
-              <strong>Clinical {Math.round((fusionContribs.clinical ?? 1.0) * 100)}%</strong>
-              <span> · Audio {Math.round((fusionContribs.audio ?? 0) * 100)}%</span>
-              <span> · Video {Math.round((fusionContribs.video ?? 0) * 100)}%</span>
-              <span> · Text {Math.round((fusionContribs.text ?? 0) * 100)}%</span>
-            </div>
-          )}
-
-          <p className="miora-fusion-disclaimer" style={{ marginTop: '0.35rem', fontSize: '0.71rem', color: '#888', fontStyle: 'italic' }}>
-            Experimental Research Comparison: Non-negative stacking isolates held-out clinical signal. EPDS Q10 safety alert operates independently.
-          </p>
         </div>
       </div>
     </section>

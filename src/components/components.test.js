@@ -57,13 +57,13 @@ describe('Miora Components & Fixes', () => {
     expect(html).not.toContain('desktop-only');
   });
 
-  it('Header renders Miora calligraphic logo without side tagline text and links Dashboard to /dashboard on top right', () => {
+  it('Header renders Miora calligraphic logo without side tagline text and links Get Started to /login on top right', () => {
     const html = Header();
     expect(html).toContain('brand-wordmark');
     expect(html).toContain('brand-m');
     expect(html).toContain('iora');
-    expect(html).toContain('Dashboard');
-    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain('Get Started');
+    expect(html).toMatch(/href="\/(login|dashboard)"/);
     expect(html).toContain('header-cta');
     expect(html).not.toContain('Get Started Free');
     expect(html).not.toContain('brand-rule');

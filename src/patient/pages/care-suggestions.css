@@ -1,0 +1,555 @@
+/* ==========================================================================
+   Miora — Care Suggestions Styles
+   Unified with Clinician Dashboard Visual Hierarchy & Design System
+   ========================================================================== */
+
+.care-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Hero Header Card */
+.care-hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #fdf5f7 100%);
+  overflow: hidden;
+}
+
+.care-hero-text {
+  max-width: 640px;
+}
+
+.care-title {
+  margin: 0 0 6px;
+}
+
+.care-subtitle {
+  margin: 0;
+}
+
+.care-hero-illu-wrap {
+  width: 140px;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.care-hero-illustration {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Categories Tabs Bar */
+.care-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--patient-blush-border);
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.care-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--patient-radius-pill);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--patient-ink-light);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--patient-transition);
+}
+
+.care-tab-btn:hover {
+  background: #fdf0f2;
+  color: var(--patient-ink);
+}
+
+.care-tab-btn.is-active {
+  background: var(--patient-blush-pill);
+  border-color: rgba(217, 60, 117, 0.16);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+}
+
+.care-tab-icon {
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+}
+
+/* Main Grid */
+.care-main-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.care-main-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.care-main-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Care Plan Card */
+.care-plan-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+}
+
+.plan-info-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-badge-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #f4d3db;
+}
+
+.plan-text-content {
+  min-width: 0;
+}
+
+.plan-title {
+  margin: 0 0 6px;
+  font-family: var(--patient-font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.plan-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--patient-muted);
+  line-height: 1.45;
+}
+
+.plan-info-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.plan-meta-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 14px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 10px;
+}
+
+.plan-meta-label {
+  font-size: 11px;
+  color: var(--patient-subtle);
+}
+
+.plan-meta-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+/* Suggestions Section */
+.care-suggestions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.suggestions-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.suggestions-section-title {
+  margin: 0;
+  font-family: var(--patient-font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.day-progress-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--patient-brand-rose-deep);
+  background: var(--patient-blush-soft);
+  border: 1px solid #f4d3db;
+  padding: 3px 10px;
+  border-radius: var(--patient-radius-pill);
+}
+
+.suggestions-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.suggestion-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--patient-transition);
+}
+
+.suggestion-card:hover {
+  transform: translateY(-2px);
+}
+
+.suggestion-img-wrap {
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suggestion-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.suggestion-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.suggestion-card-desc {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: var(--patient-subtle);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.suggestion-action-btn {
+  width: 100%;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  justify-content: center;
+}
+
+/* Progress Tracker Card */
+.care-progress-card {
+  padding: 22px;
+}
+
+.progress-card-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.progress-body-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-gauge-wrap {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto;
+}
+
+.progress-gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-gauge-track {
+  fill: none;
+  stroke: #f6e8ec;
+  stroke-width: 7;
+}
+
+.progress-gauge-bar {
+  fill: none;
+  stroke: #ea3a7a;
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.progress-gauge-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gauge-fraction {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--patient-brand-rose-deep);
+  line-height: 1.1;
+}
+
+.gauge-subtext {
+  font-size: 10px;
+  color: var(--patient-subtle);
+  line-height: 1.2;
+}
+
+.progress-tasks-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  cursor: pointer;
+  transition: var(--patient-transition);
+}
+
+.progress-task-item:hover {
+  background: #fff8f9;
+  border-color: rgba(217, 60, 117, 0.3);
+}
+
+.task-check-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--patient-blush-border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--patient-transition);
+}
+
+.task-check-circle.completed {
+  background: #27ae60;
+  border-color: #27ae60;
+}
+
+.progress-task-item.is-completed .task-name {
+  text-decoration: line-through;
+  color: var(--patient-subtle);
+}
+
+.task-name {
+  font-size: 13px;
+  color: var(--patient-ink);
+  font-weight: 500;
+}
+
+/* Support Card */
+.care-support-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.support-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.support-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #f4d3db;
+}
+
+.support-text-wrap {
+  min-width: 0;
+}
+
+.support-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.support-desc {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--patient-muted);
+  line-height: 1.45;
+}
+
+.support-action-btn {
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* Modals */
+.care-interactive-modal {
+  max-width: 460px;
+  width: 100%;
+  padding: 24px;
+}
+
+.care-modal-desc {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--patient-muted);
+  line-height: 1.5;
+}
+
+.breathing-circle-wrap {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.breathing-bubble {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--patient-blush-pill);
+  border: 3px solid var(--patient-brand-rose);
+  color: var(--patient-brand-rose-deep);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: breathingAnimation 4s infinite ease-in-out;
+}
+
+@keyframes breathingAnimation {
+  0%, 100% { transform: scale(0.85); opacity: 0.8; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+.care-tips-ul {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--patient-muted);
+  line-height: 1.6;
+}
+
+.journal-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--patient-blush-border);
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--patient-ink);
+  outline: none;
+  margin-bottom: 16px;
+  resize: vertical;
+  transition: var(--patient-transition);
+}
+
+.journal-textarea:focus {
+  border-color: var(--patient-brand-rose);
+  box-shadow: 0 0 0 3px rgba(217, 60, 117, 0.12);
+}
+
+.modal-action-btn {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .care-main-grid {
+    grid-template-columns: 1fr;
+  }
+  .suggestions-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .suggestions-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .care-plan-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

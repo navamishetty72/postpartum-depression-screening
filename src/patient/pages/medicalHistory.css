@@ -1,0 +1,423 @@
+/* ==========================================================================
+   Miora — Medical History Screen Styles
+   Unified with Clinician Dashboard Visual Hierarchy & Tokens
+   ========================================================================== */
+
+.medhist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Breadcrumb */
+.medhist-breadcrumb-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--patient-subtle);
+  margin-bottom: -12px;
+}
+
+.medhist-breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--patient-muted);
+  text-decoration: none;
+  transition: var(--patient-transition);
+}
+
+.medhist-breadcrumb-link:hover {
+  color: var(--patient-brand-rose-deep);
+}
+
+.medhist-breadcrumb-sep {
+  color: var(--patient-subtle);
+  font-size: 14px;
+}
+
+.medhist-breadcrumb-current {
+  color: var(--patient-ink);
+  font-weight: 500;
+}
+
+/* Card 1: Question Card */
+.medhist-question-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 32px;
+}
+
+.medhist-question-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.medhist-question-text {
+  margin: 0 0 8px;
+  font-family: var(--patient-font-serif);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--patient-ink);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.medhist-question-note {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--patient-subtle);
+}
+
+.medhist-options-grid {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.medhist-option-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: var(--patient-radius-pill);
+  background: var(--patient-surface);
+  border: 1.5px solid var(--patient-blush-border);
+  color: var(--patient-ink);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--patient-transition);
+}
+
+.medhist-option-btn:hover {
+  border-color: rgba(217, 60, 117, 0.4);
+  background: #fff8f9;
+}
+
+.medhist-option-btn.is-selected {
+  background: var(--patient-blush-pill);
+  border-color: var(--patient-brand-rose);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(217, 60, 117, 0.1);
+}
+
+.medhist-radio-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--patient-blush-border);
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--patient-transition);
+}
+
+.medhist-option-btn.is-selected .medhist-radio-indicator {
+  background: var(--patient-brand-rose);
+  border-color: var(--patient-brand-rose);
+}
+
+.medhist-question-illustration-wrap {
+  flex-shrink: 0;
+  width: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.medhist-question-illustration {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Card 2: Upload Records Card */
+.medhist-upload-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.medhist-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.medhist-upload-title {
+  margin: 0;
+  font-family: var(--patient-font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.medhist-optional-tag {
+  font-family: var(--patient-font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--patient-subtle);
+}
+
+.medhist-secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--patient-muted);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  padding: 4px 12px;
+  border-radius: var(--patient-radius-pill);
+}
+
+.medhist-upload-subtitle {
+  margin: -12px 0 0;
+  font-size: 13.5px;
+  color: var(--patient-muted);
+}
+
+/* Drag & Drop Zone */
+.medhist-dropzone {
+  border: 2px dashed #e2c2ce;
+  border-radius: var(--patient-radius-card);
+  background: #fffbfa;
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--patient-transition);
+}
+
+.medhist-dropzone:hover,
+.medhist-dropzone.is-dragover {
+  border-color: var(--patient-brand-rose);
+  background: #fff3f6;
+  transform: translateY(-1px);
+}
+
+.medhist-cloud-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border: 1px solid var(--patient-blush-border);
+}
+
+.medhist-dropzone-prompt {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--patient-ink);
+  font-weight: 500;
+}
+
+.medhist-click-upload-btn {
+  background: none;
+  border: none;
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.medhist-dropzone-hint {
+  font-size: 12px;
+  color: var(--patient-subtle);
+}
+
+/* Validation Alert */
+.medhist-validation-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--patient-danger-bg);
+  border: 1px solid var(--patient-danger-border);
+  border-radius: var(--patient-radius-md);
+  color: var(--patient-danger-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Bottom Row */
+.medhist-card2-bottom-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 8px;
+}
+
+.medhist-uploaded-section {
+  flex: 1;
+  min-width: 0;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: var(--patient-radius-md);
+  padding: 16px;
+}
+
+.medhist-uploaded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patient-ink);
+  margin-bottom: 12px;
+}
+
+.medhist-uploaded-count-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--patient-radius-pill);
+  background: var(--patient-blush-pill);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+}
+
+.medhist-uploaded-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medhist-uploaded-empty {
+  font-size: 12.5px;
+  color: var(--patient-subtle);
+  padding: 12px 0;
+  text-align: center;
+}
+
+.medhist-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--patient-blush-border);
+  border-radius: var(--patient-radius-sm);
+}
+
+.medhist-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.medhist-pdf-badge,
+.medhist-img-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.medhist-pdf-badge {
+  background: #feecef;
+  color: #c73566;
+}
+
+.medhist-img-badge {
+  background: #eef4fe;
+  color: #1e5cb3;
+}
+
+.medhist-file-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.medhist-file-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--patient-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.medhist-file-size {
+  font-size: 11px;
+  color: var(--patient-subtle);
+}
+
+.medhist-file-remove-btn {
+  background: none;
+  border: none;
+  color: var(--patient-subtle);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--patient-transition);
+}
+
+.medhist-file-remove-btn:hover {
+  color: var(--patient-danger-text);
+  background: #feecef;
+}
+
+.medhist-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.medhist-save-btn {
+  padding: 12px 28px;
+  font-size: 14.5px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .medhist-question-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .medhist-question-illustration-wrap {
+    align-self: center;
+    width: 140px;
+  }
+  .medhist-card2-bottom-row {
+    flex-direction: column;
+  }
+  .medhist-actions-bar {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .medhist-save-btn {
+    width: 100%;
+  }
+}

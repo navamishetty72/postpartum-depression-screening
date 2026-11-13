@@ -1,6 +1,13 @@
 {
   "routes": [
     { "path": "/", "title": "Miora — Maternal Emotional Intelligence" },
+    { "path": "/login", "title": "Miora — Sign In" },
+    { "path": "/create-account", "title": "Miora — Create Account" },
+    { "path": "/patient/home", "title": "Miora — Patient Home Dashboard" },
+    { "path": "/screening", "title": "Miora — AI Screening Session" },
+    { "path": "/patient/screening", "title": "Miora — AI Screening Session" },
+    { "path": "/screening-results", "title": "Miora — Screening Results" },
+    { "path": "/patient/care-suggestions", "title": "Miora — Care Suggestions" },
     { "path": "/dashboard", "title": "Miora — Dashboard" },
     { "path": "/mothers", "title": "Miora — Mothers & Cases" },
     { "path": "/live-screening", "title": "Miora — Live Screening" },

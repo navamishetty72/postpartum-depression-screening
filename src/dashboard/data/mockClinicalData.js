@@ -21,60 +21,6 @@ export const KPI_TRENDS = {
 };
 
 /**
- * Synthetic demonstration reference survey baseline predictors (46 features).
- * DEMONSTRATION FIXTURE ONLY: This is a synthetic template formatted for the
- * Random Forest input schema. It is NOT authentic identifiable participant data.
- */
-export const DEFAULT_CLINICAL_SURVEY_FEATURES = {
-  Age: 28.0,
-  'Number of the latest pregnancy': 1.0,
-  Residence: 'Urban',
-  'Education Level': 'Graduate',
-  'Marital status': 'Married',
-  'Occupation before latest pregnancy': 'Employed',
-  'Monthly income before latest pregnancy': '30000-50000',
-  'Occupation After Your Latest Childbirth': 'Homemaker',
-  'Current monthly income': '30000-50000',
-  "Husband's education level": 'Graduate',
-  'Husband’s monthly income': '40000-60000',
-  Addiction: 'No',
-  'Total children': 1,
-  'Disease before pregnancy': 'None',
-  'History of pregnancy loss': 'No',
-  'Family type': 'Nuclear',
-  'Number of household members': 3,
-  'Relationship with the in-laws': 'Good',
-  'Relationship with husband': 'Good',
-  'Relationship with the newborn': 'Good',
-  'Relationship between father and newborn': 'Good',
-  'Feeling about motherhood': 'Happy',
-  'Recieved Support': 'Yes',
-  'Need for Support': 'No',
-  'Major changes or losses during pregnancy': 'No',
-  Abuse: 'No',
-  'Trust and share feelings': 'Yes',
-  'Pregnancy length': 'Full term',
-  'Pregnancy plan': 'Planned',
-  'Regular checkups': 'Yes',
-  'Fear of pregnancy': 'No',
-  'Diseases during pregnancy': 'None',
-  'Age of newborn': '1-3 months',
-  'Age of immediate older children': 'None',
-  'Mode of delivery': 'Normal',
-  'Gender of newborn': 'Female',
-  'Birth compliancy': 'Normal',
-  Breastfeed: 'Yes',
-  'Newborn illness': 'No',
-  'Worry about newborn': 'No',
-  'Relax/sleep when newborn is tended ': 'Yes',
-  'Relax/sleep when the newborn is asleep': 'Yes',
-  'Angry after latest child birth': 'No',
-  'Feeling for regular activities': 'Normal',
-  'Depression before pregnancy (PHQ2)': 'No',
-  'Depression during pregnancy (PHQ2)': 'No',
-};
-
-/**
  * Weekly screening records used by the Screening Activity chart.
  * Supports 4-week, 8-week, and 12-week clinical reporting windows.
  */

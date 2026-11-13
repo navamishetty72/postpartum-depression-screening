@@ -228,7 +228,6 @@ export function ClinicalProvider({ children }) {
     preliminaryScore,
     modalityContributions,
     indicators,
-    backendResult,
   }) => {
     const mother = mothers.find((m) => m.id === motherId);
     const cap = capturedModalities || { text: true, voice: false, video: false };
@@ -250,48 +249,15 @@ export function ClinicalProvider({ children }) {
       discordanceScore: discordanceDetected ? 0.72 : 0.14,
       preliminaryScore: preliminaryScore ?? null,
       capturedModalities: cap,
-      backendResult: backendResult || null,
-      fusion: backendResult?.fusion || {
-        status: 'not_available',
-        combined_score: preliminaryScore ?? null,
-        modality_contributions: modalityContributions || { clinical: 1.0, audio: 0.0, video: 0.0, text: 0.0 },
-        research_benchmarks: backendResult?.fusion?.research_benchmarks || null,
-      },
       modalities: {
-        ...(backendResult?.clinical?.status === 'completed'
-          ? {
-              clinical: {
-                status: 'completed',
-                score: backendResult.clinical.prediction?.predicted_risk_probability ?? null,
-                provenance: 'authentic_clinical_survey',
-                model: backendResult.clinical.model_version || 'Random Forest',
-              },
-            }
-          : {}),
         text: cap.text
-          ? {
-              status: backendResult?.text?.status || 'completed',
-              score: modalityContributions?.text ?? score,
-              entitiesDetected: backendResult?.text?.total_entities_detected,
-              provenance: 'biomedical_ner_v1.3.0',
-            }
+          ? { status: 'completed', score: modalityContributions?.text ?? score }
           : { status: 'unavailable', score: null },
         voice: cap.voice
-          ? {
-              status: backendResult?.audio?.status || 'completed',
-              score:
-                backendResult?.audio?.prediction?.predicted_risk_probability ??
-                modalityContributions?.voice ??
-                score,
-              provenance: 'CLINICALLY_CONDITIONED_SYNTHETIC',
-            }
+          ? { status: 'completed', score: modalityContributions?.voice ?? score }
           : { status: 'unavailable', score: null },
         video: cap.video
-          ? {
-              status: backendResult?.video?.status || 'completed',
-              score: modalityContributions?.video ?? score,
-              provenance: 'synthetic_video_simulation',
-            }
+          ? { status: 'completed', score: modalityContributions?.video ?? score }
           : { status: 'unavailable', score: null },
       },
       riskHistory: [

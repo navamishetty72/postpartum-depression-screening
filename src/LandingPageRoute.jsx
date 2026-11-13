@@ -82,13 +82,17 @@ export function LandingPageRoute() {
       triggerHandlers.push([card, fn]);
     });
 
-    const dashboardCta = root.querySelector('.header-cta');
-    const handleDashboardClick = (e) => {
+    const headerCta = root.querySelector('.header-cta');
+    const headerSignin = root.querySelector('.header-signin');
+    const heroCta = root.querySelector('.hero-cta');
+    const handleLoginClick = (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
-      navigate('/dashboard');
+      navigate('/login');
     };
-    dashboardCta?.addEventListener('click', handleDashboardClick);
+    headerCta?.addEventListener('click', handleLoginClick);
+    headerSignin?.addEventListener('click', handleLoginClick);
+    heroCta?.addEventListener('click', handleLoginClick);
 
     const helplineDialog = root.querySelector('#helplines-dialog');
     const openHelplinesBtn = root.querySelector('.open-helplines-btn');
@@ -138,7 +142,9 @@ export function LandingPageRoute() {
         el.removeEventListener('mouseenter', fn);
         el.removeEventListener('click', fn);
       });
-      dashboardCta?.removeEventListener('click', handleDashboardClick);
+      headerCta?.removeEventListener('click', handleLoginClick);
+      headerSignin?.removeEventListener('click', handleLoginClick);
+      heroCta?.removeEventListener('click', handleLoginClick);
       openHelplinesBtn?.removeEventListener('click', openHelplineModal);
       modalCloseBtn?.removeEventListener('click', closeHelplineModal);
       modalBackdrop?.removeEventListener('click', closeHelplineModal);

@@ -361,4 +361,3 @@ export function buildClinicalNotePdfBlob(params) {
 
   return new Blob([pdf], { type: 'application/pdf' });
 }
-

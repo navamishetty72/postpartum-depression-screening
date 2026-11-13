@@ -416,4 +416,3 @@ export function FinalizeConfirmationModal({
     </div>
   );
 }
-
