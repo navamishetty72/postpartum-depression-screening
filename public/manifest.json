@@ -1,0 +1,33 @@
+{
+  "name": "Miora — Maternal Emotional Intelligence",
+  "short_name": "Miora",
+  "description": "An AI-powered companion for early and sensitive detection of postpartum distress, with compassionate care and personalized support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f4",
+  "theme_color": "#fdf6f2",
+  "icons": [
+    {
+      "src": "/assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
+

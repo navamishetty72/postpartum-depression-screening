@@ -1,4 +1,4 @@
-# Node / Frontend
+# Node / Frontend artifacts
 node_modules/
 dist/
 .playwright-mcp/
@@ -13,6 +13,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
+dist/
 downloads/
 eggs/
 .eggs/
