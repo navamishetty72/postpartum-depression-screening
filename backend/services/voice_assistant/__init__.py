@@ -9,11 +9,15 @@ Provides an empathetic Gemini-powered conversational companion with:
 
 from backend.services.voice_assistant.config import (
     DEFAULT_GEMINI_MODEL,
+    DEFAULT_LANGUAGE,
+    SUPPORTED_LANGUAGES,
     VoiceAssistantConfig,
+    detect_language,
     get_voice_assistant_config,
 )
 from backend.services.voice_assistant.gemini_service import (
     FALLBACK_SUPPORT_MESSAGE,
+    FALLBACK_SUPPORT_MESSAGES,
     GeminiCredentialsMissingError,
     GeminiProviderError,
     GeminiServiceError,
@@ -24,13 +28,17 @@ from backend.services.voice_assistant.safety_guard import (
     EMERGENCY_RESPONSE_IMMEDIATE_DANGER,
     EMERGENCY_RESPONSE_INFANT_HARM,
     EMERGENCY_RESPONSE_SELF_HARM,
+    EMERGENCY_RESPONSES_BY_LANGUAGE,
     SafetyCheckResult,
     SafetyGuard,
 )
 
 __all__ = [
     "DEFAULT_GEMINI_MODEL",
+    "DEFAULT_LANGUAGE",
+    "SUPPORTED_LANGUAGES",
     "VoiceAssistantConfig",
+    "detect_language",
     "get_voice_assistant_config",
     "GeminiVoiceAssistantService",
     "VoiceAssistantResponse",
@@ -40,8 +48,10 @@ __all__ = [
     "GeminiCredentialsMissingError",
     "GeminiProviderError",
     "FALLBACK_SUPPORT_MESSAGE",
+    "FALLBACK_SUPPORT_MESSAGES",
     "EMERGENCY_RESPONSE_SELF_HARM",
     "EMERGENCY_RESPONSE_INFANT_HARM",
     "EMERGENCY_RESPONSE_IMMEDIATE_DANGER",
+    "EMERGENCY_RESPONSES_BY_LANGUAGE",
 ]
 
