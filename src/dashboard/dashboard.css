@@ -1,0 +1,1713 @@
+/* ==========================================================================
+   Miora Clinician Command Center & Connected Views
+   ========================================================================== */
+
+.miora-app-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at 88% 8%, #fcecef 0%, #fdf8f4 46%, #fcf6f2 100%);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+/* Top Navigation */
+.dash-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(253, 249, 247, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #f0dfe2;
+}
+
+.dash-topnav-inner {
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.dash-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.dash-brand-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dash-brand-link .brand-wordmark {
+  font-size: 29px;
+  color: #d93c75;
+  padding-bottom: 0.14em;
+}
+
+.dash-brand-divider {
+  width: 1px;
+  height: 28px;
+  background: #e9d3d7;
+}
+
+.dash-tagline {
+  display: flex;
+  flex-direction: column;
+  font-size: 11.5px;
+  line-height: 1.22;
+  color: #54464b;
+  font-weight: 500;
+}
+
+.dash-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.dash-nav-link {
+  padding: 8px 13px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #46383d;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.dash-nav-link:hover {
+  background: #fdf0f2;
+  color: var(--ink);
+}
+
+.dash-nav-link.is-active {
+  background: #fde7ec;
+  color: #271218;
+  font-weight: 600;
+  border-color: rgba(217, 60, 117, 0.14);
+}
+
+.dash-nav-utilities {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.dash-utility-wrap {
+  position: relative;
+}
+
+.dash-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #433238;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.dash-icon-btn:hover,
+.dash-icon-btn.is-open {
+  background: #fdeef1;
+  color: var(--rose-deep);
+  border-color: #f3d4dc;
+}
+
+.dash-bell-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d93c75;
+  border: 1.5px solid #fdf9f7;
+}
+
+.dash-avatar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #e7b5c3;
+  background: #fff5f7;
+  color: var(--rose-deep);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.dash-avatar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(199, 53, 102, 0.15);
+}
+
+.dash-mobile-menu-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #ead6da;
+  background: #fff;
+  color: var(--ink);
+  place-items: center;
+  cursor: pointer;
+}
+
+.dash-mobile-drawer {
+  display: none;
+}
+
+/* Popovers */
+.dash-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 80;
+  background: #fffdfc;
+  border: 1px solid #ecd6da;
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(56, 22, 34, 0.12);
+  padding: 12px;
+  min-width: 260px;
+}
+
+.dash-search-popover {
+  width: 330px;
+}
+
+.dash-search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  border: 1px solid #ead6da;
+  background: #fff8f9;
+  color: var(--muted);
+}
+
+.dash-search-input-row input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.dash-popover-section {
+  margin-top: 10px;
+}
+
+.dash-popover-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  padding-inline: 4px;
+}
+
+.dash-search-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.dash-search-result:hover {
+  background: #fdf0f3;
+}
+
+.dash-search-result span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dash-popover-empty {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 6px 4px;
+}
+
+.dash-alerts-popover {
+  width: 310px;
+}
+
+.dash-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 10px;
+  border-bottom: 1px solid #f2e4e6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dash-popover-count {
+  font-size: 11.5px;
+  color: var(--rose-deep);
+  background: #fdeef2;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.dash-alerts-list {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.dash-alert-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dash-alert-item:hover {
+  background: #fdf2f4;
+}
+
+.dash-alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex: 0 0 auto;
+}
+
+.dash-alert-dot.severity-high {
+  background: #d93c75;
+}
+
+.dash-alert-dot.severity-moderate {
+  background: #d99228;
+}
+
+.dash-alert-dot.severity-low {
+  background: #3d9259;
+}
+
+.dash-alert-copy p {
+  font-size: 12.5px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.dash-alert-copy span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dash-profile-popover {
+  width: 240px;
+}
+
+.dash-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px 10px;
+  border-bottom: 1px solid #f2e4e6;
+}
+
+.dash-profile-meta strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.dash-profile-meta span {
+  font-size: 12px;
+  color: var(--rose-deep);
+}
+
+.dash-profile-meta small {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.dash-profile-actions {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.dash-profile-actions button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.dash-profile-actions button:hover {
+  background: #fdf0f3;
+  color: var(--rose-deep);
+}
+
+/* Command Center Main Container */
+.miora-command-shell {
+  padding: 18px 24px 36px;
+}
+
+.miora-command-frame {
+  max-width: 1220px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(180deg, #fffcfb 0%, #fdf7f5 100%);
+  border: 1px solid #eedadd;
+  border-radius: 24px;
+  padding: 26px 28px 22px;
+  box-shadow: 0 12px 34px rgba(120, 48, 68, 0.045);
+  overflow: hidden;
+}
+
+.miora-header-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 58%;
+  height: 150px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dashboard Header */
+.miora-dash-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.miora-dash-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  color: #4d3c42;
+}
+
+.miora-dash-eyebrow-line {
+  width: 60px;
+  height: 1px;
+  background: #e1b8c1;
+}
+
+.miora-dash-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(30px, 3.2vw, 41px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin: 10px 0 8px;
+}
+
+.miora-dash-title em {
+  color: #c93769;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.miora-dash-subtitle {
+  font-size: 14px;
+  color: #54464b;
+  line-height: 1.45;
+}
+
+.miora-dash-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  padding-bottom: 4px;
+}
+
+.miora-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1px solid #c23263;
+  background: linear-gradient(180deg, #e05082 0%, #c83668 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(199, 53, 102, 0.22);
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.miora-cta-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 20px rgba(199, 53, 102, 0.28);
+  filter: brightness(1.03);
+}
+
+.miora-cta-dropdown-wrap {
+  position: relative;
+}
+
+.miora-cta-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #e9d2d7;
+  background: #fffbfa;
+  color: #56454b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.miora-cta-circle:hover {
+  border-color: #d9a7b3;
+  background: #fdf0f3;
+  color: var(--rose-deep);
+}
+
+.miora-cta-menu {
+  min-width: 215px;
+  display: grid;
+  gap: 3px;
+}
+
+.miora-cta-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.miora-cta-menu button:hover {
+  background: #fdf0f3;
+  color: var(--rose-deep);
+}
+
+/* KPI Grid */
+.miora-kpi-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.miora-kpi-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #eed9dd;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(130, 52, 74, 0.035);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.miora-kpi-card.is-clickable {
+  cursor: pointer;
+}
+
+.miora-kpi-card.is-clickable:hover {
+  transform: translateY(-2px);
+  border-color: #e4bcc6;
+  box-shadow: 0 10px 22px rgba(130, 52, 74, 0.07);
+}
+
+.miora-kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fdeef1;
+  border: 1px solid #f7d9e0;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-kpi-content {
+  min-width: 0;
+}
+
+.miora-kpi-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.miora-kpi-label {
+  font-size: 13px;
+  color: #54464b;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miora-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.miora-trend-positive {
+  background: #e8f5ec;
+  color: #2d7a47;
+  border: 1px solid #d4ecdb;
+}
+
+.miora-trend-attention {
+  background: #fdeaf0;
+  color: #b62d5b;
+  border: 1px solid #f6d1dc;
+}
+
+/* Shared Cards */
+.miora-card {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #eed9dd;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 14px rgba(130, 52, 74, 0.035);
+}
+
+.miora-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.miora-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-card-icon {
+  color: #c73566;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miora-card-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.miora-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid #ead4d8;
+  background: #fffbfa;
+  color: #3a292f;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.miora-pill-btn:hover {
+  background: #fdeef2;
+  border-color: #e1b5c0;
+  color: var(--rose-deep);
+}
+
+/* Charts Grid */
+.miora-charts-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.12fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.miora-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.miora-pill-select {
+  appearance: none;
+  padding: 6px 30px 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #ead4d8;
+  background: #fffbfa;
+  color: #38272d;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.miora-select-chevron {
+  position: absolute;
+  right: 11px;
+  pointer-events: none;
+  color: #6b5a60;
+  display: inline-flex;
+}
+
+.miora-area-chart-wrap {
+  width: 100%;
+  min-height: 210px;
+}
+
+.miora-chart-tooltip {
+  background: #fffdfc;
+  border: 1px solid #ebd5d9;
+  border-radius: 12px;
+  padding: 9px 12px;
+  box-shadow: 0 10px 24px rgba(56, 22, 34, 0.1);
+  font-size: 12px;
+}
+
+.miora-chart-tooltip-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.miora-chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--muted);
+}
+
+.miora-chart-tooltip-row strong {
+  color: var(--rose-deep);
+}
+
+/* Risk Distribution */
+.miora-risk-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 6px 4px;
+}
+
+.miora-donut-wrap {
+  position: relative;
+  width: 174px;
+  height: 174px;
+  flex: 0 0 auto;
+}
+
+.miora-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.miora-donut-total {
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.miora-donut-caption {
+  font-size: 12px;
+  color: #5b4d52;
+  margin-top: 2px;
+}
+
+.miora-risk-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.miora-risk-legend-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--ink);
+  transition: background 140ms ease;
+}
+
+.miora-risk-legend-btn:hover {
+  background: #fdf2f4;
+}
+
+.miora-risk-legend-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-risk-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.miora-risk-label {
+  color: #3a2c31;
+}
+
+.miora-risk-value {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Priority Cases + Recent Screenings Grid */
+.miora-cases-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.24fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.miora-table-scroll {
+  overflow-x: auto;
+}
+
+.miora-priority-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.miora-priority-table thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b5c61;
+  padding: 4px 8px 10px;
+  border-bottom: 1px solid #f2e4e6;
+  white-space: nowrap;
+}
+
+.miora-table-row {
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.miora-table-row:hover {
+  background: #fff6f7;
+}
+
+.miora-table-row.is-selected {
+  background: #fdeef2;
+}
+
+.miora-table-row td {
+  padding: 11px 8px;
+  border-bottom: 1px solid #f6ecee;
+  vertical-align: middle;
+}
+
+.miora-table-row:last-child td {
+  border-bottom: 0;
+}
+
+.miora-cell-id {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.miora-cell-week {
+  color: #4d3f44;
+  white-space: nowrap;
+}
+
+.miora-cell-reason {
+  color: #3c2f34;
+}
+
+.miora-col-action,
+.miora-cell-action {
+  width: 34px;
+  text-align: right;
+}
+
+.miora-row-arrow-btn {
+  border: 0;
+  background: transparent;
+  color: #c73566;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Badges */
+.miora-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.miora-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-review {
+  background: #fde8ee;
+  color: #a92350;
+}
+
+.status-followup {
+  background: #fef3dc;
+  color: #956013;
+}
+
+.status-pending {
+  background: #f2eaf8;
+  color: #6d3f94;
+}
+
+.status-completed {
+  background: #e8f5ec;
+  color: #2d7a47;
+}
+
+.risk-high {
+  background: #fbdde5;
+  color: #a3214c;
+}
+
+.risk-moderate {
+  background: #fdf0d5;
+  color: #8c5a12;
+}
+
+.risk-low {
+  background: #e7f4ea;
+  color: #2b7745;
+}
+
+.risk-review {
+  background: #fde8ee;
+  color: #b62d5b;
+}
+
+/* Recent Screenings */
+.miora-recent-list {
+  display: grid;
+  gap: 10px;
+}
+
+.miora-recent-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  border-radius: 12px;
+  border: 1px solid #f2e2e5;
+  background: #fffcfc;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.miora-recent-item:hover {
+  background: #fff5f7;
+  border-color: #e6c2cb;
+  transform: translateY(-1px);
+}
+
+.miora-recent-item.is-selected {
+  border-color: #d98aa3;
+  background: #fdf0f3;
+}
+
+.miora-recent-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.miora-recent-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fdeef1;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-recent-id {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.miora-recent-meta {
+  font-size: 12.5px;
+  color: #5b4d52;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miora-recent-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.miora-recent-chevron {
+  color: #a97384;
+  display: inline-flex;
+}
+
+/* Quick Actions Bar */
+.miora-quick-actions {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #eed9dd;
+  border-radius: 16px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 4px 14px rgba(130, 52, 74, 0.03);
+}
+
+.miora-quick-actions-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.miora-quick-title {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.miora-quick-divider {
+  width: 1px;
+  height: 28px;
+  background: #ecd8dc;
+  flex: 0 0 auto;
+}
+
+.miora-quick-buttons {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.miora-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 11px;
+  border: 1px solid #ecd6da;
+  background: #fff9fa;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.miora-quick-btn:hover {
+  background: #fdeef2;
+  border-color: #dfbac4;
+  transform: translateY(-1px);
+}
+
+.miora-quick-btn-icon {
+  color: #c73566;
+  display: inline-flex;
+}
+
+/* Connected Sub-Pages & Modals */
+.miora-subpage-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.miora-subpage-title {
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.miora-subpage-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid #e7cfd4;
+  background: #fffbfa;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.miora-btn-secondary:hover {
+  background: #fdeef2;
+  border-color: #deb4bf;
+  color: var(--rose-deep);
+}
+
+.miora-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.miora-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.miora-filter-pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #ead6da;
+  background: #fff;
+  color: #4f4045;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.miora-filter-pill.is-active {
+  background: #fde7ec;
+  border-color: #e2b2c0;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.miora-inline-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #ead6da;
+  background: #fff;
+  min-width: 260px;
+  color: var(--muted);
+}
+
+.miora-inline-search input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.miora-master-detail {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.miora-case-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f2e4e6;
+}
+
+.miora-case-id-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--rose-deep);
+}
+
+.miora-case-detail-head h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 4px 0 2px;
+}
+
+.miora-case-detail-head p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.miora-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.miora-detail-block {
+  background: #fff8f9;
+  border: 1px solid #f2e3e5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.miora-detail-block span {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.miora-detail-block strong {
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.miora-status-select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.miora-status-select-row select {
+  border: 1px solid #ead4d8;
+  border-radius: 8px;
+  background: #fff;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+
+.miora-detail-notes {
+  display: grid;
+  gap: 12px;
+}
+
+.miora-detail-notes h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rose-deep);
+  margin: 0 0 4px;
+}
+
+.miora-detail-notes p {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #3d3034;
+}
+
+.miora-detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+/* Live Screening & Modals */
+.miora-screening-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.miora-screening-form,
+.miora-modal-form {
+  display: grid;
+  gap: 14px;
+}
+
+.miora-field {
+  display: grid;
+  gap: 6px;
+}
+
+.miora-field span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #493a3f;
+}
+
+.miora-field input,
+.miora-field select,
+.miora-field textarea {
+  border: 1px solid #e7d2d6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fffdfc;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.miora-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.miora-voice-capture-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #f0d8dd;
+  background: #fff7f8;
+}
+
+.miora-voice-capture-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.miora-voice-capture-left strong {
+  display: block;
+  font-size: 14px;
+}
+
+.miora-voice-capture-left p {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.miora-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.miora-screening-guide h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.miora-guide-note {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.miora-guide-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #3c2f34;
+}
+
+.miora-discordance-grid,
+.miora-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.miora-badge-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.miora-cue-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.miora-cue-box {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff8f9;
+  border: 1px solid #f2e2e5;
+}
+
+.miora-cue-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rose-deep);
+  margin-bottom: 6px;
+}
+
+.miora-cue-box p {
+  font-size: 13px;
+  color: #3e3135;
+  line-height: 1.4;
+}
+
+.miora-insight-stat-list {
+  display: grid;
+  gap: 12px;
+}
+
+.miora-insight-stat {
+  padding: 14px;
+  border-radius: 12px;
+  background: #fff8f9;
+  border: 1px solid #f1e1e4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.miora-insight-stat strong {
+  font-family: var(--serif);
+  font-size: 24px;
+  color: var(--rose-deep);
+}
+
+.miora-insight-stat span {
+  font-size: 13px;
+  color: #4f4045;
+}
+
+/* Modal */
+.miora-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(39, 18, 24, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.miora-modal-dialog {
+  width: min(94vw, 520px);
+  background: #fffdfc;
+  border: 1px solid #ecd6da;
+  border-radius: 22px;
+  padding: 22px 24px;
+  box-shadow: 0 24px 48px rgba(39, 18, 24, 0.22);
+}
+
+.miora-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.miora-modal-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.miora-modal-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.miora-modal-head h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin-bottom: 2px;
+}
+
+.miora-modal-head p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.miora-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.miora-modal-success {
+  display: grid;
+  gap: 12px;
+}
+
+.miora-success-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #e8f5ec;
+  color: #2d7a47;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 1120px) {
+  .dash-tagline {
+    display: none;
+  }
+  .dash-brand-divider {
+    display: none;
+  }
+  .miora-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .miora-charts-grid,
+  .miora-cases-grid,
+  .miora-master-detail,
+  .miora-screening-grid,
+  .miora-discordance-grid,
+  .miora-insights-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 920px) {
+  .dash-nav-links {
+    display: none;
+  }
+  .dash-mobile-menu-btn {
+    display: grid;
+  }
+  .dash-mobile-drawer {
+    display: grid;
+    gap: 4px;
+    padding: 10px 20px 14px;
+    border-top: 1px solid #f0dfe2;
+    background: #fdf9f7;
+  }
+  .dash-mobile-link {
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .dash-mobile-link.is-active {
+    background: #fde7ec;
+    font-weight: 600;
+  }
+  .miora-quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .miora-quick-divider {
+    display: none;
+  }
+  .miora-quick-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .miora-command-shell {
+    padding: 12px;
+  }
+  .miora-command-frame {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .miora-dash-header,
+  .miora-subpage-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .miora-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .miora-risk-body {
+    flex-direction: column;
+    align-items: center;
+  }
+  .miora-risk-legend {
+    width: 100%;
+  }
+  .miora-recent-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .miora-recent-left {
+    flex: 1 1 180px;
+  }
+  .miora-recent-meta {
+    white-space: normal;
+  }
+  .miora-quick-buttons {
+    grid-template-columns: 1fr;
+  }
+  .miora-field-row,
+  .miora-cue-compare {
+    grid-template-columns: 1fr;
+  }
+}
+
