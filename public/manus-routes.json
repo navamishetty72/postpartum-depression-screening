@@ -6,6 +6,7 @@
     { "path": "/live-screening", "title": "Miora — Live Screening" },
     { "path": "/results", "title": "Miora — Results" },
     { "path": "/discordance", "title": "Miora — Discordance" },
+    { "path": "/clinical-review", "title": "Miora — Clinical Review" },
     { "path": "/insights", "title": "Miora — Insights & Care" }
   ]
 }

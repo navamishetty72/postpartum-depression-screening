@@ -72,9 +72,9 @@
 }
 
 .dash-nav-link {
-  padding: 8px 13px;
+  padding: 7px 11px;
   border-radius: 10px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: #46383d;
   white-space: nowrap;
@@ -988,6 +988,11 @@
   color: #2d7a47;
 }
 
+.status-active {
+  background: #fdeef2;
+  color: #b62d5b;
+}
+
 .risk-high {
   background: #fbdde5;
   color: #a3214c;
@@ -1608,16 +1613,546 @@
 }
 
 /* ==========================================================================
+   Screen 02: Mothers & Cases Registry, Filters, Pagination & Profile Drawer
+   ========================================================================== */
+
+.miora-mothers-ribbon {
+  width: 62%;
+  height: 155px;
+}
+
+.miora-registry-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 255px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.miora-mobile-filter-bar {
+  display: none;
+}
+
+.miora-filters-sidebar {
+  padding: 18px 18px 16px;
+}
+
+.miora-filters-inner {
+  display: grid;
+  gap: 14px;
+}
+
+.miora-filters-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.miora-filters-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  flex: 1;
+}
+
+.miora-filters-mobile-close {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #ead4d8;
+  background: #fff;
+  color: var(--ink);
+  place-items: center;
+  cursor: pointer;
+}
+
+.miora-filter-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.miora-filter-legend {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.miora-filter-checks {
+  display: grid;
+  gap: 9px;
+}
+
+.miora-filter-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #3f3136;
+}
+
+.miora-filter-check-row input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #c73566;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.miora-filter-risk-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.filter-pill-low {
+  background: #e7f4ea;
+  color: #2b7745;
+}
+
+.filter-pill-moderate {
+  background: #fdf0d5;
+  color: #8c5a12;
+}
+
+.filter-pill-high {
+  background: #fbdde5;
+  color: #a3214c;
+}
+
+.filter-pill-review {
+  background: #f2eaf8;
+  color: #6d3f94;
+}
+
+.miora-filter-status-text {
+  font-size: 13px;
+  color: #36292d;
+}
+
+.miora-filter-divider {
+  height: 1px;
+  background: #f1e3e5;
+}
+
+/* Dual-Thumb Postpartum Week Range Slider */
+.miora-range-slider {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.miora-range-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: #f1dce0;
+}
+
+.miora-range-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: #d94678;
+}
+
+.miora-range-input {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 24px;
+}
+
+.miora-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #d94678;
+  box-shadow: 0 1px 4px rgba(130, 40, 70, 0.2);
+  cursor: pointer;
+}
+
+.miora-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #d94678;
+  box-shadow: 0 1px 4px rgba(130, 40, 70, 0.2);
+  cursor: pointer;
+}
+
+.miora-range-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #6b5c61;
+  margin-top: 4px;
+}
+
+.miora-range-dash {
+  color: #b79ea5;
+}
+
+.miora-clear-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--rose-deep);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.miora-clear-filters-btn:hover {
+  background: #fdeef2;
+}
+
+/* Mother Registry Table Card */
+.miora-registry-card {
+  padding: 18px 22px 16px;
+}
+
+.miora-registry-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.miora-registry-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.miora-registry-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #ead4d8;
+  background: #fffbfa;
+  min-width: 278px;
+  color: #7c6b71;
+}
+
+.miora-registry-search input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.miora-registry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.miora-registry-table thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b5c61;
+  padding: 8px 10px 11px;
+  border-bottom: 1px solid #f1e3e5;
+  white-space: nowrap;
+}
+
+.miora-registry-actions-col,
+.miora-registry-actions-cell {
+  text-align: center;
+}
+
+.miora-registry-row {
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.miora-registry-row:hover {
+  background: #fff6f7;
+}
+
+.miora-registry-row td {
+  padding: 11px 10px;
+  border-bottom: 1px solid #f5eaec;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.miora-registry-row:last-child td {
+  border-bottom: 0;
+}
+
+.miora-mother-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-initials-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fdeaf0;
+  border: 1px solid #f6d5de;
+  color: #b62d5b;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-initials-avatar-lg {
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
+}
+
+.miora-mother-initials {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.miora-cell-date {
+  color: #4f4146;
+}
+
+.miora-eye-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #ebd3d9;
+  background: #fff9fa;
+  color: #7d324c;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.miora-eye-btn:hover {
+  background: #fde8ee;
+  border-color: #df9db0;
+  color: var(--rose-deep);
+}
+
+.miora-registry-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.miora-inline-reset {
+  border: 0;
+  background: transparent;
+  color: var(--rose-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Pagination */
+.miora-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 14px;
+  margin-top: 6px;
+  border-top: 1px solid #f2e4e6;
+  flex-wrap: wrap;
+}
+
+.miora-pagination-summary {
+  font-size: 12.5px;
+  color: #6b5c61;
+}
+
+.miora-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.miora-page-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #4d3f44;
+  font-size: 12.5px;
+  font-weight: 500;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.miora-page-btn:hover:not(:disabled):not(.is-active) {
+  background: #fdf0f3;
+  color: var(--rose-deep);
+}
+
+.miora-page-btn.is-active {
+  background: #d94678;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(217, 70, 120, 0.25);
+}
+
+.miora-page-nav {
+  border-color: #ebd5d9;
+  background: #fffbfa;
+}
+
+.miora-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.miora-page-ellipsis {
+  color: #8f7e84;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* Mother Profile Slide-over Drawer */
+.miora-profile-backdrop,
+.miora-filters-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 115;
+  background: rgba(39, 18, 24, 0.42);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.miora-filters-drawer-backdrop {
+  justify-content: flex-start;
+}
+
+.miora-profile-drawer {
+  width: min(94vw, 490px);
+  height: 100%;
+  overflow-y: auto;
+  background: #fffdfc;
+  border-left: 1px solid #ecd6da;
+  padding: 24px;
+  box-shadow: -16px 0 40px rgba(39, 18, 24, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.miora-filters-drawer {
+  width: min(86vw, 300px);
+  height: 100%;
+  overflow-y: auto;
+  background: #fffdfc;
+  border-right: 1px solid #ecd6da;
+  padding: 20px 18px;
+  box-shadow: 16px 0 40px rgba(39, 18, 24, 0.14);
+}
+
+.miora-profile-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f2e4e6;
+}
+
+.miora-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.miora-profile-identity h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 2px 0;
+}
+
+.miora-profile-identity p {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.miora-related-cases h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rose-deep);
+  margin: 0 0 8px;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 
-@media (max-width: 1120px) {
+@media (max-width: 1180px) {
   .dash-tagline {
     display: none;
   }
   .dash-brand-divider {
     display: none;
   }
+  .miora-registry-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 1120px) {
   .miora-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1631,7 +2166,7 @@
   }
 }
 
-@media (max-width: 920px) {
+@media (max-width: 980px) {
   .dash-nav-links {
     display: none;
   }
@@ -1669,6 +2204,22 @@
   }
 }
 
+@media (max-width: 860px) {
+  .miora-registry-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .miora-filters-sidebar {
+    display: none;
+  }
+  .miora-mobile-filter-bar {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .miora-filters-mobile-close {
+    display: grid;
+  }
+}
+
 @media (max-width: 640px) {
   .miora-command-shell {
     padding: 12px;
@@ -1684,6 +2235,11 @@
   }
   .miora-kpi-grid {
     grid-template-columns: 1fr;
+  }
+  .miora-registry-controls,
+  .miora-registry-search {
+    width: 100%;
+    min-width: 0;
   }
   .miora-risk-body {
     flex-direction: column;

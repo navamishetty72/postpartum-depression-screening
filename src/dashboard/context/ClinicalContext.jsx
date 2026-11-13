@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import {
-  BASELINE_COHORT,
   CLINICAL_ALERTS,
   INITIAL_MOTHERS,
   INITIAL_SCREENINGS,
@@ -11,6 +10,21 @@ import {
 
 const ClinicalContext = createContext(null);
 
+function formatInitials(rawName) {
+  const parts = rawName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { initials: 'N. M.', avatarInitials: 'NM' };
+  if (parts.length === 1) {
+    const first = parts[0][0].toUpperCase();
+    return { initials: `${first}.`, avatarInitials: first };
+  }
+  const first = parts[0][0].toUpperCase();
+  const last = parts[parts.length - 1][0].toUpperCase();
+  return {
+    initials: `${first}. ${last}.`,
+    avatarInitials: `${first}${last}`,
+  };
+}
+
 export function ClinicalProvider({ children }) {
   const [mothers, setMothers] = useState(INITIAL_MOTHERS);
   const [screenings, setScreenings] = useState(INITIAL_SCREENINGS);
@@ -19,26 +33,19 @@ export function ClinicalProvider({ children }) {
   const [isAddMotherOpen, setIsAddMotherOpen] = useState(false);
 
   const metrics = useMemo(() => {
-    const addedMothers = mothers.length - INITIAL_MOTHERS.length;
     const addedScreenings = screenings.filter(
       (s) => !INITIAL_SCREENINGS.some((init) => init.id === s.id)
     );
     const addedCompleted = addedScreenings.filter((s) => s.status === 'Completed').length;
 
-    const registeredMothers = BASELINE_COHORT.additionalMothers + INITIAL_MOTHERS.length + addedMothers;
+    const registeredMothers = mothers.length;
+    const activeCases = mothers.filter((m) => m.status !== 'Pending').length;
     const screeningsCompleted = 247 + addedCompleted;
-
-    const initialReviewCount = INITIAL_MOTHERS.filter(
-      (m) => m.status === 'Review' || m.status === 'Follow-up' || m.status === 'Pending'
+    const casesForReview = mothers.filter(
+      (m) => m.status === 'Review' || m.status === 'Follow-up'
     ).length;
-    const currentReviewCount = mothers.filter(
-      (m) => m.status === 'Review' || m.status === 'Follow-up' || m.status === 'Pending'
-    ).length;
-    const casesForReview = 18 + (currentReviewCount - initialReviewCount);
-
-    const initialDiscordanceCount = INITIAL_MOTHERS.filter((m) => m.discordanceFlag).length;
-    const currentDiscordanceCount = mothers.filter((m) => m.discordanceFlag).length;
-    const potentialDiscordance = 7 + (currentDiscordanceCount - initialDiscordanceCount);
+    const highRiskCases = mothers.filter((m) => m.risk === 'High').length;
+    const potentialDiscordance = mothers.filter((m) => m.discordanceFlag).length;
 
     // Risk distribution counts (exact initial baseline: 143, 49, 35, 20 = 247)
     const extraLow = addedCompleted ? addedScreenings.filter((s) => s.risk === 'Low').length : 0;
@@ -65,8 +72,10 @@ export function ClinicalProvider({ children }) {
 
     return {
       registeredMothers,
+      activeCases,
       screeningsCompleted,
       casesForReview,
+      highRiskCases,
       potentialDiscordance,
       trends: KPI_TRENDS,
       riskDistribution,
@@ -83,12 +92,20 @@ export function ClinicalProvider({ children }) {
   }, [mothers]);
 
   const addMother = ({ name, postpartumWeek, reasonForReview, risk = 'Low' }) => {
-    const nextNum = 118 + (mothers.length - INITIAL_MOTHERS.length);
+    const addedCount = mothers.length - INITIAL_MOTHERS.length;
+    const nextNum = 118 + addedCount;
     const newId = `M-${nextNum}`;
+    const { initials, avatarInitials } = formatInitials(name);
+    const nowIso = new Date().toISOString();
+
     const newMother = {
       id: newId,
       name: name.trim(),
+      initials,
+      avatarInitials,
       postpartumWeek: Number(postpartumWeek) || 1,
+      lastScreeningDate: 'Apr 25, 2026',
+      lastScreeningIso: nowIso,
       status: risk === 'High' ? 'Review' : 'Pending',
       risk,
       reasonForReview: reasonForReview?.trim() || 'Initial postpartum intake',
@@ -151,6 +168,7 @@ export function ClinicalProvider({ children }) {
               status: risk === 'High' ? 'Review' : discordanceDetected ? 'Follow-up' : 'Completed',
               discordanceFlag: Boolean(discordanceDetected) || m.discordanceFlag,
               lastScreeningTime: 'Just now',
+              lastScreeningIso: new Date().toISOString(),
               textCueSummary: summary,
             }
           : m
@@ -189,4 +207,3 @@ export function useClinicalData() {
   }
   return ctx;
 }
-

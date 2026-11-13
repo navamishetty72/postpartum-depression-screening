@@ -1,5 +1,5 @@
 /**
- * Clearly identified mock clinical dataset for the Miora Command Center.
+ * Clearly identified mock clinical dataset for Miora Clinician Screens.
  * In production, these structures map directly to backend EHR / screening endpoints.
  */
 export const IS_MOCK_DATA = true;
@@ -17,24 +17,7 @@ export const KPI_TRENDS = {
   screeningsCompleted: '+8%',
   casesForReview: '+12%',
   potentialDiscordance: '+3%',
-};
-
-/**
- * Baseline historical cohort totals (combined with live detailed records below)
- * so initial Command Center metrics reflect 328 registered mothers,
- * 247 completed screenings, 18 cases for review, and 7 discordance flags.
- */
-export const BASELINE_COHORT = {
-  additionalMothers: 318, // + 10 detailed mother records = 328
-  additionalScreenings: 237, // + 10 completed detailed screenings = 247
-  additionalReviewCases: 13, // + 5 detailed review cases = 18
-  additionalDiscordance: 4, // + 3 detailed discordance cases = 7
-  riskCounts: {
-    'Low Risk': 138, // + 5 detailed = 143 (58%)
-    'Moderate Risk': 46, // + 3 detailed = 49 (20%)
-    'High Risk': 33, // + 2 detailed = 35 (14%)
-    'Requires Review': 20, // + 0 extra or derived via status; kept exact 20 (8%)
-  },
+  highRiskCases: '-3%',
 };
 
 /**
@@ -63,11 +46,15 @@ export const RISK_COLORS = {
   'Requires Review': '#df487e',
 };
 
-export const INITIAL_MOTHERS = [
+const FEATURED_MOTHERS = [
   {
     id: 'M-104',
     name: 'Amara K.',
+    initials: 'A. S.',
+    avatarInitials: 'AS',
     postpartumWeek: 6,
+    lastScreeningDate: 'Apr 24, 2026',
+    lastScreeningIso: '2026-04-24T11:30:00Z',
     status: 'Review',
     risk: 'High',
     reasonForReview: 'Elevated distress cues',
@@ -83,7 +70,11 @@ export const INITIAL_MOTHERS = [
   {
     id: 'M-108',
     name: 'Sofia M.',
+    initials: 'N. R.',
+    avatarInitials: 'NR',
     postpartumWeek: 2,
+    lastScreeningDate: 'Apr 23, 2026',
+    lastScreeningIso: '2026-04-23T15:10:00Z',
     status: 'Follow-up',
     risk: 'Moderate',
     reasonForReview: 'Voice-text mismatch',
@@ -99,7 +90,11 @@ export const INITIAL_MOTHERS = [
   {
     id: 'M-112',
     name: 'Hannah L.',
+    initials: 'P. K.',
+    avatarInitials: 'PK',
     postpartumWeek: 12,
+    lastScreeningDate: 'Apr 22, 2026',
+    lastScreeningIso: '2026-04-22T14:20:00Z',
     status: 'Pending',
     risk: 'Low',
     reasonForReview: 'Incomplete screening',
@@ -113,25 +108,73 @@ export const INITIAL_MOTHERS = [
     carePlan: 'Send gentle SMS reminder to finish remaining check-in prompts at convenient time.',
   },
   {
-    id: 'M-117',
-    name: 'Priya N.',
-    postpartumWeek: 5,
-    status: 'Completed',
+    id: 'M-115',
+    name: 'Maya T.',
+    initials: 'S. D.',
+    avatarInitials: 'SD',
+    postpartumWeek: 8,
+    lastScreeningDate: 'Apr 21, 2026',
+    lastScreeningIso: '2026-04-21T16:45:00Z',
+    status: 'Active',
     risk: 'Low',
     reasonForReview: 'Routine check-in',
     priority: false,
     discordanceFlag: false,
     discordanceType: null,
-    epdsScore: 4,
+    epdsScore: 5,
+    lastScreeningTime: '36 min ago',
+    voiceCueSummary: 'Balanced prosody and clear conversational engagement.',
+    textCueSummary: 'Reported feeling supported by partner and local postpartum group.',
+    carePlan: 'Continue routine postpartum monitoring.',
+  },
+  {
+    id: 'M-117',
+    name: 'Priya N.',
+    initials: 'I. V.',
+    avatarInitials: 'IV',
+    postpartumWeek: 4,
+    lastScreeningDate: 'Apr 20, 2026',
+    lastScreeningIso: '2026-04-20T18:10:00Z',
+    status: 'Active',
+    risk: 'Moderate',
+    reasonForReview: 'Sleep disruption markers',
+    priority: false,
+    discordanceFlag: false,
+    discordanceType: null,
+    epdsScore: 9,
     lastScreeningTime: '10 min ago',
-    voiceCueSummary: 'Warm, steady cadence with natural emotional range.',
-    textCueSummary: 'Shared positive bonding moments and manageable rest schedule.',
-    carePlan: 'Continue standard bi-weekly check-in cadence.',
+    voiceCueSummary: 'Mild vocal fatigue with warm engagement.',
+    textCueSummary: 'Shared positive bonding moments alongside fragmented nighttime sleep.',
+    carePlan: 'Continue bi-weekly check-in cadence with rest support.',
+  },
+  {
+    id: 'M-120',
+    name: 'Riya T.',
+    initials: 'R. T.',
+    avatarInitials: 'RT',
+    postpartumWeek: 10,
+    lastScreeningDate: 'Apr 20, 2026',
+    lastScreeningIso: '2026-04-20T09:15:00Z',
+    status: 'Review',
+    risk: 'High',
+    reasonForReview: 'Elevated vocal strain',
+    priority: false,
+    discordanceFlag: true,
+    discordanceType: 'Elevated vocal strain vs. brief text responses',
+    epdsScore: 15,
+    lastScreeningTime: '4 hrs ago',
+    voiceCueSummary: 'Elevated pitch tension and faster speech cadence during stressor prompts.',
+    textCueSummary: 'Expressed feeling overwhelmed balancing recovery and infant care.',
+    carePlan: 'Schedule priority clinician outreach and perinatal counselor consultation.',
   },
   {
     id: 'M-116',
     name: 'Elena R.',
+    initials: 'E. R.',
+    avatarInitials: 'ER',
     postpartumWeek: 4,
+    lastScreeningDate: 'Apr 19, 2026',
+    lastScreeningIso: '2026-04-19T14:00:00Z',
     status: 'Completed',
     risk: 'Moderate',
     reasonForReview: 'Sleep disruption markers',
@@ -145,25 +188,13 @@ export const INITIAL_MOTHERS = [
     carePlan: 'Provide guided restorative sleep resources and schedule 1-week check-in.',
   },
   {
-    id: 'M-115',
-    name: 'Maya T.',
-    postpartumWeek: 8,
-    status: 'Completed',
-    risk: 'Low',
-    reasonForReview: 'Routine check-in',
-    priority: false,
-    discordanceFlag: false,
-    discordanceType: null,
-    epdsScore: 5,
-    lastScreeningTime: '36 min ago',
-    voiceCueSummary: 'Balanced prosody and clear conversational engagement.',
-    textCueSummary: 'Reported feeling supported by partner and local postpartum group.',
-    carePlan: 'Continue routine postpartum monitoring.',
-  },
-  {
     id: 'M-101',
     name: 'Claire B.',
+    initials: 'C. B.',
+    avatarInitials: 'CB',
     postpartumWeek: 3,
+    lastScreeningDate: 'Apr 19, 2026',
+    lastScreeningIso: '2026-04-19T10:30:00Z',
     status: 'Review',
     risk: 'High',
     reasonForReview: 'Persistent anxiety & overwhelm',
@@ -179,7 +210,11 @@ export const INITIAL_MOTHERS = [
   {
     id: 'M-109',
     name: 'Nadia W.',
+    initials: 'N. W.',
+    avatarInitials: 'NW',
     postpartumWeek: 9,
+    lastScreeningDate: 'Apr 18, 2026',
+    lastScreeningIso: '2026-04-18T12:15:00Z',
     status: 'Follow-up',
     risk: 'Moderate',
     reasonForReview: 'Mood dip from Week 6 baseline',
@@ -195,7 +230,11 @@ export const INITIAL_MOTHERS = [
   {
     id: 'M-113',
     name: 'Zara H.',
+    initials: 'Z. H.',
+    avatarInitials: 'ZH',
     postpartumWeek: 7,
+    lastScreeningDate: 'Apr 17, 2026',
+    lastScreeningIso: '2026-04-17T16:00:00Z',
     status: 'Completed',
     risk: 'Low',
     reasonForReview: 'Routine check-in',
@@ -211,7 +250,11 @@ export const INITIAL_MOTHERS = [
   {
     id: 'M-114',
     name: 'Grace D.',
+    initials: 'G. D.',
+    avatarInitials: 'GD',
     postpartumWeek: 10,
+    lastScreeningDate: 'Apr 17, 2026',
+    lastScreeningIso: '2026-04-17T09:40:00Z',
     status: 'Completed',
     risk: 'Low',
     reasonForReview: 'Routine check-in',
@@ -225,6 +268,97 @@ export const INITIAL_MOTHERS = [
     carePlan: 'Routine postpartum care pathway.',
   },
 ];
+
+const FIRST_LETTERS = 'ABCEGHKLMNPRSTZ';
+const LAST_LETTERS = 'BDGHKLMNPRSTVW';
+const MONTHS = ['Apr', 'Mar', 'Feb', 'Jan'];
+
+function buildGeneratedCohort() {
+  const generated = [];
+  const baseDate = new Date('2026-04-16T12:00:00Z').getTime();
+
+  for (let i = 0; i < 317; i += 1) {
+    const first = FIRST_LETTERS[i % FIRST_LETTERS.length];
+    const last = LAST_LETTERS[(i * 3 + 5) % LAST_LETTERS.length];
+    const avatarInitials = `${first}${last}`;
+    const initials = `${first}. ${last}.`;
+    const id = `M-${201 + i}`;
+
+    let risk = 'Low';
+    let status = i % 2 === 0 ? 'Active' : 'Completed';
+    let reasonForReview = 'Routine postpartum check-in';
+    let epdsScore = 3 + (i % 5);
+
+    if (i < 4) {
+      risk = 'High';
+      status = 'Review';
+      reasonForReview = 'Elevated postpartum distress indicators';
+      epdsScore = 15 + (i % 3);
+    } else if (i < 13) {
+      risk = 'Moderate';
+      status = 'Follow-up';
+      reasonForReview = 'Scheduled clinician follow-up';
+      epdsScore = 10 + (i % 3);
+    } else if (i < 93) {
+      risk = i % 3 === 0 ? 'Moderate' : 'Low';
+      status = 'Pending';
+      reasonForReview = 'Pending weekly multimodal check-in';
+      epdsScore = risk === 'Moderate' ? 9 : 5;
+    } else if (i % 17 === 0) {
+      risk = 'Requires Review';
+      status = 'Active';
+      reasonForReview = 'Nuanced tone shift flagged for review';
+      epdsScore = 11;
+    } else if (i % 5 === 0) {
+      risk = 'Moderate';
+      reasonForReview = 'Mild sleep fatigue noted';
+      epdsScore = 9;
+    }
+
+    const dayOffset = Math.floor(i / 4);
+    const dt = new Date(baseDate - dayOffset * 24 * 60 * 60 * 1000 - (i % 4) * 3600000);
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedDate = `${monthNames[dt.getUTCMonth()]} ${dt.getUTCDate()}, ${dt.getUTCFullYear()}`;
+    const week = (i * 5 + 2) % 25; // 0..24
+
+    generated.push({
+      id,
+      name: `Mother ${initials}`,
+      initials,
+      avatarInitials,
+      postpartumWeek: week,
+      lastScreeningDate: formattedDate,
+      lastScreeningIso: dt.toISOString(),
+      status,
+      risk,
+      reasonForReview,
+      priority: false,
+      discordanceFlag: i < 3,
+      discordanceType: i < 3 ? 'Prosody-text divergence' : null,
+      epdsScore,
+      lastScreeningTime: `${dayOffset + 2} days ago`,
+      voiceCueSummary:
+        risk === 'High'
+          ? 'Heightened vocal tension and slower cadence detected.'
+          : 'Steady conversational prosody within expected baseline.',
+      textCueSummary:
+        status === 'Pending'
+          ? 'Awaiting scheduled self-reflection submission.'
+          : 'Completed structured postpartum wellbeing prompts.',
+      carePlan:
+        risk === 'High'
+          ? 'Prioritize clinician review and supportive care outreach.'
+          : 'Continue standard Miora postpartum monitoring schedule.',
+    });
+  }
+
+  return generated;
+}
+
+export const INITIAL_MOTHERS = [...FEATURED_MOTHERS, ...buildGeneratedCohort()];
+
+// Keep MONTHS referenced cleanly if needed for exports; avoid unused-var warning
+void MONTHS;
 
 export const INITIAL_SCREENINGS = [
   {
@@ -330,4 +464,3 @@ export const CLINICAL_ALERTS = [
     severity: 'low',
   },
 ];
-

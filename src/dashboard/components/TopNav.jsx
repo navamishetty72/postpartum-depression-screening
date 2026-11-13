@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { label: 'Results', to: '/results' },
   { label: 'Discordance', to: '/discordance' },
   { label: 'Insights & Care', to: '/insights' },
+  { label: 'Clinical Review', to: '/clinical-review' },
 ];
 
 export function TopNav() {
