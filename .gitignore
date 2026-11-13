@@ -73,6 +73,10 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 !data/processed/README.md
+!data/processed/Numerical/
+data/processed/Numerical/*
+!data/processed/Numerical/ppd_modeling_matrix.csv
+!data/processed/Numerical/train_test_split_manifest.csv
 
 data/synthetic/*
 !data/synthetic/.gitkeep
