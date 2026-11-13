@@ -221,7 +221,6 @@ RESEARCH_FUSION_BENCHMARKS: Dict[str, Any] = {
     ),
 }
 
-
 class NonNegativeStackingFusionStrategy(BaseFusionStrategy):
     """Canonical late fusion strategy using non-negative stacking weights.
 
@@ -349,10 +348,7 @@ class MultimodalFusionEngine:
         strategy: Optional[BaseFusionStrategy] = None,
         discordance_analyzer: Optional[DiscordanceAnalyzer] = None,
     ) -> None:
-        # Default to canonical NonNegativeStackingFusionStrategy for research fusion evaluation
-        self.strategy: Optional[BaseFusionStrategy] = (
-            strategy if strategy is not None else NonNegativeStackingFusionStrategy()
-        )
+        self.strategy: Optional[BaseFusionStrategy] = strategy
         self.discordance_analyzer: DiscordanceAnalyzer = (
             discordance_analyzer or DiscordanceAnalyzer()
         )
@@ -567,7 +563,7 @@ class MultimodalFusionEngine:
 
 
 # Global singleton instance for production runtime
-fusion_engine = MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+fusion_engine = MultimodalFusionEngine()
 
 
 def get_fusion_engine() -> MultimodalFusionEngine:

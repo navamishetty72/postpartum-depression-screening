@@ -25,6 +25,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+cv2 = pytest.importorskip("cv2", reason="opencv-python is required for real video tests")
+
 from pipelines.real_video.config import (
     DATA_ORIGIN_REAL_VIDEO,
     FEATURE_BOUNDS,

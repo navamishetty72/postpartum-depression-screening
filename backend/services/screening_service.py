@@ -1,3 +1,143 @@
+"""Screening persistence and retrieval service for MIORA clinical backend.
+
+Member 1 owns multimodal analysis; Member 2 owns storing and retrieving its results.
+This service provides a transactional persistence function that Member 1 can call
+after `/api/screenings/analyze` completes.
+"""
+
+import logging
+from typing import List, Optional
+import uuid
+
+from sqlalchemy import desc, select
+from sqlalchemy.orm import Session
+
+from backend.models.mother import Mother
+from backend.models.screening import Screening
+from backend.schemas.screening import ScreeningPersistRequest
+
+logger = logging.getLogger("ppd.services.screening")
+
+
+class ScreeningPersistenceError(Exception):
+    """Raised when screening persistence fails (e.g. invalid foreign key or transaction error)."""
+    pass
+
+
+class MotherNotFoundError(ScreeningPersistenceError):
+    """Raised when the referenced mother does not exist."""
+    pass
+
+
+class ScreeningService:
+    """Service providing transactional persistence and retrieval for screening records."""
+
+    @staticmethod
+    def persist_screening(
+        db: Session,
+        data: ScreeningPersistRequest,
+    ) -> Screening:
+        """Persist a completed screening session and multimodal prediction results.
+
+        Guarantees:
+        - Verifies that the referenced Mother exists; raises MotherNotFoundError if missing.
+        - Persists screening_status, modality_status, and fusion_status strictly according to contract.
+        - Stores model_metadata and multimodal_scores only when explicitly supplied.
+        - Strictly preserves the EPDS Q10 safety alert.
+        - Never fabricates or calculates combined risk scores. Missing modalities remain missing.
+        - Executes within a database transaction; safely rolls back on any failure.
+        """
+        # 1. Verify mother existence
+        mother = db.get(Mother, data.mother_id)
+        if not mother:
+            logger.warning("Screening persistence rejected: Mother [id=%s] not found", data.mother_id)
+            raise MotherNotFoundError(f"Mother with ID '{data.mother_id}' does not exist.")
+
+        # 2. Extract and format status dictionaries cleanly
+        modality_status_dict = {
+            mod: (val.value if hasattr(val, "value") else str(val))
+            for mod, val in data.modality_status.items()
+        }
+
+        # Model metadata & multimodal scores: store only what Member 1 supplied, else empty dict
+        stored_metadata = data.model_metadata if data.model_metadata is not None else {}
+        stored_multimodal = data.multimodal_scores if data.multimodal_scores is not None else {}
+
+        screening = Screening(
+            mother_id=data.mother_id,
+            instrument=data.instrument,
+            total_score=data.total_score,
+            risk_classification=data.risk_classification,
+            q10_safety_alert=data.q10_safety_alert,
+            submitted_answers=data.submitted_answers,
+            item_scores=data.item_scores,
+            screening_status=(
+                data.screening_status.value
+                if hasattr(data.screening_status, "value")
+                else str(data.screening_status)
+            ),
+            fusion_status=(
+                data.fusion_status.value
+                if hasattr(data.fusion_status, "value")
+                else str(data.fusion_status)
+            ),
+            modality_status=modality_status_dict,
+            model_metadata=stored_metadata,
+            multimodal_scores=stored_multimodal,
+            notes=data.notes,
+        )
+
+        try:
+            db.add(screening)
+            db.commit()
+            db.refresh(screening)
+            logger.info(
+                "Persisted screening [id=%s] for Mother [id=%s] with status=%s, q10_alert=%s",
+                screening.id,
+                screening.mother_id,
+                screening.screening_status,
+                screening.q10_safety_alert,
+            )
+            return screening
+        except Exception as exc:
+            db.rollback()
+            logger.error(
+                "Failed to persist screening for Mother [id=%s]: %s",
+                data.mother_id,
+                type(exc).__name__,
+            )
+            raise ScreeningPersistenceError(f"Database error during screening persistence: {exc}") from exc
+
+    @staticmethod
+    def get_screening_by_id(
+        db: Session,
+        screening_id: uuid.UUID,
+    ) -> Optional[Screening]:
+        """Retrieve an individual screening record by UUID."""
+        return db.get(Screening, screening_id)
+
+    @staticmethod
+    def get_screenings_by_mother_id(
+        db: Session,
+        mother_id: uuid.UUID,
+    ) -> Optional[List[Screening]]:
+        """Retrieve all screenings for a specific mother, newest first.
+
+        Returns None if the Mother does not exist.
+        """
+        mother = db.get(Mother, mother_id)
+        if not mother:
+            return None
+
+        stmt = (
+            select(Screening)
+            .where(Screening.mother_id == mother_id)
+            .order_by(desc(Screening.screening_date), desc(Screening.created_at))
+        )
+        return list(db.scalars(stmt).all())
+
+
+screening_service = ScreeningService()
 """Service layer for central multimodal screening orchestration.
 
 Coordinates single- and multi-modality screening workflows across clinical numerical
@@ -17,6 +157,7 @@ from pydantic import ValidationError
 
 from backend.ml.fusion_engine import (
     MultimodalFusionEngine,
+    NonNegativeStackingFusionStrategy,
     fusion_engine,
     get_fusion_engine,
 )
@@ -68,6 +209,30 @@ class MotherValidator:
         return True
 
 
+class EligibilityValidator:
+    """Interface for participant self-declared postpartum eligibility verification.
+
+    Postpartum eligibility (within 12 months of childbirth) is self-declared by the mother
+    before screening. This is a clinical protocol requirement, NOT an automated classification.
+    """
+
+    def validate_eligibility(self, eligibility_confirmed: Optional[Union[bool, str]]) -> bool:
+        """Verify whether the mother confirmed self-declared postpartum eligibility."""
+        if eligibility_confirmed is True:
+            return True
+        if isinstance(eligibility_confirmed, str) and eligibility_confirmed.strip().lower() in ("true", "1", "yes"):
+            return True
+        return False
+
+
+default_eligibility_validator = EligibilityValidator()
+
+
+def get_eligibility_validator() -> EligibilityValidator:
+    """FastAPI dependency provider for EligibilityValidator."""
+    return default_eligibility_validator
+
+
 class ScreeningOrchestrationService:
     """Central orchestrator coordinating multimodal PPD screening inferences."""
 
@@ -78,12 +243,18 @@ class ScreeningOrchestrationService:
         audio_svc: Optional[AudioScreeningService] = None,
         mother_val: Optional[MotherValidator] = None,
         fusion_eng: Optional[MultimodalFusionEngine] = None,
+        elig_val: Optional[EligibilityValidator] = None,
     ) -> None:
         self.clinical_service: ClinicalScreeningService = clinical_svc or clinical_service
         self.text_ner_service: TextNERService = text_svc or text_ner_service
         self.audio_service: AudioScreeningService = audio_svc or audio_service
         self.mother_validator: MotherValidator = mother_val or MotherValidator()
-        self.fusion_engine: MultimodalFusionEngine = fusion_eng or fusion_engine
+        self.fusion_engine: MultimodalFusionEngine = (
+            fusion_eng
+            if fusion_eng is not None
+            else MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+        )
+        self.eligibility_validator: EligibilityValidator = elig_val or default_eligibility_validator
 
     async def orchestrate_screening(
         self,
@@ -96,23 +267,10 @@ class ScreeningOrchestrationService:
         text_content: Optional[str] = None,
         files_voice_bytes: Optional[bytes] = None,
         files_video_bytes: Optional[bytes] = None,
+        eligibility_confirmed: Optional[Union[bool, str]] = None,
     ) -> ScreeningAnalysisResponse:
         """Execute multimodal screening analysis preserving partial completion states."""
-        # 1. Validate Consent
-        is_consented = (
-            consent_confirmed is True
-            or (
-                isinstance(consent_confirmed, str)
-                and consent_confirmed.strip().lower() in ("true", "1", "yes")
-            )
-        )
-        if not is_consented:
-            raise HTTPException(
-                status_code=400,
-                detail="Maternal consent must be confirmed before submitting screening files for analysis.",
-            )
-
-        # 2. Validate Mother ID Format & Existence
+        # 1. Validate Mother ID Format (422)
         if not mother_id or not isinstance(mother_id, str) or not mother_id.strip():
             raise HTTPException(
                 status_code=422,
@@ -120,13 +278,7 @@ class ScreeningOrchestrationService:
             )
         clean_mother_id = mother_id.strip()
 
-        if not self.mother_validator.validate_mother_exists(clean_mother_id):
-            raise HTTPException(
-                status_code=404,
-                detail=f"Registered mother record not found for motherId='{clean_mother_id}'.",
-            )
-
-        # 3. Validate Modalities
+        # 2. Validate Modalities Syntax & Selection (422)
         try:
             modalities = ModalitiesSelection.from_raw(modalities_raw)
         except ValueError as exc:
@@ -141,16 +293,14 @@ class ScreeningOrchestrationService:
                 detail="At least one screening modality must be requested.",
             )
 
-        # 4. Clinical Numerical Modality
-        clinical_result: ClinicalModalityResult
+        # 3. Validate Clinical / Text Feature Payloads Schema & Syntax (422)
+        clean_features = None
         if modalities.clinical:
             if not clinical_features_raw:
                 raise HTTPException(
                     status_code=422,
                     detail="clinical_features JSON payload is required when clinical modality is requested.",
                 )
-
-            # Parse JSON if passed as string
             if isinstance(clinical_features_raw, str):
                 try:
                     features_dict = json.loads(clinical_features_raw)
@@ -166,8 +316,6 @@ class ScreeningOrchestrationService:
                     status_code=422,
                     detail="clinical_features must be a valid JSON object string or dictionary.",
                 )
-
-            # Validate against strict 46-feature schema (extra='forbid' blocks target leakage)
             try:
                 validated_features = ClinicalFeatures.model_validate(features_dict)
                 clean_features = validated_features.to_feature_dict()
@@ -177,6 +325,59 @@ class ScreeningOrchestrationService:
                     detail=f"Clinical features schema validation failed: {exc}",
                 )
 
+        raw_text: Optional[str] = None
+        if modalities.text:
+            if files_text_bytes is not None and len(files_text_bytes) > 0:
+                raw_text = files_text_bytes.decode("utf-8", errors="replace").strip()
+            elif text_content is not None and text_content.strip():
+                raw_text = text_content.strip()
+
+            if not raw_text:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Text narrative content or files_text is required when text modality is requested.",
+                )
+
+            if len(raw_text) > TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Text input exceeds safe maximum limit of {TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT} characters.",
+                )
+
+        # 4. Validate Mother Registration / Existence in Database (404)
+        if not self.mother_validator.validate_mother_exists(clean_mother_id):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Registered mother record not found for motherId='{clean_mother_id}'.",
+            )
+
+        # 5. Validate Maternal Consent (400)
+        is_consented = (
+            consent_confirmed is True
+            or (
+                isinstance(consent_confirmed, str)
+                and consent_confirmed.strip().lower() in ("true", "1", "yes")
+            )
+        )
+        if not is_consented:
+            raise HTTPException(
+                status_code=400,
+                detail="Maternal consent must be confirmed before submitting screening files for analysis.",
+            )
+
+        # 6. Validate Self-Declared Postpartum Eligibility (403)
+        if not self.eligibility_validator.validate_eligibility(eligibility_confirmed):
+            raise HTTPException(
+                status_code=403,
+                detail=(
+                    "Screening halted. Participant self-declared postpartum eligibility confirmation is required "
+                    "before screening predictions can be generated."
+                ),
+            )
+
+        # 7. Clinical Numerical Modality
+        clinical_result: ClinicalModalityResult
+        if modalities.clinical:
             # Execute clinical prediction
             try:
                 raw_pred = self.clinical_service.predict(
@@ -216,27 +417,9 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 5. Biomedical Text NER Modality
+        # 8. Biomedical Text NER Modality
         text_result: TextModalityResult
         if modalities.text:
-            raw_text: Optional[str] = None
-            if files_text_bytes is not None and len(files_text_bytes) > 0:
-                raw_text = files_text_bytes.decode("utf-8", errors="replace").strip()
-            elif text_content is not None and text_content.strip():
-                raw_text = text_content.strip()
-
-            if not raw_text:
-                raise HTTPException(
-                    status_code=422,
-                    detail="Text narrative content or files_text is required when text modality is requested.",
-                )
-
-            if len(raw_text) > TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"Text input exceeds safe maximum limit of {TextNERPredictor.MAX_SAFE_CHARACTER_LIMIT} characters.",
-                )
-
             # Execute entity extraction
             try:
                 ner_out = self.text_ner_service.extract_entities(raw_text)
@@ -433,7 +616,7 @@ class ScreeningOrchestrationService:
 
 # Global default instances
 default_mother_validator = MotherValidator()
-screening_service = ScreeningOrchestrationService()
+screening_orchestration_service = ScreeningOrchestrationService()
 
 
 def get_mother_validator() -> MotherValidator:
@@ -451,13 +634,19 @@ def get_screening_service(
     audio_svc: AudioScreeningService = Depends(get_audio_service),
     mother_val: MotherValidator = Depends(get_mother_validator),
     fusion_eng: MultimodalFusionEngine = Depends(get_fusion_engine),
+    elig_val: EligibilityValidator = Depends(get_eligibility_validator),
 ) -> ScreeningOrchestrationService:
     """FastAPI dependency provider for ScreeningOrchestrationService."""
+    active_engine = fusion_eng
+    if active_engine is fusion_engine and active_engine.strategy is None:
+        active_engine = MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+
     return ScreeningOrchestrationService(
         clinical_svc=clinical_svc,
         text_svc=text_svc,
         audio_svc=audio_svc,
         mother_val=mother_val,
-        fusion_eng=fusion_eng,
+        fusion_eng=active_engine,
+        elig_val=elig_val,
     )
 

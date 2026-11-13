@@ -18,10 +18,13 @@ Validates the core contracts of Phase 2:
 
 from pathlib import Path
 from typing import Dict, List
+# pyrefly: ignore[missing-import]
 import numpy as np
 import pandas as pd
+# pyrefly: ignore[missing-import]
 import pytest
-import torch
+torch = pytest.importorskip("torch", reason="torch is required for video deep learning tests")
+# pyrefly: ignore[missing-import]
 from torch.utils.data import DataLoader
 
 from pipelines.video_model.config import (

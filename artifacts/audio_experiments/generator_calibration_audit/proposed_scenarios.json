@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "audit_name": "Audio Generator Signal-to-Noise Calibration Audit",
+    "phase": "Experiment 2 Final Audit and Verification",
+    "modality": "synthetic_audio",
+    "cohort_evaluated": "canonical_train_640",
+    "holdout_status": "strictly_frozen_160_unaccessed",
+    "execution_mode": "read_only_investigation",
+    "scientific_integrity_notice": "This generator produces synthetic engineering fixtures for multimodal architectural benchmarking. Acoustic features are simulated using non-target clinical covariates and residual Gaussian noise. They do not represent real physical recordings of postpartum patients."
+  },
+  "retained_features_specification": {
+    "speech_rate_syllables_per_sec": {
+      "unit": "syllables/second",
+      "type": "primary_acoustic_feature",
+      "definition": "Total syllable count divided by total elapsed duration (N_syl / T_total), inclusive of pauses.",
+      "clamping_bounds": [
+        1.8,
+        6.2
+      ],
+      "mathematical_nature": "Direct acoustic scalar generated from baseline prior + covariate shift + correlated residual Gaussian noise."
+    },
+    "pause_ratio": {
+      "unit": "dimensionless proportion [0, 1]",
+      "type": "primary_acoustic_feature",
+      "definition": "Total silent pause duration divided by total elapsed duration (T_pause / T_total).",
+      "clamping_bounds": [
+        0.08,
+        0.65
+      ],
+      "mathematical_nature": "Direct acoustic scalar generated from baseline prior + covariate shift + correlated residual Gaussian noise."
+    },
+    "speech_to_pause_ratio": {
+      "unit": "dimensionless ratio",
+      "type": "engineered_composite_metric",
+      "definition": "speech_rate_syllables_per_sec / pause_ratio",
+      "clamping_bounds": "derived (strictly positive: [3.86, 62.80] observed in training set)",
+      "mathematical_nature": "Engineered non-linear transformation of speech_rate and pause_ratio. It is NOT an independent acoustic measurement."
+    }
+  },
+  "snr_and_effect_size_formulas": {
+    "snr_sd": "sigma_delta / sigma_residual",
+    "snr_var": "(sigma_delta / sigma_residual)^2",
+    "snr_db": "10 * log10(snr_var)",
+    "snr_range": "(max(delta) - min(delta)) / sigma_residual",
+    "cohens_d": "(mean_ppd_pos - mean_ppd_neg) / s_pooled",
+    "s_pooled": "sqrt(((n1 - 1)*s1^2 + (n0 - 1)*s0^2) / (n1 + n0 - 2))",
+    "group_ordering": "PPD+ (EPDS >= 13, n=281) minus PPD- (EPDS < 13, n=359)"
+  },
+  "current_parameters": {
+    "baseline_means": {
+      "speech_rate_syllables_per_sec": 3.8,
+      "pause_ratio": 0.24,
+      "speech_to_pause_ratio_derived": 15.8333
+    },
+    "residual_noise_stds": {
+      "speech_rate_syllables_per_sec": 0.55,
+      "pause_ratio": 0.06,
+      "speech_to_pause_ratio_delta_method": 5.6396
+    },
+    "correlation_sr_pr": -0.6,
+    "clinical_shift_weights": {
+      "speech_rate_syllables_per_sec": {
+        "norm_age": -0.05,
+        "sleep_disruption": -0.35,
+        "support_deficit": -0.15,
+        "infant_distress": -0.1,
+        "maternal_affect": -0.3
+      },
+      "pause_ratio": {
+        "norm_age": 0.01,
+        "sleep_disruption": 0.05,
+        "support_deficit": 0.02,
+        "infant_distress": 0.02,
+        "maternal_affect": 0.04
+      }
+    }
+  },
+  "empirical_distributions_train_640": {
+    "speech_rate_syllables_per_sec": {
+      "empirical_mean": 3.5605,
+      "empirical_std": 0.6005,
+      "shift_mean": -0.2252,
+      "shift_std": 0.1772,
+      "shift_range": 1.0451,
+      "shift_group_diff": -0.1114,
+      "snr_sd": 0.3221,
+      "snr_var": 0.1038,
+      "snr_db": -9.84,
+      "empirical_cohen_d": -0.1554,
+      "clamped_count": 2,
+      "clamped_pct": 0.31
+    },
+    "pause_ratio": {
+      "empirical_mean": 0.2712,
+      "empirical_std": 0.0668,
+      "shift_mean": 0.0337,
+      "shift_std": 0.0265,
+      "shift_range": 0.162,
+      "shift_group_diff": 0.0159,
+      "snr_sd": 0.4413,
+      "snr_var": 0.1947,
+      "snr_db": -7.11,
+      "empirical_cohen_d": 0.1803,
+      "clamped_count": 0,
+      "clamped_pct": 0.0
+    },
+    "speech_to_pause_ratio": {
+      "empirical_mean": 14.4827,
+      "empirical_std": 6.4871,
+      "shift_mean": -2.5937,
+      "shift_std": 1.8574,
+      "shift_range": 10.3015,
+      "shift_group_diff": -1.6382,
+      "snr_sd": 0.3293,
+      "snr_var": 0.1085,
+      "snr_db": -9.65,
+      "empirical_cohen_d": -0.1066,
+      "clamped_count": 0,
+      "clamped_pct": 0.0
+    }
+  },
+  "verified_literature_studies": [
+    {
+      "citation": "Cannizzaro et al. (2004)",
+      "full_title": "Voice acoustical measurement of the severity of major depression",
+      "authors": "Michael Cannizzaro, Brian Harel, Nicole Reilly, Phillip Chappell, Peter J. Snyder",
+      "year": 2004,
+      "journal": "Brain and Cognition, 56(1), 30-35",
+      "doi": "10.1016/j.bandc.2004.05.003",
+      "sample_size": 7,
+      "population": "Adult outpatients with Major Depressive Disorder",
+      "cohort_type": "general_depression",
+      "speech_features": "Speaking rate, total pause time, pitch variability",
+      "reported_result": "Speaking rate correlated negatively with HDRS (r = -0.74, p < 0.05); pause duration positive trend (r = 0.67, p = 0.09)",
+      "support_type": "direction_of_association_only",
+      "limitation": "Very small sample (N=7); general adult depression, not postpartum."
+    },
+    {
+      "citation": "Mundt et al. (2007)",
+      "full_title": "Voice acoustic measures of depression severity and treatment response collected via interactive voice response (IVR) technology",
+      "authors": "James C. Mundt, Peter J. Snyder, Michael S. Cannizzaro, Kara Chappie, Dayna S. Geralts",
+      "year": 2007,
+      "journal": "Journal of Neurolinguistics, 20(1), 50-64",
+      "doi": "10.1016/j.jneuroling.2006.04.001",
+      "sample_size": 35,
+      "population": "Adult outpatients with Major Depressive Disorder starting pharmacotherapy",
+      "cohort_type": "general_depression",
+      "speech_features": "Speaking rate, total pause time, pause frequency",
+      "reported_result": "Treatment responders had significant increase in speech rate (F = 7.15, p = 0.01) and decrease in pause time (F = 9.82, p = 0.004); Cohen d approx 0.50 - 0.70",
+      "support_type": "direction_and_numerical_range",
+      "limitation": "Telephone bandwidth (8 kHz); structured reading/counting tasks; not perinatal."
+    },
+    {
+      "citation": "Cummins et al. (2015)",
+      "full_title": "A review of depression and suicide risk assessment using speech analysis",
+      "authors": "Nicholas Cummins, Stefan Scherer, Jarek Krajewski, Sebastian Schnieder, Julien Epps, Thomas F. Quatieri",
+      "year": 2015,
+      "journal": "Speech Communication, 71, 10-49",
+      "doi": "10.1016/j.specom.2015.03.004",
+      "sample_size": "Meta-review (> 50 studies)",
+      "population": "Diverse adult depression cohorts",
+      "cohort_type": "general_depression",
+      "speech_features": "Pause duration, pause ratio, speech rate, spectral features",
+      "reported_result": "Depression associated with 20-50% increase in pauses and 10-25% reduction in speech rate; effect sizes d approx 0.35 - 0.75",
+      "support_type": "direction_and_numerical_range",
+      "limitation": "Review across heterogeneous tasks; no postpartum-specific meta-analysis."
+    },
+    {
+      "citation": "Scherer et al. (2013)",
+      "full_title": "Automatic Behavior Descriptors for Psychological Disorder Analysis",
+      "authors": "Stefan Scherer, Giota Stratou, Mahmoud Mahmoud, Jill Boberg, Jonathan Gratch, Albert Rizzo, Louis-Philippe Morency",
+      "year": 2013,
+      "journal": "Proc. IEEE FG 2013",
+      "doi": "10.1109/FG.2013.6553738",
+      "sample_size": 189,
+      "population": "Military veterans and community adults (DAIC-WOZ, PHQ-8)",
+      "cohort_type": "general_depression",
+      "speech_features": "Syllable rate, pause duration, pause ratio",
+      "reported_result": "Pause metrics correlated with PHQ-8 (r approx 0.25 - 0.35, p < 0.001); speech rate negatively correlated (r approx -0.22 - -0.32); Cohen d approx 0.45 - 0.65",
+      "support_type": "direction_and_numerical_range",
+      "limitation": "Virtual agent interviewer; high proportion of male veterans; not perinatal."
+    },
+    {
+      "citation": "Herrera, Reissland, & Shepherd (2004)",
+      "full_title": "Maternal touch and maternal child-directed speech: effects of depressed mood in the postnatal period",
+      "authors": "Eisquel Herrera, Nadja Reissland, John Shepherd",
+      "year": 2004,
+      "journal": "Journal of Affective Disorders, 81(1), 29-39",
+      "doi": "10.1016/j.jad.2003.07.001",
+      "sample_size": 38,
+      "population": "Postpartum mothers (6 and 10 months postpartum, EPDS screened)",
+      "cohort_type": "postpartum_depression",
+      "speech_features": "Infant-directed speech affective and informative content",
+      "reported_result": "Depressed mothers produced significantly fewer affect-salient speech utterances (F(1, 34) = 4.88, p = 0.034, partial eta^2 = 0.126, d approx 0.76)",
+      "support_type": "direction_of_association_only",
+      "limitation": "Infant-directed speech; behavioral coding of utterances, not micro-acoustic pause ratio or syllable rate."
+    },
+    {
+      "citation": "Porritt, Zinser, Bachorowski, & Kaplan (2014)",
+      "full_title": "Depression Diagnoses and Fundamental Frequency-Based Acoustic Cues in Maternal Infant-Directed Speech",
+      "authors": "Lyndsay L. Porritt, Mason C. Zinser, Jo-Anne Bachorowski, Peter S. Kaplan",
+      "year": 2014,
+      "journal": "Language Learning and Development, 10(1), 51-67",
+      "doi": "10.1080/15475441.2013.793834",
+      "sample_size": 64,
+      "population": "Postpartum mothers of infants 4-12 months (SCID-diagnosed MDD vs controls)",
+      "cohort_type": "postpartum_depression",
+      "speech_features": "Mean F0 and pitch range (delta F0)",
+      "reported_result": "Clinically depressed mothers showed significantly restricted pitch range (delta F0 approx 35 Hz reduction, p < 0.05, d approx 0.55)",
+      "support_type": "direction_and_numerical_range_for_pitch_only",
+      "limitation": "Measured pitch range, not speech rate or pause ratio; infant-directed speech."
+    }
+  ],
+  "proposed_calibration_scenarios": {
+    "scenario_1_current_configuration": {
+      "description": "Current high-noise baseline with heavy residual Gaussian variance.",
+      "speech_rate_residual_sigma": 0.55,
+      "pause_ratio_residual_sigma": 0.06,
+      "speech_to_pause_residual_sigma_delta_method": 5.6396,
+      "snr_sd_speech_rate": 0.3221,
+      "snr_var_speech_rate": 0.1038,
+      "snr_db_speech_rate": -9.84,
+      "snr_sd_pause_ratio": 0.4413,
+      "snr_var_pause_ratio": 0.1947,
+      "snr_db_pause_ratio": -7.11,
+      "simulated_cohen_d_speech_rate": -0.2345,
+      "simulated_cohen_d_pause_ratio": 0.3189,
+      "simulated_cohen_d_speech_to_pause": -0.2561,
+      "simulated_ranges": {
+        "speech_rate": [
+          1.86,
+          5.64
+        ],
+        "pause_ratio": [
+          0.081,
+          0.476
+        ],
+        "speech_to_pause": [
+          4.77,
+          54.0
+        ]
+      },
+      "physiological_bounds_plausibility": "All values lie within physiological limits; no severe clamping occurs. However, residual noise accounts for 85-90% of total feature variance, placing the audio modality near the random guessing threshold."
+    },
+    "scenario_2_conservative_evidence_informed": {
+      "description": "Conservative evidence-informed calibration matching small-to-moderate depression effect sizes (Cohen d ~ 0.40 - 0.45).",
+      "speech_rate_residual_sigma": 0.25,
+      "pause_ratio_residual_sigma": 0.035,
+      "speech_to_pause_residual_sigma_delta_method": 2.9214,
+      "snr_sd_speech_rate": 0.7088,
+      "snr_var_speech_rate": 0.5024,
+      "snr_db_speech_rate": -2.99,
+      "snr_sd_pause_ratio": 0.7571,
+      "snr_var_pause_ratio": 0.5733,
+      "snr_db_pause_ratio": -2.42,
+      "simulated_cohen_d_speech_rate": -0.4073,
+      "simulated_cohen_d_pause_ratio": 0.4396,
+      "simulated_cohen_d_speech_to_pause": -0.4251,
+      "simulated_ranges": {
+        "speech_rate": [
+          2.53,
+          4.69
+        ],
+        "pause_ratio": [
+          0.153,
+          0.424
+        ],
+        "speech_to_pause": [
+          6.39,
+          26.74
+        ]
+      },
+      "physiological_bounds_plausibility": "Excellent physiological plausibility. Zero clamping. Maintains substantial unexplained inter-individual acoustic variance while allowing clinical signal to emerge."
+    },
+    "scenario_3_moderate_evidence_informed": {
+      "description": "Moderate evidence-informed calibration matching structured clinical interview and infant-directed prosodic effect sizes (Cohen d ~ 0.50 - 0.65).",
+      "speech_rate_residual_sigma": 0.17,
+      "pause_ratio_residual_sigma": 0.024,
+      "speech_to_pause_residual_sigma_delta_method": 1.9912,
+      "snr_sd_speech_rate": 1.0424,
+      "snr_var_speech_rate": 1.0865,
+      "snr_db_speech_rate": 0.36,
+      "snr_sd_pause_ratio": 1.1042,
+      "snr_var_pause_ratio": 1.2192,
+      "snr_db_pause_ratio": 0.86,
+      "simulated_cohen_d_speech_rate": -0.4988,
+      "simulated_cohen_d_pause_ratio": 0.5174,
+      "simulated_cohen_d_speech_to_pause": -0.5132,
+      "simulated_ranges": {
+        "speech_rate": [
+          2.63,
+          4.43
+        ],
+        "pause_ratio": [
+          0.184,
+          0.402
+        ],
+        "speech_to_pause": [
+          6.73,
+          23.06
+        ]
+      },
+      "physiological_bounds_plausibility": "High physiological plausibility. Zero clamping. Variance of clinical covariate signal approximately equals residual noise variance (SNR ~ 1.0)."
+    }
+  }
+}

@@ -12,6 +12,7 @@ from pipelines.synthetic_audio.generator import run_generation as generate_audio
 from pipelines.synthetic_text.generator import run_generation as generate_text
 from pipelines.synthetic_video.generator import run_generation as generate_video
 from pipelines.synthetic_video.generator_v2 import run_generation_v2 as generate_video_v2
+from pipelines.synthetic_video_v3.generator_v3 import run_generation_v3 as generate_video_v3
 
 
 def main():
@@ -23,6 +24,8 @@ def main():
     generate_video()
     print("Generating synthetic video v2 dataset...")
     generate_video_v2()
+    print("Generating synthetic video v3 dataset...")
+    generate_video_v3()
     print("All synthetic multimodal datasets successfully generated.")
 
 

@@ -120,6 +120,7 @@ def test_clinical_baseline_remains_independent_and_unaffected(client: TestClient
         "motherId": "M-RESEARCH-01",
         "modalities": json.dumps({"clinical": True, "audio": False, "video": False, "text": False}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=payload)
@@ -192,6 +193,7 @@ def test_multimodal_research_screening_with_mock_audio(
             "motherId": "M-RESEARCH-02",
             "modalities": json.dumps({"clinical": True, "audio": True}),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "clinical_features": json.dumps(_get_valid_clinical_features()),
             "audio_features": json.dumps(valid_acoustic_dict),
         }
@@ -256,6 +258,7 @@ def test_missing_modalities_do_not_fabricate_scores(client: TestClient):
         "motherId": "M-RESEARCH-03",
         "modalities": json.dumps({"clinical": True, "audio": True, "video": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
         # No audio_features or video files passed
     }
@@ -284,6 +287,7 @@ def test_text_ner_never_enters_predictive_fusion(client: TestClient):
         "motherId": "M-RESEARCH-04",
         "modalities": json.dumps({"clinical": True, "text": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
         "text_content": "Patient reports severe sadness, insomnia, and overwhelming fatigue.",
     }
@@ -310,6 +314,7 @@ def test_video_modality_reports_simulation_notice(client: TestClient):
         "motherId": "M-RESEARCH-05",
         "modalities": json.dumps({"video": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
     }
     response = client.post("/api/screenings/analyze", data=payload)
     assert response.status_code == 200

@@ -16,7 +16,7 @@ Validates the core contracts of Phase 3:
 from typing import Dict, List
 import numpy as np
 import pytest
-import torch
+torch = pytest.importorskip("torch", reason="torch is required for video deep learning tests")
 import torch.nn as nn
 from torch.utils.data import DataLoader
 

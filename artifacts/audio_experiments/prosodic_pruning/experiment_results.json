@@ -1,0 +1,1422 @@
+{
+  "baseline": {
+    "features": [
+      "f0_mean_hz",
+      "f0_std_hz",
+      "jitter_local_percent",
+      "shimmer_local_percent",
+      "hnr_db",
+      "speech_rate_syllables_per_sec",
+      "pause_ratio"
+    ],
+    "feature_count": 7,
+    "c_param": 0.1,
+    "fold_roc_aucs": [
+      0.5602,
+      0.4521,
+      0.5585,
+      0.5687,
+      0.5538
+    ],
+    "mean_cv_roc_auc": 0.5387,
+    "std_cv_roc_auc": 0.0435,
+    "mean_cv_f1": 0.4755,
+    "std_cv_f1": 0.0587,
+    "mean_cv_balanced_accuracy": 0.5292,
+    "std_cv_balanced_accuracy": 0.0278,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5339,
+      "pr_auc": 0.479,
+      "accuracy": 0.5344,
+      "balanced_accuracy": 0.5293,
+      "sensitivity": 0.4875,
+      "specificity": 0.571,
+      "precision": 0.4708,
+      "f1": 0.479,
+      "brier_score": 0.25,
+      "confusion_matrix": {
+        "tn": 205,
+        "fp": 154,
+        "fn": 144,
+        "tp": 137
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5602,
+        "pr_auc": 0.4856,
+        "accuracy": 0.5625,
+        "balanced_accuracy": 0.5589,
+        "sensitivity": 0.5263,
+        "specificity": 0.5915,
+        "precision": 0.5085,
+        "f1": 0.5172,
+        "brier_score": 0.2485,
+        "confusion_matrix": {
+          "tn": 42,
+          "fp": 29,
+          "fn": 27,
+          "tp": 30
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.4521,
+        "pr_auc": 0.4238,
+        "accuracy": 0.5,
+        "balanced_accuracy": 0.4802,
+        "sensitivity": 0.3214,
+        "specificity": 0.6389,
+        "precision": 0.4091,
+        "f1": 0.36,
+        "brier_score": 0.2584,
+        "confusion_matrix": {
+          "tn": 46,
+          "fp": 26,
+          "fn": 38,
+          "tp": 18
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5585,
+        "pr_auc": 0.5425,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2473,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5687,
+        "pr_auc": 0.486,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5526,
+        "sensitivity": 0.5357,
+        "specificity": 0.5694,
+        "precision": 0.4918,
+        "f1": 0.5128,
+        "brier_score": 0.2467,
+        "confusion_matrix": {
+          "tn": 41,
+          "fp": 31,
+          "fn": 26,
+          "tp": 30
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5538,
+        "pr_auc": 0.5398,
+        "accuracy": 0.5312,
+        "balanced_accuracy": 0.5317,
+        "sensitivity": 0.5357,
+        "specificity": 0.5278,
+        "precision": 0.4688,
+        "f1": 0.5,
+        "brier_score": 0.2489,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 26,
+          "tp": 30
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "f0_mean_hz": {
+        "standardized_coefficient": -0.028,
+        "odds_ratio": 0.9724,
+        "direction": "Negative (decreases risk)"
+      },
+      "f0_std_hz": {
+        "standardized_coefficient": 0.1396,
+        "odds_ratio": 1.1498,
+        "direction": "Positive (increases risk)"
+      },
+      "jitter_local_percent": {
+        "standardized_coefficient": 0.0232,
+        "odds_ratio": 1.0235,
+        "direction": "Positive (increases risk)"
+      },
+      "shimmer_local_percent": {
+        "standardized_coefficient": 0.0015,
+        "odds_ratio": 1.0015,
+        "direction": "Positive (increases risk)"
+      },
+      "hnr_db": {
+        "standardized_coefficient": 0.0149,
+        "odds_ratio": 1.015,
+        "direction": "Positive (increases risk)"
+      },
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.0769,
+        "odds_ratio": 0.9259,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.1524,
+        "odds_ratio": 1.1646,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.0031
+  },
+  "exp_a": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio"
+    ],
+    "feature_count": 2,
+    "c_param": 0.1,
+    "fold_roc_aucs": [
+      0.5629,
+      0.5181,
+      0.5449,
+      0.5992,
+      0.5181
+    ],
+    "mean_cv_roc_auc": 0.5486,
+    "std_cv_roc_auc": 0.0305,
+    "mean_cv_f1": 0.4848,
+    "std_cv_f1": 0.0479,
+    "mean_cv_balanced_accuracy": 0.5274,
+    "std_cv_balanced_accuracy": 0.0267,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5455,
+      "pr_auc": 0.4898,
+      "accuracy": 0.5297,
+      "balanced_accuracy": 0.5274,
+      "sensitivity": 0.5089,
+      "specificity": 0.546,
+      "precision": 0.4673,
+      "f1": 0.4872,
+      "brier_score": 0.2486,
+      "confusion_matrix": {
+        "tn": 196,
+        "fp": 163,
+        "fn": 138,
+        "tp": 143
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5629,
+        "pr_auc": 0.51,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5536,
+        "sensitivity": 0.5439,
+        "specificity": 0.5634,
+        "precision": 0.5,
+        "f1": 0.521,
+        "brier_score": 0.2476,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 31,
+          "fn": 26,
+          "tp": 31
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5181,
+        "pr_auc": 0.4829,
+        "accuracy": 0.5078,
+        "balanced_accuracy": 0.497,
+        "sensitivity": 0.4107,
+        "specificity": 0.5833,
+        "precision": 0.434,
+        "f1": 0.422,
+        "brier_score": 0.2503,
+        "confusion_matrix": {
+          "tn": 42,
+          "fp": 30,
+          "fn": 33,
+          "tp": 23
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5449,
+        "pr_auc": 0.4995,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2498,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5992,
+        "pr_auc": 0.5141,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5625,
+        "sensitivity": 0.625,
+        "specificity": 0.5,
+        "precision": 0.493,
+        "f1": 0.5512,
+        "brier_score": 0.2462,
+        "confusion_matrix": {
+          "tn": 36,
+          "fp": 36,
+          "fn": 21,
+          "tp": 35
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5181,
+        "pr_auc": 0.513,
+        "accuracy": 0.5078,
+        "balanced_accuracy": 0.501,
+        "sensitivity": 0.4464,
+        "specificity": 0.5556,
+        "precision": 0.4386,
+        "f1": 0.4425,
+        "brier_score": 0.2494,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 32,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.0675,
+        "odds_ratio": 0.9347,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.1269,
+        "odds_ratio": 1.1353,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.0019
+  },
+  "exp_b1": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio",
+      "articulation_rate"
+    ],
+    "feature_count": 3,
+    "c_param": 0.1,
+    "fold_roc_aucs": [
+      0.5634,
+      0.5176,
+      0.5461,
+      0.59,
+      0.5164
+    ],
+    "mean_cv_roc_auc": 0.5467,
+    "std_cv_roc_auc": 0.028,
+    "mean_cv_f1": 0.4861,
+    "std_cv_f1": 0.0413,
+    "mean_cv_balanced_accuracy": 0.5287,
+    "std_cv_balanced_accuracy": 0.0218,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5435,
+      "pr_auc": 0.4893,
+      "accuracy": 0.5312,
+      "balanced_accuracy": 0.5288,
+      "sensitivity": 0.5089,
+      "specificity": 0.5487,
+      "precision": 0.4689,
+      "f1": 0.4881,
+      "brier_score": 0.2487,
+      "confusion_matrix": {
+        "tn": 197,
+        "fp": 162,
+        "fn": 138,
+        "tp": 143
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5634,
+        "pr_auc": 0.5101,
+        "accuracy": 0.5625,
+        "balanced_accuracy": 0.5624,
+        "sensitivity": 0.5614,
+        "specificity": 0.5634,
+        "precision": 0.5079,
+        "f1": 0.5333,
+        "brier_score": 0.2476,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 31,
+          "fn": 25,
+          "tp": 32
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5176,
+        "pr_auc": 0.4845,
+        "accuracy": 0.5156,
+        "balanced_accuracy": 0.504,
+        "sensitivity": 0.4107,
+        "specificity": 0.5972,
+        "precision": 0.4423,
+        "f1": 0.4259,
+        "brier_score": 0.2503,
+        "confusion_matrix": {
+          "tn": 43,
+          "fp": 29,
+          "fn": 33,
+          "tp": 23
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5461,
+        "pr_auc": 0.5007,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2497,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.59,
+        "pr_auc": 0.5069,
+        "accuracy": 0.5391,
+        "balanced_accuracy": 0.5446,
+        "sensitivity": 0.5893,
+        "specificity": 0.5,
+        "precision": 0.4783,
+        "f1": 0.528,
+        "brier_score": 0.2466,
+        "confusion_matrix": {
+          "tn": 36,
+          "fp": 36,
+          "fn": 23,
+          "tp": 33
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5164,
+        "pr_auc": 0.51,
+        "accuracy": 0.5156,
+        "balanced_accuracy": 0.5099,
+        "sensitivity": 0.4643,
+        "specificity": 0.5556,
+        "precision": 0.4483,
+        "f1": 0.4561,
+        "brier_score": 0.2495,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 32,
+          "fn": 30,
+          "tp": 26
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.0815,
+        "odds_ratio": 0.9217,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.12,
+        "odds_ratio": 1.1275,
+        "direction": "Positive (increases risk)"
+      },
+      "articulation_rate": {
+        "standardized_coefficient": 0.0122,
+        "odds_ratio": 1.0123,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.002
+  },
+  "exp_b2": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio",
+      "speech_to_pause_ratio"
+    ],
+    "feature_count": 3,
+    "c_param": 0.1,
+    "fold_roc_aucs": [
+      0.5723,
+      0.5243,
+      0.5424,
+      0.5947,
+      0.5275
+    ],
+    "mean_cv_roc_auc": 0.5522,
+    "std_cv_roc_auc": 0.0272,
+    "mean_cv_f1": 0.4511,
+    "std_cv_f1": 0.0431,
+    "mean_cv_balanced_accuracy": 0.5276,
+    "std_cv_balanced_accuracy": 0.0257,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5499,
+      "pr_auc": 0.4906,
+      "accuracy": 0.5391,
+      "balanced_accuracy": 0.5277,
+      "sensitivity": 0.4342,
+      "specificity": 0.6212,
+      "precision": 0.4729,
+      "f1": 0.4527,
+      "brier_score": 0.2478,
+      "confusion_matrix": {
+        "tn": 223,
+        "fp": 136,
+        "fn": 159,
+        "tp": 122
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5723,
+        "pr_auc": 0.5132,
+        "accuracy": 0.5703,
+        "balanced_accuracy": 0.5625,
+        "sensitivity": 0.4912,
+        "specificity": 0.6338,
+        "precision": 0.5185,
+        "f1": 0.5045,
+        "brier_score": 0.2467,
+        "confusion_matrix": {
+          "tn": 45,
+          "fp": 26,
+          "fn": 29,
+          "tp": 28
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5243,
+        "pr_auc": 0.4854,
+        "accuracy": 0.5312,
+        "balanced_accuracy": 0.5099,
+        "sensitivity": 0.3393,
+        "specificity": 0.6806,
+        "precision": 0.4524,
+        "f1": 0.3878,
+        "brier_score": 0.2489,
+        "confusion_matrix": {
+          "tn": 49,
+          "fp": 23,
+          "fn": 37,
+          "tp": 19
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5424,
+        "pr_auc": 0.4927,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5149,
+        "sensitivity": 0.4464,
+        "specificity": 0.5833,
+        "precision": 0.4545,
+        "f1": 0.4505,
+        "brier_score": 0.2498,
+        "confusion_matrix": {
+          "tn": 42,
+          "fp": 30,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5947,
+        "pr_auc": 0.5193,
+        "accuracy": 0.5625,
+        "balanced_accuracy": 0.5536,
+        "sensitivity": 0.4821,
+        "specificity": 0.625,
+        "precision": 0.5,
+        "f1": 0.4909,
+        "brier_score": 0.2459,
+        "confusion_matrix": {
+          "tn": 45,
+          "fp": 27,
+          "fn": 29,
+          "tp": 27
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5275,
+        "pr_auc": 0.5166,
+        "accuracy": 0.5078,
+        "balanced_accuracy": 0.497,
+        "sensitivity": 0.4107,
+        "specificity": 0.5833,
+        "precision": 0.434,
+        "f1": 0.422,
+        "brier_score": 0.2477,
+        "confusion_matrix": {
+          "tn": 42,
+          "fp": 30,
+          "fn": 33,
+          "tp": 23
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.1463,
+        "odds_ratio": 0.8639,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.2333,
+        "odds_ratio": 1.2628,
+        "direction": "Positive (increases risk)"
+      },
+      "speech_to_pause_ratio": {
+        "standardized_coefficient": 0.1936,
+        "odds_ratio": 1.2137,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.002
+  },
+  "baseline_c1": {
+    "features": [
+      "f0_mean_hz",
+      "f0_std_hz",
+      "jitter_local_percent",
+      "shimmer_local_percent",
+      "hnr_db",
+      "speech_rate_syllables_per_sec",
+      "pause_ratio"
+    ],
+    "feature_count": 7,
+    "c_param": 1.0,
+    "fold_roc_aucs": [
+      0.5597,
+      0.4482,
+      0.5558,
+      0.565,
+      0.5585
+    ],
+    "mean_cv_roc_auc": 0.5374,
+    "std_cv_roc_auc": 0.0447,
+    "mean_cv_f1": 0.4665,
+    "std_cv_f1": 0.0655,
+    "mean_cv_balanced_accuracy": 0.5201,
+    "std_cv_balanced_accuracy": 0.0333,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5326,
+      "pr_auc": 0.4783,
+      "accuracy": 0.525,
+      "balanced_accuracy": 0.5202,
+      "sensitivity": 0.4804,
+      "specificity": 0.5599,
+      "precision": 0.4608,
+      "f1": 0.4704,
+      "brier_score": 0.2504,
+      "confusion_matrix": {
+        "tn": 201,
+        "fp": 158,
+        "fn": 146,
+        "tp": 135
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5597,
+        "pr_auc": 0.4842,
+        "accuracy": 0.5469,
+        "balanced_accuracy": 0.5431,
+        "sensitivity": 0.5088,
+        "specificity": 0.5775,
+        "precision": 0.4915,
+        "f1": 0.5,
+        "brier_score": 0.2488,
+        "confusion_matrix": {
+          "tn": 41,
+          "fp": 30,
+          "fn": 28,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.4482,
+        "pr_auc": 0.4222,
+        "accuracy": 0.4766,
+        "balanced_accuracy": 0.4573,
+        "sensitivity": 0.3036,
+        "specificity": 0.6111,
+        "precision": 0.3778,
+        "f1": 0.3366,
+        "brier_score": 0.2599,
+        "confusion_matrix": {
+          "tn": 44,
+          "fp": 28,
+          "fn": 39,
+          "tp": 17
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5558,
+        "pr_auc": 0.5433,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2472,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.565,
+        "pr_auc": 0.4829,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5526,
+        "sensitivity": 0.5357,
+        "specificity": 0.5694,
+        "precision": 0.4918,
+        "f1": 0.5128,
+        "brier_score": 0.2469,
+        "confusion_matrix": {
+          "tn": 41,
+          "fp": 31,
+          "fn": 26,
+          "tp": 30
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5585,
+        "pr_auc": 0.5411,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5248,
+        "sensitivity": 0.5357,
+        "specificity": 0.5139,
+        "precision": 0.4615,
+        "f1": 0.4959,
+        "brier_score": 0.2491,
+        "confusion_matrix": {
+          "tn": 37,
+          "fp": 35,
+          "fn": 26,
+          "tp": 30
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "f0_mean_hz": {
+        "standardized_coefficient": -0.0305,
+        "odds_ratio": 0.97,
+        "direction": "Negative (decreases risk)"
+      },
+      "f0_std_hz": {
+        "standardized_coefficient": 0.1503,
+        "odds_ratio": 1.1622,
+        "direction": "Positive (increases risk)"
+      },
+      "jitter_local_percent": {
+        "standardized_coefficient": 0.0228,
+        "odds_ratio": 1.0231,
+        "direction": "Positive (increases risk)"
+      },
+      "shimmer_local_percent": {
+        "standardized_coefficient": 0.001,
+        "odds_ratio": 1.001,
+        "direction": "Positive (increases risk)"
+      },
+      "hnr_db": {
+        "standardized_coefficient": 0.0161,
+        "odds_ratio": 1.0163,
+        "direction": "Positive (increases risk)"
+      },
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.0758,
+        "odds_ratio": 0.927,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.1651,
+        "odds_ratio": 1.1796,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.0033
+  },
+  "exp_a_c1": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio"
+    ],
+    "feature_count": 2,
+    "c_param": 1.0,
+    "fold_roc_aucs": [
+      0.5626,
+      0.5141,
+      0.5449,
+      0.5933,
+      0.5176
+    ],
+    "mean_cv_roc_auc": 0.5465,
+    "std_cv_roc_auc": 0.0295,
+    "mean_cv_f1": 0.4938,
+    "std_cv_f1": 0.0426,
+    "mean_cv_balanced_accuracy": 0.5341,
+    "std_cv_balanced_accuracy": 0.0244,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5436,
+      "pr_auc": 0.4894,
+      "accuracy": 0.5359,
+      "balanced_accuracy": 0.5342,
+      "sensitivity": 0.5196,
+      "specificity": 0.5487,
+      "precision": 0.474,
+      "f1": 0.4958,
+      "brier_score": 0.2487,
+      "confusion_matrix": {
+        "tn": 197,
+        "fp": 162,
+        "fn": 135,
+        "tp": 146
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5626,
+        "pr_auc": 0.5111,
+        "accuracy": 0.5625,
+        "balanced_accuracy": 0.5624,
+        "sensitivity": 0.5614,
+        "specificity": 0.5634,
+        "precision": 0.5079,
+        "f1": 0.5333,
+        "brier_score": 0.2476,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 31,
+          "fn": 25,
+          "tp": 32
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5141,
+        "pr_auc": 0.4826,
+        "accuracy": 0.5312,
+        "balanced_accuracy": 0.5218,
+        "sensitivity": 0.4464,
+        "specificity": 0.5972,
+        "precision": 0.463,
+        "f1": 0.4545,
+        "brier_score": 0.2505,
+        "confusion_matrix": {
+          "tn": 43,
+          "fp": 29,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5449,
+        "pr_auc": 0.5002,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2499,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5933,
+        "pr_auc": 0.5106,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5625,
+        "sensitivity": 0.625,
+        "specificity": 0.5,
+        "precision": 0.493,
+        "f1": 0.5512,
+        "brier_score": 0.2462,
+        "confusion_matrix": {
+          "tn": 36,
+          "fp": 36,
+          "fn": 21,
+          "tp": 35
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5176,
+        "pr_auc": 0.5124,
+        "accuracy": 0.5078,
+        "balanced_accuracy": 0.501,
+        "sensitivity": 0.4464,
+        "specificity": 0.5556,
+        "precision": 0.4386,
+        "f1": 0.4425,
+        "brier_score": 0.2495,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 32,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.066,
+        "odds_ratio": 0.9361,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.1351,
+        "odds_ratio": 1.1446,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.002
+  },
+  "exp_b1_c1": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio",
+      "articulation_rate"
+    ],
+    "feature_count": 3,
+    "c_param": 1.0,
+    "fold_roc_aucs": [
+      0.5636,
+      0.5141,
+      0.5429,
+      0.5893,
+      0.5166
+    ],
+    "mean_cv_roc_auc": 0.5453,
+    "std_cv_roc_auc": 0.0285,
+    "mean_cv_f1": 0.4936,
+    "std_cv_f1": 0.0358,
+    "mean_cv_balanced_accuracy": 0.5351,
+    "std_cv_balanced_accuracy": 0.0212,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5417,
+      "pr_auc": 0.4868,
+      "accuracy": 0.5375,
+      "balanced_accuracy": 0.5352,
+      "sensitivity": 0.516,
+      "specificity": 0.5543,
+      "precision": 0.4754,
+      "f1": 0.4949,
+      "brier_score": 0.249,
+      "confusion_matrix": {
+        "tn": 199,
+        "fp": 160,
+        "fn": 136,
+        "tp": 145
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5636,
+        "pr_auc": 0.5067,
+        "accuracy": 0.5625,
+        "balanced_accuracy": 0.5624,
+        "sensitivity": 0.5614,
+        "specificity": 0.5634,
+        "precision": 0.5079,
+        "f1": 0.5333,
+        "brier_score": 0.2477,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 31,
+          "fn": 25,
+          "tp": 32
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5141,
+        "pr_auc": 0.481,
+        "accuracy": 0.5312,
+        "balanced_accuracy": 0.5218,
+        "sensitivity": 0.4464,
+        "specificity": 0.5972,
+        "precision": 0.463,
+        "f1": 0.4545,
+        "brier_score": 0.2505,
+        "confusion_matrix": {
+          "tn": 43,
+          "fp": 29,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5429,
+        "pr_auc": 0.4958,
+        "accuracy": 0.5234,
+        "balanced_accuracy": 0.5228,
+        "sensitivity": 0.5179,
+        "specificity": 0.5278,
+        "precision": 0.4603,
+        "f1": 0.4874,
+        "brier_score": 0.2498,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 27,
+          "tp": 29
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5893,
+        "pr_auc": 0.507,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5585,
+        "sensitivity": 0.5893,
+        "specificity": 0.5278,
+        "precision": 0.4925,
+        "f1": 0.5366,
+        "brier_score": 0.2467,
+        "confusion_matrix": {
+          "tn": 38,
+          "fp": 34,
+          "fn": 23,
+          "tp": 33
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5166,
+        "pr_auc": 0.5057,
+        "accuracy": 0.5156,
+        "balanced_accuracy": 0.5099,
+        "sensitivity": 0.4643,
+        "specificity": 0.5556,
+        "precision": 0.4483,
+        "f1": 0.4561,
+        "brier_score": 0.2501,
+        "confusion_matrix": {
+          "tn": 40,
+          "fp": 32,
+          "fn": 30,
+          "tp": 26
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.1636,
+        "odds_ratio": 0.8491,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.0831,
+        "odds_ratio": 1.0866,
+        "direction": "Positive (increases risk)"
+      },
+      "articulation_rate": {
+        "standardized_coefficient": 0.0758,
+        "odds_ratio": 1.0788,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.0021
+  },
+  "exp_b2_c1": {
+    "features": [
+      "speech_rate_syllables_per_sec",
+      "pause_ratio",
+      "speech_to_pause_ratio"
+    ],
+    "feature_count": 3,
+    "c_param": 1.0,
+    "fold_roc_aucs": [
+      0.5804,
+      0.5283,
+      0.5501,
+      0.5888,
+      0.5312
+    ],
+    "mean_cv_roc_auc": 0.5558,
+    "std_cv_roc_auc": 0.0249,
+    "mean_cv_f1": 0.4457,
+    "std_cv_f1": 0.0253,
+    "mean_cv_balanced_accuracy": 0.535,
+    "std_cv_balanced_accuracy": 0.0193,
+    "overall_oof_metrics": {
+      "roc_auc": 0.5522,
+      "pr_auc": 0.4936,
+      "accuracy": 0.55,
+      "balanced_accuracy": 0.5351,
+      "sensitivity": 0.4128,
+      "specificity": 0.6574,
+      "precision": 0.4854,
+      "f1": 0.4462,
+      "brier_score": 0.2477,
+      "confusion_matrix": {
+        "tn": 236,
+        "fp": 123,
+        "fn": 165,
+        "tp": 116
+      },
+      "sample_count": 640,
+      "positive_count": 281,
+      "negative_count": 359,
+      "decision_threshold": 0.5
+    },
+    "fold_metrics": [
+      {
+        "roc_auc": 0.5804,
+        "pr_auc": 0.5166,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5432,
+        "sensitivity": 0.4386,
+        "specificity": 0.6479,
+        "precision": 0.5,
+        "f1": 0.4673,
+        "brier_score": 0.2463,
+        "confusion_matrix": {
+          "tn": 46,
+          "fp": 25,
+          "fn": 32,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 57,
+        "negative_count": 71,
+        "decision_threshold": 0.5,
+        "fold": 1
+      },
+      {
+        "roc_auc": 0.5283,
+        "pr_auc": 0.4912,
+        "accuracy": 0.5547,
+        "balanced_accuracy": 0.5327,
+        "sensitivity": 0.3571,
+        "specificity": 0.7083,
+        "precision": 0.4878,
+        "f1": 0.4124,
+        "brier_score": 0.2484,
+        "confusion_matrix": {
+          "tn": 51,
+          "fp": 21,
+          "fn": 36,
+          "tp": 20
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 2
+      },
+      {
+        "roc_auc": 0.5501,
+        "pr_auc": 0.4925,
+        "accuracy": 0.5156,
+        "balanced_accuracy": 0.504,
+        "sensitivity": 0.4107,
+        "specificity": 0.5972,
+        "precision": 0.4423,
+        "f1": 0.4259,
+        "brier_score": 0.2518,
+        "confusion_matrix": {
+          "tn": 43,
+          "fp": 29,
+          "fn": 33,
+          "tp": 23
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 3
+      },
+      {
+        "roc_auc": 0.5888,
+        "pr_auc": 0.5189,
+        "accuracy": 0.5781,
+        "balanced_accuracy": 0.5635,
+        "sensitivity": 0.4464,
+        "specificity": 0.6806,
+        "precision": 0.5208,
+        "f1": 0.4808,
+        "brier_score": 0.2454,
+        "confusion_matrix": {
+          "tn": 49,
+          "fp": 23,
+          "fn": 31,
+          "tp": 25
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 4
+      },
+      {
+        "roc_auc": 0.5312,
+        "pr_auc": 0.526,
+        "accuracy": 0.5469,
+        "balanced_accuracy": 0.5317,
+        "sensitivity": 0.4107,
+        "specificity": 0.6528,
+        "precision": 0.4792,
+        "f1": 0.4423,
+        "brier_score": 0.2466,
+        "confusion_matrix": {
+          "tn": 47,
+          "fp": 25,
+          "fn": 33,
+          "tp": 23
+        },
+        "sample_count": 128,
+        "positive_count": 56,
+        "negative_count": 72,
+        "decision_threshold": 0.5,
+        "fold": 5
+      }
+    ],
+    "feature_coefficients": {
+      "speech_rate_syllables_per_sec": {
+        "standardized_coefficient": -0.1925,
+        "odds_ratio": 0.8249,
+        "direction": "Negative (decreases risk)"
+      },
+      "pause_ratio": {
+        "standardized_coefficient": 0.3125,
+        "odds_ratio": 1.3668,
+        "direction": "Positive (increases risk)"
+      },
+      "speech_to_pause_ratio": {
+        "standardized_coefficient": 0.3071,
+        "odds_ratio": 1.3595,
+        "direction": "Positive (increases risk)"
+      }
+    },
+    "intercept": -0.0019
+  }
+}

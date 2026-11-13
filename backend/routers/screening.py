@@ -47,6 +47,14 @@ async def analyze_screening(
         None,
         description="Alternative snake_case consent flag",
     ),
+    eligibilityConfirmed: Optional[str] = Form(
+        None,
+        description="Boolean string ('true'/'false') confirming self-declared postpartum eligibility",
+    ),
+    eligibility_confirmed: Optional[str] = Form(
+        None,
+        description="Alternative snake_case eligibility flag",
+    ),
     clinical_features: Optional[str] = Form(
         None,
         description="JSON string containing the complete 46 clinical survey predictors (required if clinical=true)",
@@ -76,6 +84,7 @@ async def analyze_screening(
     """Orchestrate central multimodal screening analysis."""
     effective_mother_id = motherId if motherId is not None else mother_id
     effective_consent = consentConfirmed if consentConfirmed is not None else consent_confirmed
+    effective_eligibility = eligibilityConfirmed if eligibilityConfirmed is not None else eligibility_confirmed
 
     files_text_bytes: Optional[bytes] = None
     if files_text is not None:
@@ -99,5 +108,6 @@ async def analyze_screening(
         text_content=text_content,
         files_voice_bytes=files_voice_bytes,
         files_video_bytes=files_video_bytes,
+        eligibility_confirmed=effective_eligibility,
     )
 

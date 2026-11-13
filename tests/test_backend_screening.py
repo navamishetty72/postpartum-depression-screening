@@ -150,6 +150,7 @@ def test_clinical_only_screening(client: TestClient):
         "motherId": "M-101",
         "modalities": json.dumps({"clinical": True, "text": False, "audio": False, "video": False}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=payload)
@@ -196,6 +197,7 @@ def test_text_only_screening_with_file_upload(
             "motherId": "M-102",
             "modalities": json.dumps(["text"]),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
         }
         response = client.post("/api/screenings/analyze", data=data, files=files)
         assert response.status_code == 200
@@ -234,6 +236,7 @@ def test_clinical_and_text_together(
             "motherId": "M-103",
             "modalities": json.dumps({"clinical": True, "text": True}),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "clinical_features": json.dumps(_get_valid_clinical_features()),
             "text_content": "Mother reported persistent postpartum depression symptoms during clinical intake.",
         }
@@ -277,6 +280,32 @@ def test_missing_consent_rejected(client: TestClient):
     assert response2.status_code == 400
 
 
+def test_unconfirmed_eligibility_rejected(client: TestClient):
+    """Verify that omitting or setting eligibilityConfirmed to false returns HTTP 403."""
+    # Case A: eligibilityConfirmed is explicitly false
+    data_false = {
+        "motherId": "M-104",
+        "modalities": json.dumps({"clinical": True}),
+        "consentConfirmed": "true",
+        "eligibilityConfirmed": "false",
+        "clinical_features": json.dumps(_get_valid_clinical_features()),
+    }
+    resp1 = client.post("/api/screenings/analyze", data=data_false)
+    assert resp1.status_code == 403
+    assert "eligibility confirmation is required" in resp1.json()["detail"].lower()
+
+    # Case B: eligibilityConfirmed is omitted/missing (cannot bypass the gate)
+    data_missing = {
+        "motherId": "M-104",
+        "modalities": json.dumps({"clinical": True}),
+        "consentConfirmed": "true",
+        "clinical_features": json.dumps(_get_valid_clinical_features()),
+    }
+    resp2 = client.post("/api/screenings/analyze", data=data_missing)
+    assert resp2.status_code == 403
+    assert "eligibility confirmation is required" in resp2.json()["detail"].lower()
+
+
 # ---------------------------------------------------------------------------
 # 5. Invalid Modalities Rejection
 # ---------------------------------------------------------------------------
@@ -285,7 +314,7 @@ def test_invalid_modalities_rejected(client: TestClient):
     # Case A: Malformed JSON string
     response = client.post(
         "/api/screenings/analyze",
-        data={"motherId": "M-105", "consentConfirmed": "true", "modalities": "not-valid-json"},
+        data={"motherId": "M-105", "consentConfirmed": "true", "eligibilityConfirmed": "true", "modalities": "not-valid-json"},
     )
     assert response.status_code == 422
 
@@ -295,6 +324,7 @@ def test_invalid_modalities_rejected(client: TestClient):
         data={
             "motherId": "M-105",
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "modalities": json.dumps({"clinical": False, "text": False, "audio": False, "video": False}),
         },
     )
@@ -311,6 +341,7 @@ def test_missing_clinical_features_rejected(client: TestClient):
         "motherId": "M-106",
         "modalities": json.dumps({"clinical": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
     }
     response = client.post("/api/screenings/analyze", data=data)
     assert response.status_code == 422
@@ -327,6 +358,7 @@ def test_invalid_clinical_features_rejected(client: TestClient):
         "motherId": "M-107",
         "modalities": json.dumps({"clinical": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps({"Age": 28.0, "Number of the latest pregnancy": 1.0}),
     }
     resp = client.post("/api/screenings/analyze", data=data_incomplete)
@@ -339,6 +371,7 @@ def test_invalid_clinical_features_rejected(client: TestClient):
         "motherId": "M-107",
         "modalities": json.dumps({"clinical": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(leaked),
     }
     resp_leak = client.post("/api/screenings/analyze", data=data_leaked)
@@ -354,6 +387,7 @@ def test_invalid_text_input_rejected(client: TestClient):
         "motherId": "M-108",
         "modalities": json.dumps({"text": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
     }
     response = client.post("/api/screenings/analyze", data=data)
     assert response.status_code == 422
@@ -369,6 +403,7 @@ def test_missing_optional_modalities_accepted(client: TestClient):
         "motherId": "M-109",
         "modalities": json.dumps(["clinical"]),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=data)
@@ -390,6 +425,7 @@ def test_unavailable_audio_and_video_modalities(client: TestClient):
         "motherId": "M-110",
         "modalities": json.dumps({"clinical": True, "audio": True, "video": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=data)
@@ -424,6 +460,7 @@ def test_individual_modality_failure_preserves_successful_results(client: TestCl
             "motherId": "M-111",
             "modalities": json.dumps({"clinical": True, "text": True}),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "clinical_features": json.dumps(_get_valid_clinical_features()),
             "text_content": "Patient narrative input",
         }
@@ -451,6 +488,7 @@ def test_all_requested_modalities_fail_status(client: TestClient):
         "motherId": "M-112",
         "modalities": json.dumps({"audio": True, "video": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
     }
     response = client.post("/api/screenings/analyze", data=data)
     assert response.status_code == 200
@@ -480,6 +518,7 @@ def test_mother_existence_validator(client: TestClient):
             "motherId": "UNREGISTERED-M-99",
             "modalities": json.dumps(["clinical"]),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "clinical_features": json.dumps(_get_valid_clinical_features()),
         }
         response = client.post("/api/screenings/analyze", data=data)
@@ -498,6 +537,7 @@ def test_response_contract_schema(client: TestClient):
         "motherId": "M-114",
         "modalities": json.dumps({"clinical": True}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=data)

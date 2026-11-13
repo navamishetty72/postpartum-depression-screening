@@ -20,7 +20,7 @@ import json
 import numpy as np
 import pandas as pd
 import pytest
-import torch
+torch = pytest.importorskip("torch", reason="torch is required for video deep learning tests")
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
