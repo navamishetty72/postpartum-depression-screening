@@ -15,6 +15,10 @@ import uuid
 from fastapi import HTTPException
 from pydantic import ValidationError
 
+from backend.ml.fusion_engine import (
+    MultimodalFusionEngine,
+    fusion_engine,
+)
 from backend.schemas.clinical_numerical import ClinicalFeatures
 from backend.schemas.screening import (
     AudioModalityResult,
@@ -63,10 +67,12 @@ class ScreeningOrchestrationService:
         clinical_svc: Optional[ClinicalScreeningService] = None,
         text_svc: Optional[TextNERService] = None,
         mother_val: Optional[MotherValidator] = None,
+        fusion_eng: Optional[MultimodalFusionEngine] = None,
     ) -> None:
         self.clinical_service: ClinicalScreeningService = clinical_svc or clinical_service
         self.text_ner_service: TextNERService = text_svc or text_ner_service
         self.mother_validator: MotherValidator = mother_val or MotherValidator()
+        self.fusion_engine: MultimodalFusionEngine = fusion_eng or fusion_engine
 
     async def orchestrate_screening(
         self,
@@ -292,14 +298,12 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 8. Late Fusion (Unimplemented in Phase 3)
-        fusion_result = FusionModalityResult(
-            status="not_available",
-            combined_score=None,
-            risk_category=None,
-            epds_equivalent=None,
-            modality_contributions={},
-            discordance_analysis=None,
+        # 8. Late Fusion & Cross-Modal Discordance via MultimodalFusionEngine
+        fusion_result = self.fusion_engine.evaluate(
+            clinical=clinical_result,
+            text=text_result,
+            audio=audio_result,
+            video=video_result,
         )
 
         # 9. Compute Overall Screening Status
@@ -345,3 +349,4 @@ screening_service = ScreeningOrchestrationService()
 def get_screening_service() -> ScreeningOrchestrationService:
     """FastAPI dependency provider for ScreeningOrchestrationService."""
     return screening_service
+

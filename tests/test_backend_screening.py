@@ -549,3 +549,4 @@ def test_existing_endpoints_regression(client: TestClient):
         json={"text": "Patient reports insomnia and depression."},
     )
     assert resp_ner.status_code in {200, 503}
+

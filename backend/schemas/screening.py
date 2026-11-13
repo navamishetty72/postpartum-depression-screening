@@ -220,3 +220,4 @@ class ScreeningAnalysisResponse(BaseModel):
     video: VideoModalityResult
     fusion: FusionModalityResult
     processed_at: str = Field(..., description="ISO-8601 UTC timestamp of screening completion")
+
