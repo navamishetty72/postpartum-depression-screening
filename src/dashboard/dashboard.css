@@ -2995,6 +2995,432 @@
   gap: 10px;
 }
 
+.miora-cta-primary:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   Screen 04: Upload & Analyze Workspace
+   ========================================================================== */
+
+.miora-upload-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 0.94fr 1.06fr;
+  gap: 16px;
+  margin-bottom: 14px;
+  align-items: start;
+}
+
+.miora-upload-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.miora-upload-desc {
+  font-size: 13px;
+  color: #5b4d52;
+  margin-top: -6px;
+}
+
+.miora-upload-zones-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.miora-upload-dropzone {
+  border: 1.5px dashed #e5bec8;
+  border-radius: 14px;
+  background: #fffafa;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.miora-upload-dropzone:hover,
+.miora-upload-dropzone.is-dragging {
+  border-color: #c73566;
+  background: #fdeef2;
+  transform: translateY(-1px);
+}
+
+.miora-upload-zone-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fdeef1;
+  border: 1px solid #f7d9e0;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+}
+
+.miora-upload-zone-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 2px;
+}
+
+.miora-upload-zone-formats {
+  font-size: 11px;
+  color: #6b5c61;
+}
+
+.miora-upload-zone-btn {
+  margin-top: 4px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #e7cfd4;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.miora-upload-zone-btn:hover {
+  background: #fdeef2;
+  border-color: #df9db0;
+  color: var(--rose-deep);
+}
+
+.miora-upload-error {
+  margin-top: 2px;
+}
+
+.miora-uploaded-section {
+  border-top: 1px solid #f1e3e5;
+  padding-top: 14px;
+}
+
+.miora-uploaded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.miora-uploaded-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.miora-clear-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rose-deep);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.miora-clear-all-btn:hover {
+  background: #fdeef2;
+}
+
+.miora-uploaded-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.miora-uploaded-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid #f1dfe3;
+  background: #fff9fa;
+}
+
+.miora-uploaded-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.miora-uploaded-file-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #fdeef1;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-uploaded-file-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.miora-uploaded-file-meta strong {
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miora-uploaded-file-meta span {
+  font-size: 11.5px;
+  color: #6b5c61;
+}
+
+.miora-uploaded-row-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.miora-file-valid-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3aa762;
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.miora-file-remove-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: #9b5a70;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.miora-file-remove-btn:hover {
+  background: #fde8ee;
+  color: var(--rose-deep);
+}
+
+.miora-uploaded-empty {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fffafa;
+  border: 1px dashed #edd8dc;
+}
+
+/* Right Column: Selected Modalities + Analysis Preview + Key Indicators & Next Steps */
+.miora-upload-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.miora-modality-pills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.miora-modality-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #ead4d8;
+  background: #fffbfa;
+  color: #48393e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.miora-modality-toggle.is-selected {
+  background: #fdeef2;
+  border-color: #df9db0;
+  color: var(--ink);
+}
+
+.miora-modality-toggle.is-selected .miora-modality-toggle-mark {
+  color: var(--rose-deep);
+}
+
+.miora-modality-toggle.is-unavailable {
+  opacity: 0.62;
+  background: #faf5f6;
+  cursor: not-allowed;
+}
+
+.miora-modality-unavail-tag {
+  font-size: 10px;
+  font-weight: 500;
+  color: #7d6e73;
+}
+
+/* Analysis Preview */
+.miora-analysis-empty-grid {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.miora-analysis-empty-copy strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.miora-analysis-empty-copy p {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.miora-analysis-loading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fff8f9;
+  border: 1px solid #f1dfe3;
+}
+
+.miora-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2.5px solid #f3d5dd;
+  border-top-color: #c73566;
+  animation: mioraSpin 0.8s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes mioraSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.miora-analysis-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fdeef2;
+  border: 1px solid #f2c8d4;
+  flex-wrap: wrap;
+}
+
+.miora-analysis-error-copy strong {
+  display: block;
+  font-size: 13.5px;
+  color: #9e214c;
+  margin-bottom: 3px;
+}
+
+.miora-analysis-error-copy p {
+  font-size: 12.5px;
+  color: #5b3241;
+  line-height: 1.4;
+}
+
+.miora-analysis-populated {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.miora-contrib-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.miora-contrib-list {
+  display: grid;
+  gap: 10px;
+}
+
+.miora-contrib-row {
+  display: grid;
+  grid-template-columns: 46px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-contrib-label {
+  font-size: 12.5px;
+  color: #46383d;
+}
+
+.miora-contrib-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #f3e1e5;
+  overflow: hidden;
+}
+
+.miora-contrib-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #d94678;
+}
+
+.miora-contrib-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.miora-indicators-next-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.miora-upload-consent {
+  font-size: 13px;
+}
+
 /* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
@@ -3023,7 +3449,10 @@
   .miora-discordance-grid,
   .miora-insights-grid,
   .miora-live-workspace,
-  .miora-prelim-panel {
+  .miora-prelim-panel,
+  .miora-upload-layout,
+  .miora-analysis-populated,
+  .miora-indicators-next-card {
     grid-template-columns: minmax(0, 1fr);
   }
   .miora-prelim-col-bordered {
@@ -3130,7 +3559,9 @@
     grid-template-columns: 1fr;
   }
   .miora-field-row,
-  .miora-cue-compare {
+  .miora-cue-compare,
+  .miora-upload-zones-grid,
+  .miora-modality-pills {
     grid-template-columns: 1fr;
   }
   .miora-patient-strip {

@@ -39,7 +39,7 @@ describe('Miora Screen 03: Live Screening', () => {
     vi.useFakeTimers();
     renderLiveScreening();
 
-    expect(screen.getByRole('link', { name: 'Live Screening' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Screening' })).toHaveAttribute(
       'aria-current',
       'page'
     );
@@ -74,7 +74,7 @@ describe('Miora Screen 03: Live Screening', () => {
     renderLiveScreening();
     fireEvent.click(screen.getByRole('tab', { name: /Upload & Analyze/i }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Asynchronous Screening Upload'
+      'Upload & Analyze'
     );
   });
 

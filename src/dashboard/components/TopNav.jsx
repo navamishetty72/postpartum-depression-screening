@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useClinicalData } from '../context/ClinicalContext.jsx';
 import { CLINICIAN_PROFILE } from '../data/mockClinicalData.js';
 import { BrandWordmark } from './BrandWordmark.jsx';
@@ -9,7 +9,7 @@ import { RiskBadge, StatusBadge } from './Badges.jsx';
 const NAV_ITEMS = [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Mothers & Cases', to: '/mothers' },
-  { label: 'Live Screening', to: '/live-screening' },
+  { label: 'Screening', to: '/live-screening', matchPaths: ['/live-screening', '/upload-analyze'] },
   { label: 'Results', to: '/results' },
   { label: 'Discordance', to: '/discordance' },
   { label: 'Insights & Care', to: '/insights' },
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
 export function TopNav() {
   const { alerts, mothers, screenings } = useClinicalData();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openMenu, setOpenMenu] = useState(null); // 'search' | 'alerts' | 'profile' | 'mobile'
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,17 +90,22 @@ export function TopNav() {
         </div>
 
         <nav className="dash-nav-links" aria-label="Clinician workspace navigation">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `dash-nav-link ${isActive ? 'is-active' : ''}`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const extraActive = item.matchPaths?.some((p) =>
+              location.pathname.startsWith(p)
+            );
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `dash-nav-link ${isActive || extraActive ? 'is-active' : ''}`
+                }
+              >
+                {item.label}
+              </NavLink>
+            );
+          })}
         </nav>
 
         <div className="dash-nav-utilities">

@@ -10,21 +10,22 @@ import {
 
 const ClinicalContext = createContext(null);
 const DRAFT_STORAGE_KEY = 'miora_live_screening_drafts_v1';
+const UPLOAD_DRAFT_STORAGE_KEY = 'miora_upload_analyze_drafts_v1';
 
-function readStoredDrafts() {
+function readStoredMap(key) {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return {};
-    const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+    const raw = window.localStorage.getItem(key);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
   }
 }
 
-function writeStoredDrafts(drafts) {
+function writeStoredMap(key, value) {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return;
-    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+    window.localStorage.setItem(key, JSON.stringify(value));
   } catch {
     // Ignore storage quota or private-mode errors
   }
@@ -51,7 +52,8 @@ export function ClinicalProvider({ children }) {
   const [weeklyRecords, setWeeklyRecords] = useState(SCREENING_WEEKLY_RECORDS);
   const [alerts, setAlerts] = useState(CLINICAL_ALERTS);
   const [isAddMotherOpen, setIsAddMotherOpen] = useState(false);
-  const [screeningDrafts, setScreeningDrafts] = useState(() => readStoredDrafts());
+  const [screeningDrafts, setScreeningDrafts] = useState(() => readStoredMap(DRAFT_STORAGE_KEY));
+  const [uploadDrafts, setUploadDrafts] = useState(() => readStoredMap(UPLOAD_DRAFT_STORAGE_KEY));
 
   const metrics = useMemo(() => {
     const addedScreenings = screenings.filter(
@@ -228,7 +230,7 @@ export function ClinicalProvider({ children }) {
           savedAt: new Date().toISOString(),
         },
       };
-      writeStoredDrafts(next);
+      writeStoredMap(DRAFT_STORAGE_KEY, next);
       return next;
     });
   };
@@ -237,7 +239,30 @@ export function ClinicalProvider({ children }) {
     setScreeningDrafts((prev) => {
       const next = { ...prev };
       delete next[motherId];
-      writeStoredDrafts(next);
+      writeStoredMap(DRAFT_STORAGE_KEY, next);
+      return next;
+    });
+  };
+
+  const saveUploadDraft = (motherId, draftData) => {
+    setUploadDrafts((prev) => {
+      const next = {
+        ...prev,
+        [motherId]: {
+          ...draftData,
+          savedAt: new Date().toISOString(),
+        },
+      };
+      writeStoredMap(UPLOAD_DRAFT_STORAGE_KEY, next);
+      return next;
+    });
+  };
+
+  const clearUploadDraft = (motherId) => {
+    setUploadDrafts((prev) => {
+      const next = { ...prev };
+      delete next[motherId];
+      writeStoredMap(UPLOAD_DRAFT_STORAGE_KEY, next);
       return next;
     });
   };
@@ -250,6 +275,7 @@ export function ClinicalProvider({ children }) {
     metrics,
     priorityCases,
     screeningDrafts,
+    uploadDrafts,
     isAddMotherOpen,
     setIsAddMotherOpen,
     addMother,
@@ -257,6 +283,8 @@ export function ClinicalProvider({ children }) {
     updateMotherStatus,
     saveScreeningDraft,
     clearScreeningDraft,
+    saveUploadDraft,
+    clearUploadDraft,
   };
 
   return <ClinicalContext.Provider value={value}>{children}</ClinicalContext.Provider>;

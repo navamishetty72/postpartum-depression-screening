@@ -552,7 +552,7 @@ export function LiveScreeningPage() {
             className="miora-mode-tab is-active"
           >
             <DashboardIcon name="video" size={16} />
-            <span>Live Screening</span>
+            <span>Screening</span>
           </button>
           <button
             type="button"

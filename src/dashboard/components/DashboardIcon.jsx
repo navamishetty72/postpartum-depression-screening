@@ -180,6 +180,27 @@ const ICON_PATHS = {
   stopSquare: (
     <rect x="7" y="7" width="10" height="10" rx="1.8" fill="currentColor" stroke="none" />
   ),
+  uploadCloud: (
+    <>
+      <path d="M16.5 16.5a3.5 3.5 0 0 0 .6-6.9A5.2 5.2 0 0 0 7 8.4a4 4 0 0 0-.5 7.9" />
+      <path d="M12 19.5v-7M9.2 15.2 12 12.5l2.8 2.7" />
+    </>
+  ),
+  fileText: (
+    <>
+      <path d="M14 3.5H7.2A1.7 1.7 0 0 0 5.5 5.2v13.6a1.7 1.7 0 0 0 1.7 1.7h9.6a1.7 1.7 0 0 0 1.7-1.7V8L14 3.5Z" />
+      <path d="M14 3.5V8h4.5M9 12h6M9 15.5h4.5" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M4.5 6.5h15M9.5 4h5M7 6.5l.8 12a1.5 1.5 0 0 0 1.5 1.4h5.4a1.5 1.5 0 0 0 1.5-1.4l.8-12" />
+      <path d="M10.2 10.5v5.5M13.8 10.5v5.5" />
+    </>
+  ),
+  play: (
+    <polygon points="8 6 18 12 8 18 8 6" />
+  ),
   stethoscope: (
     <>
       <path d="M6.5 4.5v5a4.5 4.5 0 0 0 9 0v-5" />
