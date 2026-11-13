@@ -41,50 +41,53 @@ from pipelines.video_model.config import (
     V2_VIDEO_DIR,
     VALID_SPLIT_PARTITIONS,
 )
-from pipelines.video_model.dataset import PPDVideoDataset
-from pipelines.video_model.models import (
-    MaskedAttentionPooling,
-    MaskedTemporalPooling,
-    ParticipantStatisticalFeatureExtractor,
-    VideoBiLSTMEncoder,
-    VideoBiLSTMModel,
-    VideoGRUEncoder,
-    VideoGRUModel,
-    VideoLogisticRegressionBaseline,
-    VideoRandomForestBaseline,
-)
-from pipelines.video_model.preprocessing import (
-    VideoFeatureNormalizer,
-    get_stratified_cv_splits,
-    masked_temporal_pooling,
-    pad_collate_fn,
-)
-from pipelines.video_model.evaluate_baselines import (
-    compute_bootstrap_confidence_intervals,
-    compute_classification_metrics,
-    format_metrics_table,
-    save_metrics_to_json,
-)
-from pipelines.video_model.train_baselines import (
-    run_baseline_experiment,
-    run_cross_validation,
-    train_and_evaluate_holdout,
-)
-from pipelines.video_model.evaluate_recurrent import (
-    evaluate_holdout_with_confidence_intervals,
-    evaluate_model,
-    extract_embeddings_only,
-)
-from pipelines.video_model.train_recurrent import (
-    InMemoryVideoDataset,
-    run_recurrent_cv,
-    run_recurrent_experiments,
-    train_final_holdout_model,
-)
-from pipelines.video_model.extract_unified_embeddings import (
-    extract_unified_embeddings_for_model,
-    run_unified_embedding_extraction,
-)
+try:
+    from pipelines.video_model.dataset import PPDVideoDataset
+    from pipelines.video_model.models import (
+        MaskedAttentionPooling,
+        MaskedTemporalPooling,
+        ParticipantStatisticalFeatureExtractor,
+        VideoBiLSTMEncoder,
+        VideoBiLSTMModel,
+        VideoGRUEncoder,
+        VideoGRUModel,
+        VideoLogisticRegressionBaseline,
+        VideoRandomForestBaseline,
+    )
+    from pipelines.video_model.preprocessing import (
+        VideoFeatureNormalizer,
+        get_stratified_cv_splits,
+        masked_temporal_pooling,
+        pad_collate_fn,
+    )
+    from pipelines.video_model.evaluate_baselines import (
+        compute_bootstrap_confidence_intervals,
+        compute_classification_metrics,
+        format_metrics_table,
+        save_metrics_to_json,
+    )
+    from pipelines.video_model.train_baselines import (
+        run_baseline_experiment,
+        run_cross_validation,
+        train_and_evaluate_holdout,
+    )
+    from pipelines.video_model.evaluate_recurrent import (
+        evaluate_holdout_with_confidence_intervals,
+        evaluate_model,
+        extract_embeddings_only,
+    )
+    from pipelines.video_model.train_recurrent import (
+        InMemoryVideoDataset,
+        run_recurrent_cv,
+        run_recurrent_experiments,
+        train_final_holdout_model,
+    )
+    from pipelines.video_model.extract_unified_embeddings import (
+        extract_unified_embeddings_for_model,
+        run_unified_embedding_extraction,
+    )
+except ImportError:
+    pass
 
 __all__ = [
     # Config

@@ -15,6 +15,7 @@ import hashlib
 import numpy as np
 import pandas as pd
 import pytest
+torch = pytest.importorskip("torch", reason="torch is required for video deep learning tests")
 
 from pipelines.video_model.config import (
     EMBEDDINGS_ARTIFACTS_DIR,

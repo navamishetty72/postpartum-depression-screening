@@ -103,11 +103,11 @@ async def analyze_screening(
         consent_confirmed=effective_consent or False,
         modalities_raw=modalities,
         clinical_features_raw=clinical_features,
+        audio_features_raw=audio_features,
         files_text_bytes=files_text_bytes,
         text_content=text_content,
         files_voice_bytes=files_voice_bytes,
         files_video_bytes=files_video_bytes,
         eligibility_confirmed=effective_eligibility,
-        audio_features_raw=audio_features,
     )
 

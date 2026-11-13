@@ -10,6 +10,9 @@ export async function submitMultimodalAnalysis({
   selectedModalities,
   files,
   consentConfirmed,
+  clinicalFeatures,
+  audioFeatures,
+  textContent,
   fetchImpl = typeof window !== 'undefined' && window.fetch ? window.fetch.bind(window) : null,
 }) {
   if (!motherId) {
@@ -31,9 +34,10 @@ export async function submitMultimodalAnalysis({
   }
 
   const apiBase =
-    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_MIORA_API_URL) || '';
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_MIORA_API_URL) ||
+    (typeof window !== 'undefined' && window.location?.origin ? '' : 'http://127.0.0.1:8000');
 
-  if (!apiBase || !fetchImpl) {
+  if (!fetchImpl) {
     return {
       ok: false,
       reason: 'backend-unavailable',
@@ -47,22 +51,48 @@ export async function submitMultimodalAnalysis({
     formData.append('motherId', motherId);
     formData.append('modalities', JSON.stringify(selectedModalities));
     formData.append('consentConfirmed', String(consentConfirmed));
+
+    if (clinicalFeatures) {
+      formData.append(
+        'clinical_features',
+        typeof clinicalFeatures === 'string' ? clinicalFeatures : JSON.stringify(clinicalFeatures)
+      );
+    }
+    if (audioFeatures) {
+      formData.append(
+        'audio_features',
+        typeof audioFeatures === 'string' ? audioFeatures : JSON.stringify(audioFeatures)
+      );
+    }
+    if (textContent) {
+      formData.append('text_content', textContent);
+    }
+
     files.forEach((entry) => {
       if (entry.rawFile) {
-        formData.append(`files_${entry.modality}`, entry.rawFile, entry.name);
+        const modKey = entry.modality === 'voice' ? 'voice' : entry.modality;
+        formData.append(`files_${modKey}`, entry.rawFile, entry.name);
       }
     });
 
-    const response = await fetchImpl(`${apiBase.replace(/\/$/, '')}/api/screenings/analyze`, {
+    const url = `${apiBase ? apiBase.replace(/\/$/, '') : ''}/api/screenings/analyze`;
+    const response = await fetchImpl(url, {
       method: 'POST',
       body: formData,
     });
 
     if (!response.ok) {
+      let errorDetail = `Analysis request failed (HTTP ${response.status}).`;
+      try {
+        const errJson = await response.json();
+        if (errJson?.detail) {
+          errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+        }
+      } catch (_) {}
       return {
         ok: false,
         reason: 'server-error',
-        message: `Analysis request failed (HTTP ${response.status}). Please retry or save a draft.`,
+        message: `${errorDetail} Please retry or save a draft.`,
       };
     }
 

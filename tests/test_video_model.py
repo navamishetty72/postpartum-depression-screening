@@ -23,8 +23,7 @@ import numpy as np
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import pytest
-# pyrefly: ignore[missing-import]
-import torch
+torch = pytest.importorskip("torch", reason="torch is required for video deep learning tests")
 # pyrefly: ignore[missing-import]
 from torch.utils.data import DataLoader
 

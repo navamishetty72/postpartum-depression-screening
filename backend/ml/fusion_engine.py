@@ -167,6 +167,59 @@ CANONICAL_STACKING_WEIGHTS: Dict[str, float] = {
     "video": 0.000,
 }
 
+RESEARCH_FUSION_BENCHMARKS: Dict[str, Any] = {
+    "single_modality_benchmarks": {
+        "clinical_only": {
+            "roc_auc": 0.8373,
+            "pr_auc": 0.8025,
+            "f1_score": 0.7270,
+            "status": "production_validated",
+            "provenance": "authentic_clinical_survey",
+        },
+        "audio_only": {
+            "roc_auc": 0.5339,
+            "pr_auc": 0.4759,
+            "f1_score": 0.4782,
+            "status": "experimental_benchmark",
+            "provenance": "CLINICALLY_CONDITIONED_SYNTHETIC",
+        },
+        "video_only": {
+            "roc_auc": 0.5454,
+            "pr_auc": 0.4670,
+            "f1_score": 0.4966,
+            "status": "experimental_simulation",
+            "provenance": "synthetic_video_simulation",
+        },
+        "text_only_classifier": {
+            "roc_auc": 0.6386,
+            "pr_auc": 0.5579,
+            "f1_score": 0.5581,
+            "status": "experimental_vignettes",
+            "provenance": "synthetic_text_vignettes",
+        },
+    },
+    "multimodal_fusion_comparisons": {
+        "equal_weight_fusion": {
+            "roc_auc": 0.8115,
+            "pr_auc": 0.7735,
+            "f1_score": 0.6998,
+            "weights": {"clinical": 0.25, "audio": 0.25, "video": 0.25, "text": 0.25},
+            "finding": "Equal weighting of synthetic behavioral streams dilutes authentic clinical signal (-0.0258 ROC-AUC).",
+        },
+        "learned_stacking_fusion": {
+            "roc_auc": 0.8360,
+            "pr_auc": 0.8010,
+            "f1_score": 0.7270,
+            "weights": {"clinical": 1.000, "audio": 0.000, "video": 0.000, "text": 0.000},
+            "finding": "Non-negative stacking isolates authentic clinical signal and suppresses uncalibrated synthetic streams.",
+        },
+    },
+    "clinical_safeguard_note": (
+        "Multimodal fusion remains an offline research benchmark. Live predictive screening "
+        "relies strictly on the validated clinical baseline. EPDS Q10 safety escalation operates "
+        "independently of all ML probabilities."
+    ),
+}
 
 class NonNegativeStackingFusionStrategy(BaseFusionStrategy):
     """Canonical late fusion strategy using non-negative stacking weights.
@@ -295,7 +348,6 @@ class MultimodalFusionEngine:
         strategy: Optional[BaseFusionStrategy] = None,
         discordance_analyzer: Optional[DiscordanceAnalyzer] = None,
     ) -> None:
-        # None by default: reflects that unimodal audio/video classifiers are not yet trained
         self.strategy: Optional[BaseFusionStrategy] = strategy
         self.discordance_analyzer: DiscordanceAnalyzer = (
             discordance_analyzer or DiscordanceAnalyzer()
@@ -434,6 +486,7 @@ class MultimodalFusionEngine:
                     "comparison": [],
                     "explanation": f"Modality validation failed: {exc}",
                 },
+                research_benchmarks=RESEARCH_FUSION_BENCHMARKS,
             )
 
         # 1. Evaluate cross-modal discordance
@@ -463,6 +516,7 @@ class MultimodalFusionEngine:
                 epds_equivalent=None,
                 modality_contributions={},
                 discordance_analysis=discordance_report.to_dict(),
+                research_benchmarks=RESEARCH_FUSION_BENCHMARKS,
             )
 
         # 4. If >= 2 predictive modalities exist, evaluate with fusion strategy if configured
@@ -478,6 +532,7 @@ class MultimodalFusionEngine:
                 epds_equivalent=None,
                 modality_contributions={},
                 discordance_analysis=discordance_report.to_dict(),
+                research_benchmarks=RESEARCH_FUSION_BENCHMARKS,
             )
 
         # 5. Execute fusion strategy
@@ -492,6 +547,7 @@ class MultimodalFusionEngine:
                 epds_equivalent=epds_equiv,
                 modality_contributions=contributions,
                 discordance_analysis=discordance_report.to_dict(),
+                research_benchmarks=RESEARCH_FUSION_BENCHMARKS,
             )
         except Exception as exc:
             logger.error("Fusion strategy execution failed: %s", exc, exc_info=True)
@@ -502,6 +558,7 @@ class MultimodalFusionEngine:
                 epds_equivalent=None,
                 modality_contributions={},
                 discordance_analysis=discordance_report.to_dict(),
+                research_benchmarks=RESEARCH_FUSION_BENCHMARKS,
             )
 
 

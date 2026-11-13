@@ -18,7 +18,6 @@ from backend.services.clinical_service import clinical_service
 from backend.services.audio_service import audio_service
 
 
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Manage application startup and shutdown lifecycle (load ML services once)."""
@@ -26,6 +25,7 @@ async def lifespan(_app: FastAPI):
     clinical_service.startup()
     audio_service.startup()
     yield
+    audio_service.shutdown()
     clinical_service.shutdown()
     text_ner_service.shutdown()
 

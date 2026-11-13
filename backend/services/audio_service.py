@@ -8,7 +8,8 @@ for multimodal fusion orchestration.
 SCIENTIFIC INTEGRITY & PROVENANCE NOTICE:
 Current audio feature profiles and model artifacts are derived from clinically conditioned
 synthetic acoustic simulations. They do NOT represent authentic patient voice recordings
-and are strictly non-diagnostic research benchmarks.
+and are strictly non-diagnostic research benchmarks. Audio models are strictly non-predictive
+(is_predictive=False) and must remain excluded from predictive clinical late fusion.
 """
 
 import logging
@@ -20,8 +21,17 @@ import joblib
 import numpy as np
 import pandas as pd
 
+try:
+    # pyrefly: ignore[missing-import]
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    torch = None  # type: ignore
+    HAS_TORCH = False
+
 from backend.schemas.audio import (
     ACOUSTIC_FEATURE_BOUNDS,
+    ACOUSTIC_FEATURE_LITERATURE_SOURCES,
     ACOUSTIC_FEATURE_NAMES,
     AcousticFeatures,
     AudioPredictionDetails,
@@ -49,7 +59,15 @@ EXPECTED_AUDIO_FEATURES: List[str] = [
 
 
 class AudioScreeningService:
-    """Singleton service for audio acoustic screening inference, validation, and lifecycle management."""
+    """Singleton service for audio acoustic screening inference, validation, and lifecycle management.
+
+    Follows the architectural patterns of ClinicalScreeningService and TextNERService:
+    - Thread-safe lazy or startup initialization.
+    - Explicit is_loaded and is_available lifecycle readiness properties.
+    - Safe handling of missing model checkpoints without crashing application startup.
+    - Never trains models automatically during startup or inference.
+    - Zero logging of sensitive patient biometric features or participant identifiers.
+    """
 
     def __init__(
         self,
@@ -74,14 +92,14 @@ class AudioScreeningService:
         self._lock = threading.Lock()
 
     @property
-    def is_available(self) -> bool:
+    def is_loaded(self) -> bool:
         """Whether a genuine trained audio model checkpoint or ML artifacts are loaded and ready."""
         return self._is_available and (self._model is not None or self._rf_model is not None)
 
     @property
-    def is_loaded(self) -> bool:
-        """Alias for is_available for multimodal pipeline compatibility."""
-        return self.is_available
+    def is_available(self) -> bool:
+        """Alias for is_loaded indicating modality readiness."""
+        return self.is_loaded
 
     @property
     def model_dir_path(self) -> Path:
@@ -89,7 +107,10 @@ class AudioScreeningService:
         return self.model_dir
 
     def startup(self) -> None:
-        """Check for model weights and initialize audio pipeline if available."""
+        """Check for model weights and initialize audio pipeline if available.
+
+        Never trains models automatically if checkpoints are missing.
+        """
         with self._lock:
             self._startup_attempted = True
             model_path = self.model_dir / self.model_filename
@@ -105,10 +126,18 @@ class AudioScreeningService:
                 )
                 return
 
-            # Check if PyTorch model checkpoint exists
+            # 1. Check if PyTorch model checkpoint exists
             if self.model_filename and model_path.exists() and model_path.is_file():
+                if not HAS_TORCH:
+                    self._is_available = False
+                    self._load_error = "Required dependency 'torch' is not installed."
+                    logger.warning(
+                        "Audio model checkpoint found at %s, but 'torch' is not installed.",
+                        model_path,
+                    )
+                    return
+
                 try:
-                    import torch
                     state_dict = torch.load(model_path, map_location="cpu", weights_only=True)
                     self._model = state_dict
                     self._is_available = True
@@ -123,17 +152,16 @@ class AudioScreeningService:
                     logger.warning("Error loading audio model checkpoint: %s", exc)
                     return
 
-            # Check if scikit-learn artifacts (scaler + model) exist
+            # 2. Check if scikit-learn artifacts (scaler + model) exist
             if scaler_path.exists() and rf_path.exists():
                 try:
                     self._scaler = joblib.load(scaler_path)
                     self._rf_model = joblib.load(rf_path)
-                    self._model = self._rf_model
                     self._is_available = True
                     self._model_version = f"audio_{self.model_name}_v1"
                     self._load_error = None
                     logger.info(
-                        "Audio screening ML model loaded successfully: model=%s from %s",
+                        "Audio ML baseline (%s) loaded from %s",
                         self.model_name,
                         self.model_dir,
                     )
@@ -141,21 +169,20 @@ class AudioScreeningService:
                 except Exception as exc:
                     self._scaler = None
                     self._rf_model = None
-                    self._model = None
                     self._is_available = False
-                    self._load_error = f"Failed to load audio model: {exc}"
-                    logger.error("Failed to load audio ML artifacts: %s", exc, exc_info=True)
+                    self._load_error = f"Failed to load audio artifacts: {exc}"
+                    logger.warning("Error loading audio ML baseline: %s", exc)
                     return
 
-            # If neither checkpoint nor ML artifacts are found:
+            # 3. Model files are missing
             self._is_available = False
             self._load_error = (
-                f"Audio model weights missing: {model_path} "
-                f"(and no {self.model_name}.joblib found in {self.model_dir})"
+                f"Audio model weights missing under {self.model_dir} (neither {self.model_filename} "
+                f"nor {scaler_path.name}/{rf_path.name} found)."
             )
             logger.info(
-                "Audio model checkpoint '%s' not found. Service initialized in unavailable mode.",
-                self.model_filename,
+                "No audio models found under %s; initialized in unavailable mode.",
+                self.model_dir,
             )
 
     def shutdown(self) -> None:
@@ -175,41 +202,28 @@ class AudioScreeningService:
         features: Union[AcousticFeatures, Dict[str, Any]],
         mother_id: Optional[str] = None,
         threshold: float = 0.5,
-        return_response: Optional[bool] = None,
+        as_response: bool = True,
     ) -> Union[AudioScreeningResponse, Dict[str, Any]]:
         """Execute audio screening inference or return explicit unavailable response.
 
-        Args:
-            features: Validated AcousticFeatures schema instance or dictionary of 7 features.
-            mother_id: Optional participant / mother identifier.
-            threshold: Decision threshold for high-risk binary classification.
-            return_response: If True, returns AudioScreeningResponse schema; if False, returns
-                             structured dict. If None, returns schema when mother_id is supplied,
-                             otherwise returns structured dict.
-
-        Returns:
-            AudioScreeningResponse instance or structured prediction dictionary.
+        Never trains models automatically during inference.
+        Never fabricates predictions when model artifacts are missing.
+        Never logs participant identifiers or raw acoustic features.
         """
         if not self._startup_attempted:
             self.startup()
 
-        # Validate input features
+        # Validate input features against physiological bounds
         if isinstance(features, dict):
             validated_features = AcousticFeatures(**features)
-        elif isinstance(features, AcousticFeatures):
-            validated_features = features
         else:
-            raise HTTPException(
-                status_code=422,
-                detail="Audio features must be an AcousticFeatures instance or dictionary.",
-            )
+            validated_features = features
 
-        as_response = return_response if return_response is not None else (mother_id is not None)
-
-        # Handle unavailable state
-        if not self.is_available:
+        # When model weights or pipeline artifacts are missing or experimental
+        if not self.is_loaded:
             if as_response:
                 return AudioScreeningResponse(
+                    mother_id=mother_id,
                     status="unavailable",
                     is_predictive=False,
                     data_origin=DATA_ORIGIN_TAG,
@@ -232,18 +246,17 @@ class AudioScreeningService:
                 detail=f"Audio screening inference model is unavailable: {self._load_error or 'No trained checkpoint deployed'}.",
             )
 
-        # Execute inference if ML artifacts are loaded
+        # Execute inference if scikit-learn ML artifacts are loaded
         if self._scaler is not None and self._rf_model is not None:
-            df_features = pd.DataFrame(
-                [[getattr(validated_features, f) for f in EXPECTED_AUDIO_FEATURES]],
-                columns=EXPECTED_AUDIO_FEATURES,
-            )
+            # Enforce exact feature ordering
+            feature_row = [getattr(validated_features, f) for f in EXPECTED_AUDIO_FEATURES]
+            df_features = pd.DataFrame([feature_row], columns=EXPECTED_AUDIO_FEATURES)
 
             try:
                 scaled = self._scaler.transform(df_features)
                 prob = float(self._rf_model.predict_proba(scaled)[0, 1])
             except Exception as exc:
-                logger.error("Audio model inference failed: %s", exc, exc_info=True)
+                logger.error("Audio model inference execution failed: %s", type(exc).__name__, exc_info=False)
                 raise HTTPException(
                     status_code=500,
                     detail="Acoustic feature inference failed due to an internal error.",
@@ -257,8 +270,9 @@ class AudioScreeningService:
             else:
                 category = "LOW_RISK"
 
+            rounded_prob = round(prob, 4)
             pred_dict = {
-                "predicted_risk_probability": round(prob, 4),
+                "predicted_risk_probability": rounded_prob,
                 "predicted_class": pred,
                 "risk_category": category,
                 "decision_threshold": threshold,
@@ -276,15 +290,17 @@ class AudioScreeningService:
 
             if as_response:
                 return AudioScreeningResponse(
+                    mother_id=mother_id,
                     status="completed",
                     is_predictive=False,  # strictly False for current synthetic experimental pipeline
                     data_origin=DATA_ORIGIN_TAG,
                     model_version=self._model_version,
                     model_name=self.model_name,
                     prediction=AudioPredictionDetails(
-                        predicted_risk_probability=round(prob, 4),
+                        predicted_risk_probability=rounded_prob,
                         predicted_class=pred,
                         risk_category=category,
+                        decision_threshold=threshold,
                     ),
                     acoustic_features=validated_features,
                     message="Audio feature profile processed under experimental non-predictive protocol.",
@@ -294,6 +310,7 @@ class AudioScreeningService:
         # Fallback for PyTorch or non-inferencing checkpoint
         if as_response:
             return AudioScreeningResponse(
+                mother_id=mother_id,
                 status="completed",
                 is_predictive=False,
                 data_origin=DATA_ORIGIN_TAG,
@@ -301,7 +318,7 @@ class AudioScreeningService:
                 model_name="PPDAudioCNN",
                 prediction=None,
                 acoustic_features=validated_features,
-                message="Audio feature profile processed under experimental non-predictive protocol.",
+                message="Audio PyTorch checkpoint loaded under experimental non-predictive protocol.",
             )
         raise HTTPException(
             status_code=503,
