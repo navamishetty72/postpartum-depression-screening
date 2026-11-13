@@ -21,6 +21,15 @@ from pipelines.synthetic_video.generator import (
     SyntheticVideoGenerator,
     run_generation,
 )
+from pipelines.synthetic_video.config_v2 import (
+    SYNTHETIC_VIDEO_V2_DIR,
+    SYNTHETIC_VIDEO_V2_FEATURES_DIR,
+    SYNTHETIC_VIDEO_V2_MANIFEST_PATH,
+)
+from pipelines.synthetic_video.generator_v2 import (
+    SyntheticVideoGeneratorV2,
+    run_generation_v2,
+)
 
 __all__ = [
     "CHANNEL_BOUNDS",
@@ -36,5 +45,10 @@ __all__ = [
     "SYNTHETIC_VIDEO_MANIFEST_PATH",
     "SyntheticVideoGenerator",
     "run_generation",
+    "SYNTHETIC_VIDEO_V2_DIR",
+    "SYNTHETIC_VIDEO_V2_FEATURES_DIR",
+    "SYNTHETIC_VIDEO_V2_MANIFEST_PATH",
+    "SyntheticVideoGeneratorV2",
+    "run_generation_v2",
 ]
 

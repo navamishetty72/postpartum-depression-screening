@@ -1,0 +1,161 @@
+"""Video Modeling Pipeline module.
+
+Provides PyTorch Dataset loading, leak-free normalization, sequence padding/masking,
+and stratified cross-validation support for PPD video feature sequence modeling.
+"""
+
+from pipelines.video_model.config import (
+    AU_CHANNEL_INDICES,
+    BASELINE_ARTIFACTS_DIR,
+    CHANNEL_BOUNDS,
+    CHANNEL_NAMES,
+    CONFIDENCE_THRESHOLD,
+    CONTINUOUS_FEATURE_INDICES,
+    CV_FOLDS,
+    DEFAULT_RANDOM_SEED,
+    EMBEDDINGS_ARTIFACTS_DIR,
+    EXPECTED_DTYPE,
+    EXPECTED_TEST_PARTICIPANTS,
+    EXPECTED_TOTAL_PARTICIPANTS,
+    EXPECTED_TRAIN_PARTICIPANTS,
+    FEATURE_DIM,
+    GAZE_CHANNEL_INDICES,
+    MAX_SEQUENCE_LENGTH,
+    MIN_SEQUENCE_LENGTH,
+    MODEL_ARTIFACTS_DIR,
+    MOTION_CHANNEL_INDICES,
+    PARTICIPANT_ID_COLUMN,
+    POSE_CHANNEL_INDICES,
+    PROJECT_ROOT,
+    RECURRENT_ARTIFACTS_DIR,
+    SPLIT_COLUMN,
+    SPLIT_MANIFEST_PATH,
+    TARGET_COLUMN,
+    TRACKING_FEATURE_INDICES,
+    UNIFIED_EMBEDDINGS_ARTIFACTS_DIR,
+    V1_FEATURE_DIR,
+    V1_MANIFEST_PATH,
+    V1_VIDEO_DIR,
+    V2_FEATURE_DIR,
+    V2_MANIFEST_PATH,
+    V2_VIDEO_DIR,
+    VALID_SPLIT_PARTITIONS,
+)
+from pipelines.video_model.dataset import PPDVideoDataset
+from pipelines.video_model.models import (
+    MaskedAttentionPooling,
+    MaskedTemporalPooling,
+    ParticipantStatisticalFeatureExtractor,
+    VideoBiLSTMEncoder,
+    VideoBiLSTMModel,
+    VideoGRUEncoder,
+    VideoGRUModel,
+    VideoLogisticRegressionBaseline,
+    VideoRandomForestBaseline,
+)
+from pipelines.video_model.preprocessing import (
+    VideoFeatureNormalizer,
+    get_stratified_cv_splits,
+    masked_temporal_pooling,
+    pad_collate_fn,
+)
+from pipelines.video_model.evaluate_baselines import (
+    compute_bootstrap_confidence_intervals,
+    compute_classification_metrics,
+    format_metrics_table,
+    save_metrics_to_json,
+)
+from pipelines.video_model.train_baselines import (
+    run_baseline_experiment,
+    run_cross_validation,
+    train_and_evaluate_holdout,
+)
+from pipelines.video_model.evaluate_recurrent import (
+    evaluate_holdout_with_confidence_intervals,
+    evaluate_model,
+    extract_embeddings_only,
+)
+from pipelines.video_model.train_recurrent import (
+    InMemoryVideoDataset,
+    run_recurrent_cv,
+    run_recurrent_experiments,
+    train_final_holdout_model,
+)
+from pipelines.video_model.extract_unified_embeddings import (
+    extract_unified_embeddings_for_model,
+    run_unified_embedding_extraction,
+)
+
+__all__ = [
+    # Config
+    "AU_CHANNEL_INDICES",
+    "BASELINE_ARTIFACTS_DIR",
+    "CHANNEL_BOUNDS",
+    "CHANNEL_NAMES",
+    "CONFIDENCE_THRESHOLD",
+    "CONTINUOUS_FEATURE_INDICES",
+    "CV_FOLDS",
+    "DEFAULT_RANDOM_SEED",
+    "EXPECTED_DTYPE",
+    "EXPECTED_TEST_PARTICIPANTS",
+    "EXPECTED_TOTAL_PARTICIPANTS",
+    "EXPECTED_TRAIN_PARTICIPANTS",
+    "FEATURE_DIM",
+    "GAZE_CHANNEL_INDICES",
+    "MAX_SEQUENCE_LENGTH",
+    "MIN_SEQUENCE_LENGTH",
+    "MODEL_ARTIFACTS_DIR",
+    "MOTION_CHANNEL_INDICES",
+    "PARTICIPANT_ID_COLUMN",
+    "POSE_CHANNEL_INDICES",
+    "PROJECT_ROOT",
+    "SPLIT_COLUMN",
+    "SPLIT_MANIFEST_PATH",
+    "TARGET_COLUMN",
+    "TRACKING_FEATURE_INDICES",
+    "V1_FEATURE_DIR",
+    "V1_MANIFEST_PATH",
+    "V1_VIDEO_DIR",
+    "V2_FEATURE_DIR",
+    "V2_MANIFEST_PATH",
+    "V2_VIDEO_DIR",
+    "VALID_SPLIT_PARTITIONS",
+    # Dataset & Preprocessing
+    "PPDVideoDataset",
+    "VideoFeatureNormalizer",
+    "get_stratified_cv_splits",
+    "masked_temporal_pooling",
+    "pad_collate_fn",
+    # Models & Pooling
+    "MaskedAttentionPooling",
+    "MaskedTemporalPooling",
+    "ParticipantStatisticalFeatureExtractor",
+    "VideoBiLSTMEncoder",
+    "VideoBiLSTMModel",
+    "VideoGRUEncoder",
+    "VideoGRUModel",
+    "VideoLogisticRegressionBaseline",
+    "VideoRandomForestBaseline",
+    # Evaluation & Training
+    "compute_bootstrap_confidence_intervals",
+    "compute_classification_metrics",
+    "format_metrics_table",
+    "save_metrics_to_json",
+    "run_baseline_experiment",
+    "run_cross_validation",
+    "train_and_evaluate_holdout",
+    # Recurrent Training & Evaluation
+    "EMBEDDINGS_ARTIFACTS_DIR",
+    "InMemoryVideoDataset",
+    "RECURRENT_ARTIFACTS_DIR",
+    "evaluate_holdout_with_confidence_intervals",
+    "evaluate_model",
+    "extract_embeddings_only",
+    "extract_unified_embeddings_for_model",
+    "run_recurrent_cv",
+    "run_recurrent_experiments",
+    "run_unified_embedding_extraction",
+    "train_final_holdout_model",
+    "UNIFIED_EMBEDDINGS_ARTIFACTS_DIR",
+]
+

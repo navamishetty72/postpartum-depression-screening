@@ -95,3 +95,8 @@ data/external_recieved/
 logs/
 temp/
 tmp/
+# Generated video model artifacts
+artifacts/video_model/**/*.pt
+artifacts/video_model/**/*.joblib
+artifacts/video_model/**/*.csv
+artifacts/video_model/**/*.npz
