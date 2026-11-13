@@ -12,6 +12,8 @@ const ClinicalContext = createContext(null);
 const DRAFT_STORAGE_KEY = 'miora_live_screening_drafts_v1';
 const UPLOAD_DRAFT_STORAGE_KEY = 'miora_upload_analyze_drafts_v1';
 const CLINICAL_NOTES_STORAGE_KEY = 'miora_clinical_notes_v1';
+const CLINICAL_REVIEWS_STORAGE_KEY = 'miora_clinical_reviews_v1';
+const REVIEW_DRAFTS_STORAGE_KEY = 'miora_clinical_review_drafts_v1';
 
 function readStoredList(key) {
   try {
@@ -105,6 +107,12 @@ export function ClinicalProvider({ children }) {
   const [selectedMotherId, setSelectedMotherId] = useState('M-108');
   const [clinicalNotes, setClinicalNotes] = useState(() =>
     readStoredList(CLINICAL_NOTES_STORAGE_KEY)
+  );
+  const [clinicalReviews, setClinicalReviews] = useState(() =>
+    readStoredMap(CLINICAL_REVIEWS_STORAGE_KEY)
+  );
+  const [reviewDrafts, setReviewDrafts] = useState(() =>
+    readStoredMap(REVIEW_DRAFTS_STORAGE_KEY)
   );
 
   const metrics = useMemo(() => {
@@ -534,6 +542,121 @@ export function ClinicalProvider({ children }) {
     return entry;
   };
 
+  const saveReviewDraft = (motherId, draft) => {
+    setReviewDrafts((prev) => {
+      const next = {
+        ...prev,
+        [motherId]: {
+          ...draft,
+          updatedAt: new Date().toISOString(),
+        },
+      };
+      writeStoredMap(REVIEW_DRAFTS_STORAGE_KEY, next);
+      return next;
+    });
+  };
+
+  const saveFinalClinicalReview = ({
+    motherId,
+    screeningId,
+    aiAssessment,
+    clinicianAssessment,
+    followUpPlan,
+    persistenceMode = 'local',
+  }) => {
+    const finalizedAt = new Date().toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    const record = {
+      id: `REV-${Date.now()}`,
+      motherId,
+      screeningId,
+      aiAssessment,
+      clinicianAssessment,
+      followUpPlan,
+      persistenceMode,
+      finalizedAt,
+      createdAtIso: new Date().toISOString(),
+    };
+
+    setClinicalReviews((prev) => {
+      const existingHistory = Array.isArray(prev[motherId]?.history)
+        ? prev[motherId].history
+        : prev[motherId]?.id
+          ? [prev[motherId]]
+          : [];
+      const next = {
+        ...prev,
+        [motherId]: {
+          ...record,
+          history: [record, ...existingHistory],
+        },
+      };
+      writeStoredMap(CLINICAL_REVIEWS_STORAGE_KEY, next);
+      return next;
+    });
+
+    setReviewDrafts((prev) => {
+      const next = { ...prev };
+      delete next[motherId];
+      writeStoredMap(REVIEW_DRAFTS_STORAGE_KEY, next);
+      return next;
+    });
+
+    const nextMotherStatus =
+      clinicianAssessment.risk === 'High'
+        ? 'Review'
+        : clinicianAssessment.risk === 'Moderate'
+          ? 'Follow-up'
+          : 'Completed';
+
+    setMothers((prev) =>
+      prev.map((m) =>
+        m.id === motherId
+          ? {
+              ...m,
+              status: nextMotherStatus,
+              carePlan: `${followUpPlan.nextScreening} · ${followUpPlan.careAction} (${followUpPlan.additionalSupport})`,
+            }
+          : m
+      )
+    );
+
+    updateCarePlanField(motherId, (base) => {
+      const nextMilestone = {
+        id: `ms-rev-${Date.now()}`,
+        timeframe: followUpPlan.nextScreening,
+        title: followUpPlan.careAction,
+        description: `${followUpPlan.additionalSupport} (confirmed via clinical review).`,
+        clinician: 'Clinician Review Team',
+        completed: false,
+      };
+      return {
+        ...base,
+        notes: clinicianAssessment.reviewNotes,
+        notesSavedAt: finalizedAt,
+        finalized: true,
+        finalizedAt,
+        milestones: [nextMilestone, ...base.milestones],
+        summaryText: `Clinical review finalized (${clinicianAssessment.risk} clinical risk): ${followUpPlan.careAction} and ${followUpPlan.additionalSupport} planned with next screening ${followUpPlan.nextScreening}.`,
+      };
+    });
+
+    setAlerts((prev) => [
+      {
+        id: `alert-rev-${Date.now()}`,
+        motherId,
+        title: `Clinical review finalized for ${motherId} (${clinicianAssessment.risk} clinical risk)`,
+        time: 'Just now',
+        severity: clinicianAssessment.risk === 'High' ? 'high' : 'low',
+      },
+      ...prev,
+    ]);
+
+    return record;
+  };
+
   const value = {
     mothers,
     screenings,
@@ -549,6 +672,10 @@ export function ClinicalProvider({ children }) {
     setSelectedMotherId,
     clinicalNotes,
     addClinicalNote,
+    clinicalReviews,
+    reviewDrafts,
+    saveReviewDraft,
+    saveFinalClinicalReview,
     isAddMotherOpen,
     setIsAddMotherOpen,
     addMother,

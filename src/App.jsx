@@ -10,6 +10,7 @@ import { UploadAnalyzePage } from './dashboard/pages/UploadAnalyzePage.jsx';
 import { ResultsPage } from './dashboard/pages/ResultsPage.jsx';
 import { DiscordancePage } from './dashboard/pages/DiscordancePage.jsx';
 import { InsightsCarePage } from './dashboard/pages/InsightsCarePage.jsx';
+import { ClinicalReviewPage } from './dashboard/pages/ClinicalReviewPage.jsx';
 
 export function App() {
   return (
@@ -28,7 +29,8 @@ export function App() {
             <Route path="/results/:motherId" element={<ResultsPage />} />
             <Route path="/discordance" element={<DiscordancePage />} />
             <Route path="/discordance/:motherId" element={<DiscordancePage />} />
-            <Route path="/clinical-review" element={<DiscordancePage />} />
+            <Route path="/clinical-review" element={<ClinicalReviewPage />} />
+            <Route path="/clinical-review/:motherId" element={<ClinicalReviewPage />} />
             <Route path="/insights" element={<InsightsCarePage />} />
             <Route path="/insights/:motherId" element={<InsightsCarePage />} />
           </Route>
