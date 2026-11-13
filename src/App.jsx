@@ -6,6 +6,7 @@ import { DashboardLayout } from './dashboard/DashboardLayout.jsx';
 import { CommandCenterPage } from './dashboard/pages/CommandCenterPage.jsx';
 import { MothersCasesPage } from './dashboard/pages/MothersCasesPage.jsx';
 import { LiveScreeningPage } from './dashboard/pages/LiveScreeningPage.jsx';
+import { UploadAnalyzePage } from './dashboard/pages/UploadAnalyzePage.jsx';
 import { ResultsPage } from './dashboard/pages/ResultsPage.jsx';
 import { DiscordancePage } from './dashboard/pages/DiscordancePage.jsx';
 import { InsightsCarePage } from './dashboard/pages/InsightsCarePage.jsx';
@@ -22,6 +23,7 @@ export function App() {
             <Route path="/mothers" element={<MothersCasesPage />} />
             <Route path="/mothers/:motherId" element={<MothersCasesPage />} />
             <Route path="/live-screening" element={<LiveScreeningPage />} />
+            <Route path="/upload-analyze" element={<UploadAnalyzePage />} />
             <Route path="/results" element={<ResultsPage />} />
             <Route path="/results/:motherId" element={<ResultsPage />} />
             <Route path="/discordance" element={<DiscordancePage />} />

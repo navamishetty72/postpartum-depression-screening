@@ -4,6 +4,7 @@
     { "path": "/dashboard", "title": "Miora — Dashboard" },
     { "path": "/mothers", "title": "Miora — Mothers & Cases" },
     { "path": "/live-screening", "title": "Miora — Live Screening" },
+    { "path": "/upload-analyze", "title": "Miora — Upload & Analyze" },
     { "path": "/results", "title": "Miora — Results" },
     { "path": "/discordance", "title": "Miora — Discordance" },
     { "path": "/clinical-review", "title": "Miora — Clinical Review" },

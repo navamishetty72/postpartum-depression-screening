@@ -118,8 +118,8 @@ describe('Miora Screen 01: Dashboard', () => {
 
     fireEvent.click(screen.getByRole('link', { name: 'Dashboard' }));
     fireEvent.click(screen.getByRole('button', { name: /Start Screening/i }));
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Multimodal Screening Session/i);
-    expect(screen.getByRole('button', { name: /Complete & Save Screening/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Maternal Screening Session/i);
+    expect(screen.getByRole('button', { name: /Complete Screening/i })).toBeInTheDocument();
   });
 
   it('navigates from Landing Page Dashboard button to Dashboard', () => {

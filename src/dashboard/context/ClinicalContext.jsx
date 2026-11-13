@@ -9,6 +9,26 @@ import {
 } from '../data/mockClinicalData.js';
 
 const ClinicalContext = createContext(null);
+const DRAFT_STORAGE_KEY = 'miora_live_screening_drafts_v1';
+
+function readStoredDrafts() {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return {};
+    const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeStoredDrafts(drafts) {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+  } catch {
+    // Ignore storage quota or private-mode errors
+  }
+}
 
 function formatInitials(rawName) {
   const parts = rawName.trim().split(/\s+/).filter(Boolean);
@@ -31,6 +51,7 @@ export function ClinicalProvider({ children }) {
   const [weeklyRecords, setWeeklyRecords] = useState(SCREENING_WEEKLY_RECORDS);
   const [alerts, setAlerts] = useState(CLINICAL_ALERTS);
   const [isAddMotherOpen, setIsAddMotherOpen] = useState(false);
+  const [screeningDrafts, setScreeningDrafts] = useState(() => readStoredDrafts());
 
   const metrics = useMemo(() => {
     const addedScreenings = screenings.filter(
@@ -132,7 +153,18 @@ export function ClinicalProvider({ children }) {
     return newMother;
   };
 
-  const recordScreening = ({ motherId, risk, modality, summary, epdsEquivalent, discordanceDetected }) => {
+  const recordScreening = ({
+    motherId,
+    risk,
+    modality,
+    summary,
+    epdsEquivalent,
+    discordanceDetected,
+    conversation,
+    capturedModalities,
+    durationSeconds,
+    preliminaryScore,
+  }) => {
     const mother = mothers.find((m) => m.id === motherId);
     const newScreening = {
       id: `SCR-${248 + (screenings.length - INITIAL_SCREENINGS.length)}`,
@@ -142,9 +174,13 @@ export function ClinicalProvider({ children }) {
       status: 'Completed',
       completedAgo: 'Just now',
       risk,
-      modality: modality || 'Voice + Text',
+      modality: modality || 'Multimodal (Text · Voice · Video)',
       epdsEquivalent: Number(epdsEquivalent) || 6,
       discordanceScore: discordanceDetected ? 0.72 : 0.14,
+      preliminaryScore: preliminaryScore ?? null,
+      capturedModalities: capturedModalities || { text: true, voice: false, video: false },
+      durationSeconds: durationSeconds || 0,
+      conversation: conversation || [],
       summary,
     };
     setScreenings((prev) => [newScreening, ...prev]);
@@ -183,6 +219,29 @@ export function ClinicalProvider({ children }) {
     );
   };
 
+  const saveScreeningDraft = (motherId, draftData) => {
+    setScreeningDrafts((prev) => {
+      const next = {
+        ...prev,
+        [motherId]: {
+          ...draftData,
+          savedAt: new Date().toISOString(),
+        },
+      };
+      writeStoredDrafts(next);
+      return next;
+    });
+  };
+
+  const clearScreeningDraft = (motherId) => {
+    setScreeningDrafts((prev) => {
+      const next = { ...prev };
+      delete next[motherId];
+      writeStoredDrafts(next);
+      return next;
+    });
+  };
+
   const value = {
     mothers,
     screenings,
@@ -190,11 +249,14 @@ export function ClinicalProvider({ children }) {
     alerts,
     metrics,
     priorityCases,
+    screeningDrafts,
     isAddMotherOpen,
     setIsAddMotherOpen,
     addMother,
     recordScreening,
     updateMotherStatus,
+    saveScreeningDraft,
+    clearScreeningDraft,
   };
 
   return <ClinicalContext.Provider value={value}>{children}</ClinicalContext.Provider>;
