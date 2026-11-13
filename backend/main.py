@@ -6,14 +6,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routers.questionnaire import router as questionnaire_router
 from backend.routers.text_ner import router as text_ner_router
+from backend.routers.clinical_numerical import router as clinical_router
 from backend.services.text_ner_service import text_ner_service
+from backend.services.clinical_service import clinical_service
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Manage application startup and shutdown lifecycle (load NER model once)."""
+    """Manage application startup and shutdown lifecycle (load ML services once)."""
     text_ner_service.startup()
+    clinical_service.startup()
     yield
+    clinical_service.shutdown()
     text_ner_service.shutdown()
 
 
@@ -22,7 +26,8 @@ app = FastAPI(
     version="1.0.0",
     description=(
         "Multimodal clinical screening research prototype for Postpartum Depression (PPD), "
-        "including verified EPDS scoring and biomedical text entity extraction."
+        "including verified EPDS scoring, biomedical text entity extraction, "
+        "and clinical numerical risk prediction."
     ),
     lifespan=lifespan,
 )
@@ -39,6 +44,7 @@ app.add_middleware(
 # Register routers
 app.include_router(questionnaire_router)
 app.include_router(text_ner_router)
+app.include_router(clinical_router)
 
 
 @app.get("/", tags=["Health Check"])
