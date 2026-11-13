@@ -9,7 +9,7 @@ import { Proof } from './Proof.js';
 import { UrgentHelp } from './UrgentHelp.js';
 import { HelplineModal } from './HelplineModal.js';
 import { AmbientBackdrop } from './AmbientBackdrop.js';
-import { initHero3D, initEmpathyOrb3D } from './Miora3DScene.js';
+import { initEmpathyOrb3D } from './Miora3DScene.js';
 
 describe('Miora Components & Fixes', () => {
   it('eye icon uses valid SVG path syntax', () => {
@@ -97,17 +97,13 @@ describe('Miora Components & Fixes', () => {
     expect(html).toContain('aria-hidden="true"');
   });
 
-  it('Hero and Approach include accessible 3D canvas stages and Miora3DScene safely falls back without WebGL', () => {
-    expect(Hero()).toContain('id="hero-3d-canvas"');
+  it('Hero keeps portrait clean and Approach includes interactive 3D Empathy Core stage with WebGL fallback', () => {
+    expect(Hero()).not.toContain('hero-3d-canvas');
     const approachHtml = Approach();
     expect(approachHtml).toContain('id="orb-3d-canvas"');
     expect(approachHtml).toContain('data-orb-mode="share"');
     expect(approachHtml).toContain('data-orb-mode="understand"');
     expect(approachHtml).toContain('data-orb-mode="support"');
-
-    const cleanupHero = initHero3D(null, null);
-    expect(typeof cleanupHero).toBe('function');
-    cleanupHero();
 
     const orbCtrl = initEmpathyOrb3D(null, null);
     expect(typeof orbCtrl.setMode).toBe('function');

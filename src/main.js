@@ -9,7 +9,7 @@ import { UrgentHelp } from './components/UrgentHelp.js';
 import { Footer } from './components/Footer.js';
 import { HelplineModal } from './components/HelplineModal.js';
 import { AmbientBackdrop } from './components/AmbientBackdrop.js';
-import { initHero3D, initEmpathyOrb3D } from './components/Miora3DScene.js';
+import { initEmpathyOrb3D } from './components/Miora3DScene.js';
 
 const app = document.querySelector('#app');
 
@@ -29,11 +29,7 @@ app.innerHTML = `
   ${HelplineModal()}
 `;
 
-// 3D Interactive Scenes (gracefully falls back when WebGL is unavailable)
-const heroCanvas = document.getElementById('hero-3d-canvas');
-const heroVisual = document.querySelector('.hero-visual');
-initHero3D(heroCanvas, heroVisual);
-
+// 3D Interactive Empathy Core Scene (gracefully falls back when WebGL is unavailable)
 const orbCanvas = document.getElementById('orb-3d-canvas');
 const orbStage = document.getElementById('orb-stage');
 const orbStatusLabel = document.getElementById('orb-status-label');

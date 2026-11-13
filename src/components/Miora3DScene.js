@@ -1,7 +1,5 @@
 import {
   AmbientLight,
-  BufferAttribute,
-  BufferGeometry,
   Color,
   DirectionalLight,
   Group,
@@ -11,8 +9,6 @@ import {
   MeshStandardMaterial,
   PerspectiveCamera,
   PointLight,
-  Points,
-  PointsMaterial,
   Scene,
   SphereGeometry,
   TorusGeometry,
@@ -64,181 +60,6 @@ const ORB_MODES = {
 };
 
 /**
- * Mounts soft 3D orbiting pearlescent spheres and luminous motes behind the Hero
- * portrait without crossing over the photo.
- */
-export const initHero3D = (canvas, container) => {
-  if (!canvas || !container || !hasWebGL()) return () => {};
-
-  let renderer;
-  try {
-    renderer = new WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
-    });
-  } catch {
-    return () => {};
-  }
-
-  const scene = new Scene();
-  const camera = new PerspectiveCamera(35, 1, 0.1, 50);
-  camera.position.set(0, 0, 9.8);
-
-  const root = new Group();
-  scene.add(root);
-
-  scene.add(new AmbientLight(0xfff5f3, 1.55));
-  const keyLight = new DirectionalLight(0xffe9e4, 2.1);
-  keyLight.position.set(-4, 5, 6);
-  scene.add(keyLight);
-
-  const rimLight = new PointLight(0xd93c75, 2.0, 24);
-  rimLight.position.set(4, -3, 4);
-  scene.add(rimLight);
-
-  const warmFill = new PointLight(0xffd7c4, 1.8, 22);
-  warmFill.position.set(-3, -3, 4);
-  scene.add(warmFill);
-
-  // Smooth round 3D pearlescent spheres orbiting gracefully around the outer rim
-  const sphereSpecs = [
-    { r: 0.16, radius: 2.74, speed: 0.18, phase: 0.4, tiltX: 0.24, tiltZ: 0.16, color: 0xf7b8c7 },
-    { r: 0.12, radius: 2.78, speed: -0.15, phase: 2.3, tiltX: -0.28, tiltZ: -0.14, color: 0xe76d94 },
-    { r: 0.14, radius: 2.7, speed: 0.14, phase: 4.1, tiltX: 0.2, tiltZ: -0.26, color: 0xfad3c4 },
-    { r: 0.1, radius: 2.8, speed: -0.2, phase: 5.2, tiltX: -0.2, tiltZ: 0.24, color: 0xf5a2b8 },
-    { r: 0.11, radius: 2.68, speed: 0.16, phase: 1.3, tiltX: 0.3, tiltZ: 0.1, color: 0xffe4e6 },
-  ];
-
-  const satellites = sphereSpecs.map((spec) => {
-    const pivot = new Group();
-    pivot.rotation.set(spec.tiltX, 0, spec.tiltZ);
-    const mesh = new Mesh(
-      new SphereGeometry(spec.r, 32, 32),
-      new MeshPhysicalMaterial({
-        color: spec.color,
-        roughness: 0.14,
-        metalness: 0.05,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1,
-      })
-    );
-    pivot.add(mesh);
-    root.add(pivot);
-    return { ...spec, mesh };
-  });
-
-  // Soft luminous dust motes around the outer halo
-  const particleCount = 26;
-  const positions = new Float32Array(particleCount * 3);
-  const particleSeeds = [];
-  for (let i = 0; i < particleCount; i++) {
-    const angle = (i / particleCount) * Math.PI * 2;
-    const dist = 2.45 + (i % 4) * 0.18;
-    positions[i * 3] = Math.cos(angle) * dist;
-    positions[i * 3 + 1] = Math.sin(angle) * dist;
-    positions[i * 3 + 2] = ((i % 5) - 2) * 0.22;
-    particleSeeds.push({ angle, dist, speed: 0.1 + (i % 4) * 0.035, bob: i * 0.7 });
-  }
-  const particleGeo = new BufferGeometry();
-  particleGeo.setAttribute('position', new BufferAttribute(positions, 3));
-  const particles = new Points(
-    particleGeo,
-    new PointsMaterial({
-      color: 0xd93c75,
-      size: 0.05,
-      transparent: true,
-      opacity: 0.38,
-    })
-  );
-  root.add(particles);
-
-  let targetRotX = 0;
-  let targetRotY = 0;
-  const onPointerMove = (e) => {
-    const rect = container.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    targetRotY = nx * 0.16;
-    targetRotX = -ny * 0.14;
-  };
-  const onPointerLeave = () => {
-    targetRotX = 0;
-    targetRotY = 0;
-  };
-
-  window.addEventListener('pointermove', onPointerMove, { passive: true });
-  container.addEventListener('pointerleave', onPointerLeave);
-
-  const resize = () => {
-    const width = canvas.clientWidth || container.clientWidth || 500;
-    const height = canvas.clientHeight || container.clientHeight || 500;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  };
-  resize();
-
-  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
-  ro?.observe(canvas);
-
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let rafId = 0;
-  const start = Date.now();
-
-  const renderFrame = (elapsedSec) => {
-    root.rotation.x += (targetRotX - root.rotation.x) * 0.05;
-    root.rotation.y += (targetRotY - root.rotation.y) * 0.05;
-
-    satellites.forEach((sat) => {
-      const a = sat.phase + elapsedSec * sat.speed;
-      sat.mesh.position.set(
-        Math.cos(a) * sat.radius,
-        Math.sin(a) * sat.radius,
-        Math.sin(a * 2) * 0.16
-      );
-    });
-
-    const posAttr = particleGeo.getAttribute('position');
-    for (let i = 0; i < particleCount; i++) {
-      const seed = particleSeeds[i];
-      const a = seed.angle + elapsedSec * seed.speed * 0.25;
-      posAttr.setXYZ(
-        i,
-        Math.cos(a) * seed.dist,
-        Math.sin(a) * seed.dist + Math.sin(elapsedSec * 0.8 + seed.bob) * 0.06,
-        Math.cos(elapsedSec * 0.5 + seed.bob) * 0.3
-      );
-    }
-    posAttr.needsUpdate = true;
-
-    renderer.render(scene, camera);
-  };
-
-  renderFrame(0);
-
-  if (!reducedMotion) {
-    const tick = () => {
-      const elapsedSec = (Date.now() - start) / 1000;
-      renderFrame(elapsedSec);
-      rafId = window.requestAnimationFrame(tick);
-    };
-    rafId = window.requestAnimationFrame(tick);
-  }
-
-  return () => {
-    window.cancelAnimationFrame(rafId);
-    ro?.disconnect();
-    window.removeEventListener('pointermove', onPointerMove);
-    container.removeEventListener('pointerleave', onPointerLeave);
-    renderer.dispose();
-  };
-};
-
-/**
  * Mounts an interactive, silk-smooth 3D Empathy Core centerpiece with layered
  * glass spheres and ring-locked orbiting pearls.
  */
@@ -261,7 +82,7 @@ export const initEmpathyOrb3D = (canvas, container) => {
 
   const scene = new Scene();
   const camera = new PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0, 0, 5.9);
+  camera.position.set(0, 0, 6.4);
 
   const root = new Group();
   scene.add(root);

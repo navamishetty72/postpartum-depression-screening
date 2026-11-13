@@ -10,7 +10,7 @@ import { UrgentHelp } from './components/UrgentHelp.js';
 import { Footer } from './components/Footer.js';
 import { HelplineModal } from './components/HelplineModal.js';
 import { AmbientBackdrop } from './components/AmbientBackdrop.js';
-import { initHero3D, initEmpathyOrb3D } from './components/Miora3DScene.js';
+import { initEmpathyOrb3D } from './components/Miora3DScene.js';
 
 const ORB_STATUS_TEXT = {
   share: 'Listening calmly · Voice & words',
@@ -42,11 +42,7 @@ export function LandingPageRoute() {
       ${HelplineModal()}
     `;
 
-    // 3D Interactive Scenes
-    const heroCanvas = root.querySelector('#hero-3d-canvas');
-    const heroVisual = root.querySelector('.hero-visual');
-    const destroyHero3D = initHero3D(heroCanvas, heroVisual);
-
+    // 3D Interactive Empathy Core Scene
     const orbCanvas = root.querySelector('#orb-3d-canvas');
     const orbStage = root.querySelector('#orb-stage');
     const orbStatusLabel = root.querySelector('#orb-status-label');
@@ -136,7 +132,6 @@ export function LandingPageRoute() {
 
     return () => {
       document.body.style.overflow = '';
-      destroyHero3D();
       orbController.destroy();
       modeClickHandlers.forEach(([el, fn]) => el.removeEventListener('click', fn));
       triggerHandlers.forEach(([el, fn]) => {

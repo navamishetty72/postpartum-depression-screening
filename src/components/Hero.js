@@ -12,7 +12,6 @@ export const Hero = () => `
         </div>
       </div>
       <div class="hero-visual">
-        <canvas class="hero-3d-canvas" id="hero-3d-canvas" aria-hidden="true"></canvas>
         <div class="hero-circle" aria-hidden="true"></div>
         <picture>
           <source srcset="/assets/hero-mother.avif" type="image/avif" />
