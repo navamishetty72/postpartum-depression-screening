@@ -49,7 +49,15 @@ from backend.services.screening_service import (
     ScreeningOrchestrationService,
     get_screening_service,
 )
-from tests.test_backend_screening import _get_valid_clinical_features
+from backend.services.text_ner_service import (
+    TextNERService,
+    get_text_ner_service,
+    text_ner_service,
+)
+from tests.test_backend_screening import (
+    _create_fast_test_ner_service,
+    _get_valid_clinical_features,
+)
 
 
 @pytest.fixture(scope="module")
@@ -281,28 +289,33 @@ def test_missing_modalities_do_not_fabricate_scores(client: TestClient):
 # ---------------------------------------------------------------------------
 # 6. Text NER Non-Predictive Boundary
 # ---------------------------------------------------------------------------
-def test_text_ner_never_enters_predictive_fusion(client: TestClient):
+def test_text_ner_never_enters_predictive_fusion(client: TestClient, tmp_path: Path):
     """Verify Biomedical Text NER entity extraction is strictly non-predictive."""
-    payload = {
-        "motherId": "M-RESEARCH-04",
-        "modalities": json.dumps({"clinical": True, "text": True}),
-        "consentConfirmed": "true",
-        "eligibilityConfirmed": "true",
-        "clinical_features": json.dumps(_get_valid_clinical_features()),
-        "text_content": "Patient reports severe sadness, insomnia, and overwhelming fatigue.",
-    }
-    response = client.post("/api/screenings/analyze", data=payload)
-    assert response.status_code == 200
+    if not text_ner_service.is_loaded:
+        app.dependency_overrides[get_text_ner_service] = lambda: _create_fast_test_ner_service(tmp_path)
+    try:
+        payload = {
+            "motherId": "M-RESEARCH-04",
+            "modalities": json.dumps({"clinical": True, "text": True}),
+            "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
+            "clinical_features": json.dumps(_get_valid_clinical_features()),
+            "text_content": "Patient reports severe sadness, insomnia, and overwhelming fatigue.",
+        }
+        response = client.post("/api/screenings/analyze", data=payload)
+        assert response.status_code == 200
 
-    data = response.json()
-    assert data["status"] == "completed"
-    assert data["clinical"]["status"] == "completed"
-    assert data["text"]["status"] == "completed"
-    assert data["text"]["processing_type"] == "biomedical_ner"
+        data = response.json()
+        assert data["status"] == "completed"
+        assert data["clinical"]["status"] == "completed"
+        assert data["text"]["status"] == "completed"
+        assert data["text"]["processing_type"] == "biomedical_ner"
 
-    # Fusion does NOT consider Text NER as a predictive PPD probability
-    assert data["fusion"]["status"] == "not_available"
-    assert data["fusion"]["combined_score"] is None
+        # Fusion does NOT consider Text NER as a predictive PPD probability
+        assert data["fusion"]["status"] == "not_available"
+        assert data["fusion"]["combined_score"] is None
+    finally:
+        app.dependency_overrides.clear()
 
 
 # ---------------------------------------------------------------------------
