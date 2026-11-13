@@ -11,18 +11,20 @@ from backend.routers.mothers import router as mothers_router
 from backend.routers.questionnaire import router as questionnaire_router
 from backend.routers.screenings import router as screenings_router
 from backend.routers.text_ner import router as text_ner_router
-
-
-
+from backend.routers.clinical_numerical import router as clinical_router
+from backend.routers.screening import router as screening_router
 from backend.services.text_ner_service import text_ner_service
+from backend.services.clinical_service import clinical_service
 
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Manage application startup and shutdown lifecycle (load NER model once)."""
+    """Manage application startup and shutdown lifecycle (load ML services once)."""
     text_ner_service.startup()
+    clinical_service.startup()
     yield
+    clinical_service.shutdown()
     text_ner_service.shutdown()
 
 
@@ -31,7 +33,8 @@ app = FastAPI(
     version="1.0.0",
     description=(
         "Multimodal clinical screening research prototype for Postpartum Depression (PPD), "
-        "including verified EPDS scoring and biomedical text entity extraction."
+        "including verified EPDS scoring, biomedical text entity extraction, "
+        "and clinical numerical risk prediction."
     ),
     lifespan=lifespan,
 )
@@ -57,6 +60,8 @@ app.include_router(dashboard_router)
 
 
 
+app.include_router(clinical_router)
+app.include_router(screening_router)
 
 
 @app.get("/", tags=["Health Check"])
