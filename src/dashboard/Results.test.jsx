@@ -115,7 +115,7 @@ describe('Miora Screen 05: Maternal Screening Results', () => {
     // Clinical Review navigation
     fireEvent.click(screen.getByRole('button', { name: /Consider brief clinical review/i }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Voice–Text Discordance Review'
+      'Cross-Modal Discordance'
     );
   });
 

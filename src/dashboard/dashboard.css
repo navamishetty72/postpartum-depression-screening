@@ -3851,6 +3851,404 @@
 }
 
 /* ==========================================================================
+   Screen 07: Personalized Insights & Care
+   ========================================================================== */
+
+.miora-insights-strip {
+  gap: 10px;
+}
+
+.miora-insights-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.miora-insight-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid #f2e2e5;
+  background: #fff8f9;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.miora-insights-disclaimer {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 11px;
+  color: #7d6e73;
+}
+
+/* Care Recommendations */
+.miora-care-rec-list {
+  display: grid;
+  gap: 10px;
+}
+
+.miora-care-rec-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border-radius: 13px;
+  border: 1px solid #f1dfe3;
+  background: #fff9fa;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.miora-care-rec-card:hover {
+  background: #fdeef2;
+  border-color: #df9db0;
+  transform: translateY(-1px);
+}
+
+.miora-care-rec-card.is-excluded {
+  opacity: 0.6;
+}
+
+.miora-care-rec-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fdeef1;
+  border: 1px solid #f7d9e0;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-care-rec-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.miora-care-rec-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.miora-care-rec-top strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.miora-care-rec-action {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rose-deep);
+  white-space: nowrap;
+}
+
+.miora-care-rec-copy p {
+  font-size: 12px;
+  color: #5b4d52;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* Follow-up Plan Vertical Timeline */
+.miora-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  position: relative;
+}
+
+.miora-timeline-list::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: #f0ccd6;
+}
+
+.miora-timeline-item {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+
+.miora-timeline-time-col {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.miora-timeline-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #e4a9ba;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.miora-timeline-dot span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d94678;
+}
+
+.miora-timeline-item.is-completed .miora-timeline-dot {
+  background: #d94678;
+  border-color: #d94678;
+}
+
+.miora-timeline-item.is-completed .miora-timeline-dot span {
+  background: #fff;
+}
+
+.miora-timeline-timeframe {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.miora-timeline-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #f2e2e5;
+  background: #fffafa;
+}
+
+.miora-timeline-item.is-completed .miora-timeline-card {
+  background: #f7fbf8;
+  border-color: #d4ecdb;
+}
+
+.miora-timeline-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.miora-timeline-card-top strong {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.miora-timeline-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.miora-timeline-mini-btn {
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid #ebd4d9;
+  background: #fff;
+  color: #6b5c61;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.miora-timeline-mini-btn:hover {
+  border-color: #df9db0;
+  color: var(--rose-deep);
+}
+
+.miora-timeline-mini-btn.is-done {
+  background: #e8f5ec;
+  border-color: #cce7d4;
+  color: #2d7a47;
+}
+
+.miora-timeline-card p {
+  font-size: 12px;
+  color: #5b4d52;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.miora-timeline-edit-form {
+  display: grid;
+  gap: 6px;
+}
+
+.miora-timeline-edit-form input {
+  border: 1px solid #e7d2d6;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  background: #fff;
+}
+
+.miora-timeline-edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Support Resources 3-Tile Grid */
+.miora-support-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  flex: 1;
+}
+
+.miora-support-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  gap: 10px;
+  padding: 16px 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #f1dfe3;
+  background: #fff8f9;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.miora-support-tile:hover {
+  background: #fdeef2;
+  border-color: #df9db0;
+  transform: translateY(-1px);
+}
+
+.miora-support-tile-icon {
+  color: #c73566;
+  display: grid;
+  place-items: center;
+}
+
+.miora-support-tile strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.miora-support-tile-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #ead2d8;
+  background: #fff;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+}
+
+/* Care Team Notes */
+.miora-notes-box-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.miora-notes-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 142px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #ebd7db;
+  background: #fffdfc;
+  padding: 12px 13px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.miora-notes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: #6b5c61;
+}
+
+.miora-notes-ok {
+  color: #2d7a47;
+  font-weight: 600;
+}
+
+.miora-notes-err {
+  color: #a92350;
+  font-weight: 600;
+}
+
+.miora-notes-counter {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bottom Care Plan Summary Bar */
+.miora-care-summary-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 22px;
+}
+
+.miora-care-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.miora-care-summary-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fdeef1;
+  color: #c73566;
+  display: grid;
+  place-items: center;
+}
+
+.miora-care-summary-copy {
+  flex: 1;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #4b3d42;
+  border-left: 1px solid #f0e0e3;
+  padding-left: 18px;
+}
+
+.miora-pdf-privacy-check {
+  margin-bottom: 10px;
+  font-size: 12.5px;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 
@@ -3881,9 +4279,20 @@
   .miora-prelim-panel,
   .miora-upload-layout,
   .miora-analysis-populated,
-  .miora-indicators-next-card,
-  .miora-results-row-3 {
+  .miora-indicators-next-card {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .miora-results-row-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .miora-care-summary-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .miora-care-summary-copy {
+    border-left: 0;
+    padding-left: 0;
   }
   .miora-next-steps-bar {
     flex-direction: column;
@@ -4272,6 +4681,24 @@
     grid-template-columns: 130px 1fr 34px;
     gap: 8px;
   }
+  .miora-results-row-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .miora-support-tiles-grid {
+    grid-template-columns: 1fr;
+  }
+  .miora-support-tile {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: 12px 14px;
+  }
+  .miora-support-tile strong {
+    flex: 1;
+  }
+  .miora-care-summary-bar .miora-cta-primary {
+    width: 100%;
+  }
   .miora-patient-divider {
     display: none;
   }
@@ -4371,4 +4798,555 @@
     padding-inline: 12px;
   }
 }
+
+/* ==========================================================================
+   Screen 06: Cross-Modal Discordance
+   ========================================================================== */
+
+.miora-disc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.miora-disc-record-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fdeef2;
+  border: 1px solid #f4ccd6;
+  color: #b42a59;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.miora-disc-record-link:hover {
+  background: #fadce5;
+  border-color: #e6a8ba;
+}
+
+.miora-disc-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.miora-disc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.miora-disc-table th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b5c61;
+  padding: 6px 8px 9px;
+  border-bottom: 1px solid #f2e1e4;
+}
+
+.miora-disc-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f7ebee;
+  vertical-align: middle;
+}
+
+.miora-disc-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.miora-disc-mod-cell {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.miora-disc-mod-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.miora-disc-mod-name strong {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.miora-disc-mod-name span {
+  font-size: 11.5px;
+  color: #6b5c61;
+}
+
+.miora-disc-score-cell {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.miora-disc-level-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.miora-disc-level-pill.is-low {
+  background: #e6f4ea;
+  color: #256f3d;
+}
+
+.miora-disc-level-pill.is-moderate {
+  background: #fdebd8;
+  color: #935822;
+}
+
+.miora-disc-level-pill.is-high {
+  background: #fcdde6;
+  color: #b42a59;
+}
+
+.miora-disc-level-pill.is-muted {
+  background: #f3ecee;
+  color: #716368;
+}
+
+.miora-disc-mobile-rows {
+  display: none;
+  gap: 9px;
+}
+
+.miora-disc-mobile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 12px;
+  border: 1px solid #f2e2e5;
+  background: #fff9fa;
+}
+
+.miora-disc-mobile-row-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Risk by Modality Vertical Bar Chart */
+.miora-disc-bar-tooltip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fdeef2;
+  border: 1px solid #f4ccd6;
+  color: #8f2247;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.miora-disc-barchart {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 175px;
+  padding-top: 8px;
+}
+
+.miora-disc-yaxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  font-size: 11px;
+  color: #77676c;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.miora-disc-plot-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.miora-disc-gridlines {
+  position: absolute;
+  inset: 6px 0 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.miora-disc-gridline {
+  width: 100%;
+  height: 1px;
+  background: #f3e4e7;
+}
+
+.miora-disc-bars-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  flex: 1;
+  padding: 6px 10px 0;
+}
+
+.miora-disc-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  outline: none;
+}
+
+.miora-disc-bar-stage {
+  position: relative;
+  width: 100%;
+  max-width: 56px;
+  flex: 1;
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.miora-disc-bar-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+
+.miora-disc-bar-fill {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(180deg, #f9cad8 0%, #f4a4bd 100%);
+  transition: transform 150ms ease, filter 150ms ease;
+}
+
+.miora-disc-bar-fill.is-highlighted {
+  background: linear-gradient(180deg, #f46c9b 0%, #df467b 100%);
+}
+
+.miora-disc-bar-col:hover .miora-disc-bar-fill,
+.miora-disc-bar-col:focus-visible .miora-disc-bar-fill {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.miora-disc-bar-missing {
+  width: 100%;
+  height: 52px;
+  border-radius: 10px 10px 0 0;
+  border: 1.5px dashed #dec3ca;
+  background: #fbf5f6;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8a787e;
+}
+
+.miora-disc-bar-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #55474c;
+  height: 18px;
+}
+
+/* Discordance Result Prominent Card */
+.miora-disc-result-card {
+  background: linear-gradient(155deg, #fff5f7 0%, #fde8ee 100%);
+  border-color: #f3cfd8;
+}
+
+.miora-disc-result-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.miora-disc-gauge-wrap {
+  position: relative;
+  width: 152px;
+  height: 96px;
+  flex: 0 0 auto;
+}
+
+.miora-disc-gauge-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.miora-disc-gauge-track {
+  fill: none;
+  stroke: #f6d5df;
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.miora-disc-gauge-fill {
+  fill: none;
+  stroke-width: 14;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 280ms ease;
+}
+
+.miora-disc-gauge-center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.miora-disc-gauge-center strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.miora-disc-gauge-center span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4f3e44;
+}
+
+.miora-disc-result-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.miora-disc-meta-caption {
+  font-size: 12px;
+  color: #5b4d52;
+}
+
+.miora-disc-score-numeral {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.miora-disc-severity-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.miora-disc-severity-pill.is-peach {
+  background: #fae4cf;
+  color: #8f561f;
+}
+
+.miora-disc-severity-pill.is-green {
+  background: #e6f4ea;
+  color: #256f3d;
+}
+
+.miora-disc-severity-pill.is-muted {
+  background: #f1e6e9;
+  color: #6b5c61;
+}
+
+.miora-disc-result-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.48;
+  color: #4b3d42;
+}
+
+.miora-disc-separate-metric {
+  margin-top: auto;
+  padding-top: 9px;
+  border-top: 1px solid #f3d5de;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #5f4e54;
+}
+
+.miora-disc-separate-metric strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Row 2: Signal Alignment, Key Observations, Clinical Interpretation */
+.miora-disc-metric-legend {
+  margin: -4px 0 2px;
+  font-size: 11.5px;
+  color: #6b5c61;
+}
+
+.miora-disc-align-rows {
+  display: grid;
+  gap: 15px;
+  margin-top: 4px;
+}
+
+.miora-disc-align-row {
+  display: grid;
+  grid-template-columns: 108px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.miora-disc-pair-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.miora-disc-align-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f39ab7 0%, #df4b7e 100%);
+  transition: width 220ms ease;
+}
+
+.miora-disc-align-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.miora-disc-observation-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #f4dde2;
+  background: #fdf2f5;
+}
+
+.miora-disc-limitation-note {
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid #f3e4e7;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #6b5c61;
+}
+
+.miora-disc-saved-notes {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #f1d9df;
+  background: #fff8f9;
+}
+
+.miora-disc-saved-notes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.miora-disc-inline-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b42a59;
+  cursor: pointer;
+}
+
+.miora-disc-saved-notes ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.miora-disc-saved-notes li p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #3f3136;
+  line-height: 1.4;
+}
+
+.miora-disc-note-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8f4760;
+}
+
+@media (max-width: 1120px) {
+  .miora-disc-result-body {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .miora-disc-table-wrap {
+    display: none;
+  }
+  .miora-disc-mobile-rows {
+    display: grid;
+  }
+  .miora-disc-align-row {
+    grid-template-columns: 98px 1fr 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .miora-disc-result-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .miora-disc-result-meta {
+    align-items: center;
+  }
+  .miora-disc-separate-metric {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 

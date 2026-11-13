@@ -11,6 +11,52 @@ import {
 const ClinicalContext = createContext(null);
 const DRAFT_STORAGE_KEY = 'miora_live_screening_drafts_v1';
 const UPLOAD_DRAFT_STORAGE_KEY = 'miora_upload_analyze_drafts_v1';
+const CLINICAL_NOTES_STORAGE_KEY = 'miora_clinical_notes_v1';
+
+function readStoredList(key) {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return [];
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+const CARE_PLAN_STORAGE_KEY = 'miora_care_plans_v1';
+
+export const DEFAULT_FOLLOWUP_MILESTONES = [
+  {
+    id: 'ms-7d',
+    timeframe: 'In 7 days',
+    title: 'Follow-up screening',
+    description: 'Reassess emotional wellbeing and available signals.',
+    clinician: 'Dr. Elena Rostova',
+    completed: false,
+  },
+  {
+    id: 'ms-2w',
+    timeframe: 'In 2 weeks',
+    title: 'Clinical review',
+    description: 'Discuss progress and ongoing concerns.',
+    clinician: 'Dr. Elena Rostova',
+    completed: false,
+  },
+  {
+    id: 'ms-4w',
+    timeframe: 'In 4 weeks',
+    title: 'Re-evaluation',
+    description: 'Review changes and adjust the care plan if appropriate.',
+    clinician: 'Dr. Elena Rostova',
+    completed: false,
+  },
+];
+
+export const DEFAULT_INCLUDED_RECOMMENDATIONS = [
+  'emotional-support',
+  'counselling-referral',
+  'wellbeing-practices',
+];
 
 function readStoredMap(key) {
   try {
@@ -54,7 +100,12 @@ export function ClinicalProvider({ children }) {
   const [isAddMotherOpen, setIsAddMotherOpen] = useState(false);
   const [screeningDrafts, setScreeningDrafts] = useState(() => readStoredMap(DRAFT_STORAGE_KEY));
   const [uploadDrafts, setUploadDrafts] = useState(() => readStoredMap(UPLOAD_DRAFT_STORAGE_KEY));
+  const [carePlans, setCarePlans] = useState(() => readStoredMap(CARE_PLAN_STORAGE_KEY));
   const [caseShares, setCaseShares] = useState([]);
+  const [selectedMotherId, setSelectedMotherId] = useState('M-108');
+  const [clinicalNotes, setClinicalNotes] = useState(() =>
+    readStoredList(CLINICAL_NOTES_STORAGE_KEY)
+  );
 
   const metrics = useMemo(() => {
     const addedScreenings = screenings.filter(
@@ -331,6 +382,158 @@ export function ClinicalProvider({ children }) {
     return entry;
   };
 
+  const getCarePlan = (motherId) => {
+    const existing = carePlans[motherId];
+    return {
+      notes: existing?.notes || '',
+      notesSavedAt: existing?.notesSavedAt || null,
+      milestones: existing?.milestones || DEFAULT_FOLLOWUP_MILESTONES,
+      includedRecommendations:
+        existing?.includedRecommendations || DEFAULT_INCLUDED_RECOMMENDATIONS,
+      finalized: Boolean(existing?.finalized),
+      finalizedAt: existing?.finalizedAt || null,
+      summaryText: existing?.summaryText || '',
+    };
+  };
+
+  const updateCarePlanField = (motherId, updater) => {
+    setCarePlans((prev) => {
+      const base = {
+        notes: prev[motherId]?.notes || '',
+        notesSavedAt: prev[motherId]?.notesSavedAt || null,
+        milestones: prev[motherId]?.milestones || DEFAULT_FOLLOWUP_MILESTONES,
+        includedRecommendations:
+          prev[motherId]?.includedRecommendations || DEFAULT_INCLUDED_RECOMMENDATIONS,
+        finalized: Boolean(prev[motherId]?.finalized),
+        finalizedAt: prev[motherId]?.finalizedAt || null,
+        summaryText: prev[motherId]?.summaryText || '',
+      };
+      const next = {
+        ...prev,
+        [motherId]: updater(base),
+      };
+      writeStoredMap(CARE_PLAN_STORAGE_KEY, next);
+      return next;
+    });
+  };
+
+  const saveCareNotes = (motherId, notes) => {
+    if (notes.length > 500) {
+      return { ok: false, error: 'Care team notes cannot exceed 500 characters.' };
+    }
+    const savedAt = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    updateCarePlanField(motherId, (base) => ({
+      ...base,
+      notes,
+      notesSavedAt: savedAt,
+    }));
+    return { ok: true, savedAt };
+  };
+
+  const saveFollowUpMilestones = (motherId, milestones) => {
+    updateCarePlanField(motherId, (base) => ({
+      ...base,
+      milestones,
+    }));
+  };
+
+  const addScheduledFollowUp = (motherId, appointment) => {
+    const newMilestone = {
+      id: `ms-${Date.now()}`,
+      timeframe: appointment.date,
+      title: appointment.type,
+      description: appointment.description,
+      clinician: appointment.clinician,
+      completed: false,
+    };
+    updateCarePlanField(motherId, (base) => ({
+      ...base,
+      milestones: [newMilestone, ...base.milestones],
+    }));
+    return newMilestone;
+  };
+
+  const toggleRecommendationInPlan = (motherId, recId) => {
+    updateCarePlanField(motherId, (base) => {
+      const exists = base.includedRecommendations.includes(recId);
+      const nextList = exists
+        ? base.includedRecommendations.filter((id) => id !== recId)
+        : [...base.includedRecommendations, recId];
+      return {
+        ...base,
+        includedRecommendations: nextList,
+      };
+    });
+  };
+
+  const finalizeCarePlan = (motherId, summaryText) => {
+    const plan = getCarePlan(motherId);
+    if (!motherId || plan.includedRecommendations.length === 0 || plan.milestones.length === 0) {
+      return {
+        ok: false,
+        error:
+          'Ensure at least one care recommendation and one follow-up milestone are included before finalizing.',
+      };
+    }
+    const finalizedAt = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    updateCarePlanField(motherId, (base) => ({
+      ...base,
+      finalized: true,
+      finalizedAt,
+      summaryText,
+    }));
+    setMothers((prev) =>
+      prev.map((m) =>
+        m.id === motherId
+          ? {
+              ...m,
+              carePlan: summaryText,
+            }
+          : m
+      )
+    );
+    setAlerts((prev) => [
+      {
+        id: `alert-plan-${Date.now()}`,
+        motherId,
+        title: `Care plan finalized for ${motherId}`,
+        time: 'Just now',
+        severity: 'low',
+      },
+      ...prev,
+    ]);
+    return { ok: true, finalizedAt };
+  };
+
+  const addClinicalNote = ({ motherId, screeningId, note, category = 'Contextual Observation' }) => {
+    const trimmed = note?.trim();
+    if (!trimmed) return null;
+    const entry = {
+      id: `NOTE-${Date.now()}`,
+      motherId,
+      screeningId,
+      category,
+      note: trimmed,
+      createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+    };
+    setClinicalNotes((prev) => {
+      const next = [entry, ...prev];
+      writeStoredMap(CLINICAL_NOTES_STORAGE_KEY, next);
+      return next;
+    });
+    setAlerts((prev) => [
+      {
+        id: `alert-note-${Date.now()}`,
+        motherId,
+        title: `Contextual clinical note saved for ${motherId} (${screeningId})`,
+        time: 'Just now',
+        severity: 'low',
+      },
+      ...prev,
+    ]);
+    return entry;
+  };
+
   const value = {
     mothers,
     screenings,
@@ -340,7 +543,12 @@ export function ClinicalProvider({ children }) {
     priorityCases,
     screeningDrafts,
     uploadDrafts,
+    carePlans,
     caseShares,
+    selectedMotherId,
+    setSelectedMotherId,
+    clinicalNotes,
+    addClinicalNote,
     isAddMotherOpen,
     setIsAddMotherOpen,
     addMother,
@@ -351,6 +559,12 @@ export function ClinicalProvider({ children }) {
     saveUploadDraft,
     clearUploadDraft,
     shareCaseHandoff,
+    getCarePlan,
+    saveCareNotes,
+    saveFollowUpMilestones,
+    addScheduledFollowUp,
+    toggleRecommendationInPlan,
+    finalizeCarePlan,
   };
 
   return <ClinicalContext.Provider value={value}>{children}</ClinicalContext.Provider>;

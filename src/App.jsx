@@ -27,8 +27,10 @@ export function App() {
             <Route path="/results" element={<ResultsPage />} />
             <Route path="/results/:motherId" element={<ResultsPage />} />
             <Route path="/discordance" element={<DiscordancePage />} />
+            <Route path="/discordance/:motherId" element={<DiscordancePage />} />
             <Route path="/clinical-review" element={<DiscordancePage />} />
             <Route path="/insights" element={<InsightsCarePage />} />
+            <Route path="/insights/:motherId" element={<InsightsCarePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
