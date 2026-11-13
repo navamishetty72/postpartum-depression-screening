@@ -7,6 +7,7 @@ import { Features } from './Features.js';
 import { Evidence } from './Evidence.js';
 import { Proof } from './Proof.js';
 import { UrgentHelp } from './UrgentHelp.js';
+import { Footer } from './Footer.js';
 import { HelplineModal } from './HelplineModal.js';
 import { AmbientBackdrop } from './AmbientBackdrop.js';
 import { initEmpathyOrb3D } from './Miora3DScene.js';
@@ -110,5 +111,14 @@ describe('Miora Components & Fixes', () => {
     expect(typeof orbCtrl.destroy).toBe('function');
     orbCtrl.setMode('understand');
     orbCtrl.destroy();
+  });
+
+  it('Footer keeps only Miora logo and note without footer nav links or social placeholders', () => {
+    const html = Footer();
+    expect(html).toContain('brand-wordmark');
+    expect(html).toContain('Maternal Emotional Intelligence');
+    expect(html).not.toContain('footer-links');
+    expect(html).not.toContain('footer-socials');
+    expect(html).not.toContain('GH');
   });
 });
