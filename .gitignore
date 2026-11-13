@@ -1,4 +1,93 @@
+# Node / Frontend artifacts
 node_modules/
 dist/
-.DS_Store
 .playwright-mcp/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.env.*
+!.env.example
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & quality caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Trained models and large weights
+models/*
+!models/.gitkeep
+*.joblib
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# Data directory rules: keep heavy, private, and generated datasets out of Git
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/README.md
+
+data/synthetic/*
+!data/synthetic/.gitkeep
+!data/synthetic/README.md
+
+# Explicitly ignore legacy and auxiliary datasets if present locally
+data/Numerical/
+data/Audio_feature/
+data/Video_feature/
+data/label/
+data/NLP/
+data/external_recieved/
+
+# Local logs and temporary files
+*.log
+logs/
+temp/
+tmp/

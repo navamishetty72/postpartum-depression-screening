@@ -1,0 +1,433 @@
+{
+  "instrument": {
+    "name": "Edinburgh Postnatal Depression Scale",
+    "abbreviation": "EPDS",
+    "version": "1.0 (Standard 10-item)",
+    "question_count": 10,
+    "reference_period": "past 7 days",
+    "maximum_score": 30,
+    "is_diagnostic": false,
+    "purpose": "Screening instrument to identify postpartum and perinatal individuals at risk for depressive illness.",
+    "authors": "J. L. Cox, J. M. Holden, R. Sagovsky",
+    "publication_year": 1987,
+    "original_citation": "Cox, J.L., Holden, J.M., and Sagovsky, R. (1987). Detection of postnatal depression: Development of the 10-item Edinburgh Postnatal Depression Scale. British Journal of Psychiatry, 150(6), 782-786. DOI: 10.1192/bjp.150.6.782",
+    "reproduction_permission": "Users may reproduce the scale without further permission, providing they respect copyright by quoting the names of the authors, the title, and the source of the paper in all reproduced copies."
+  },
+  "instructions": {
+    "participant": "As you are pregnant or have recently had a baby, we would like to know how you are feeling. Please select the answer that comes closest to how you have felt in the past 7 days, not just how you feel today.",
+    "administration": [
+      "The mother is asked to check the response that comes closest to how she has been feeling in the previous 7 days.",
+      "All ten items must be completed.",
+      "Care should be taken to avoid the possibility of the mother discussing her answers with others.",
+      "The mother should complete the scale herself, unless she has limited English or has difficulty reading."
+    ]
+  },
+  "questions": [
+    {
+      "id": "EPDS_Q01",
+      "question_number": 1,
+      "question": "I have been able to laugh and see the funny side of things",
+      "response_options": [
+        {
+          "label": "As much as I always could",
+          "score": 0
+        },
+        {
+          "label": "Not quite so much now",
+          "score": 1
+        },
+        {
+          "label": "Definitely not so much now",
+          "score": 2
+        },
+        {
+          "label": "Not at all",
+          "score": 3
+        }
+      ],
+      "reverse_scored": false,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q02",
+      "question_number": 2,
+      "question": "I have looked forward with enjoyment to things",
+      "response_options": [
+        {
+          "label": "As much as I ever did",
+          "score": 0
+        },
+        {
+          "label": "Rather less than I used to",
+          "score": 1
+        },
+        {
+          "label": "Definitely less than I used to",
+          "score": 2
+        },
+        {
+          "label": "Hardly at all",
+          "score": 3
+        }
+      ],
+      "reverse_scored": false,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q03",
+      "question_number": 3,
+      "question": "I have blamed myself unnecessarily when things went wrong",
+      "response_options": [
+        {
+          "label": "Yes, most of the time",
+          "score": 3
+        },
+        {
+          "label": "Yes, some of the time",
+          "score": 2
+        },
+        {
+          "label": "Not very often",
+          "score": 1
+        },
+        {
+          "label": "No, never",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q04",
+      "question_number": 4,
+      "question": "I have been anxious or worried for no good reason",
+      "response_options": [
+        {
+          "label": "No, not at all",
+          "score": 0
+        },
+        {
+          "label": "Hardly ever",
+          "score": 1
+        },
+        {
+          "label": "Yes, sometimes",
+          "score": 2
+        },
+        {
+          "label": "Yes, very often",
+          "score": 3
+        }
+      ],
+      "reverse_scored": false,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q05",
+      "question_number": 5,
+      "question": "I have felt scared or panicky for no very good reason",
+      "response_options": [
+        {
+          "label": "Yes, quite a lot",
+          "score": 3
+        },
+        {
+          "label": "Yes, sometimes",
+          "score": 2
+        },
+        {
+          "label": "No, not much",
+          "score": 1
+        },
+        {
+          "label": "No, not at all",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q06",
+      "question_number": 6,
+      "question": "Things have been getting on top of me",
+      "response_options": [
+        {
+          "label": "Yes, most of the time I haven’t been able to cope at all",
+          "score": 3
+        },
+        {
+          "label": "Yes, sometimes I haven’t been coping as well as usual",
+          "score": 2
+        },
+        {
+          "label": "No, most of the time I have coped quite well",
+          "score": 1
+        },
+        {
+          "label": "No, I have been coping as well as ever",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q07",
+      "question_number": 7,
+      "question": "I have been so unhappy that I have had difficulty sleeping",
+      "response_options": [
+        {
+          "label": "Yes, most of the time",
+          "score": 3
+        },
+        {
+          "label": "Yes, sometimes",
+          "score": 2
+        },
+        {
+          "label": "Not very often",
+          "score": 1
+        },
+        {
+          "label": "No, not at all",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q08",
+      "question_number": 8,
+      "question": "I have felt sad or miserable",
+      "response_options": [
+        {
+          "label": "Yes, most of the time",
+          "score": 3
+        },
+        {
+          "label": "Yes, quite often",
+          "score": 2
+        },
+        {
+          "label": "Not very often",
+          "score": 1
+        },
+        {
+          "label": "No, not at all",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q09",
+      "question_number": 9,
+      "question": "I have been so unhappy that I have been crying",
+      "response_options": [
+        {
+          "label": "Yes, most of the time",
+          "score": 3
+        },
+        {
+          "label": "Yes, quite often",
+          "score": 2
+        },
+        {
+          "label": "Only occasionally",
+          "score": 1
+        },
+        {
+          "label": "No, never",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": false,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    },
+    {
+      "id": "EPDS_Q10",
+      "question_number": 10,
+      "question": "The thought of harming myself has occurred to me",
+      "response_options": [
+        {
+          "label": "Yes, quite often",
+          "score": 3
+        },
+        {
+          "label": "Sometimes",
+          "score": 2
+        },
+        {
+          "label": "Hardly ever",
+          "score": 1
+        },
+        {
+          "label": "Never",
+          "score": 0
+        }
+      ],
+      "reverse_scored": true,
+      "safety_critical": true,
+      "source": {
+        "title": "Edinburgh Postnatal Depression Scale (EPDS) - South African Depression and Anxiety Group (SADAG)",
+        "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+      }
+    }
+  ],
+  "scoring_guidance": {
+    "interpretation": "Screening support only; NOT a diagnostic instrument. The EPDS score must never override comprehensive clinical assessment.",
+    "scoring_method": "Questions 1, 2, and 4 are scored in the original direction (0, 1, 2, 3). Questions 3, 5, 6, 7, 8, 9, and 10 are reverse-scored (3, 2, 1, 0). The overall score is the arithmetic sum of the 10 items.",
+    "total_score_range": {
+      "min": 0,
+      "max": 30
+    },
+    "thresholds": [
+      {
+        "score_min": 0,
+        "score_max": 9,
+        "classification": "Low likelihood of depressive illness",
+        "clinical_significance": "Symptoms of emotional distress are within standard postnatal limits. The parent is unlikely to be experiencing clinical depression.",
+        "recommended_action": "Provide routine postpartum support and guidance. Re-screen during future perinatal visits if clinical presentation changes."
+      },
+      {
+        "score_min": 10,
+        "score_max": 12,
+        "classification": "Possible depression",
+        "clinical_significance": "Suggests mild to moderate emotional distress or early signs of depression.",
+        "recommended_action": "Support the parent, repeat the EPDS screening in 2 weeks, and conduct focused clinical review."
+      },
+      {
+        "score_min": 13,
+        "score_max": 30,
+        "classification": "Probable depression",
+        "clinical_significance": "Strongly suggests depressive illness of varying clinical severity requiring formal evaluation.",
+        "recommended_action": "Conduct immediate comprehensive diagnostic assessment; initiate specialized psychiatric or mental health counseling referral."
+      }
+    ],
+    "safety_rules": [
+      {
+        "rule_id": "CRITICAL_SAFETY_ITEM_10",
+        "question_id": "EPDS_Q10",
+        "condition": "score > 0",
+        "trigger": "Any non-zero response (score 1, 2, or 3: 'Hardly ever', 'Sometimes', or 'Yes, quite often') indicating thoughts of self-harm",
+        "priority": "URGENT_SAFETY_ASSESSMENT",
+        "clinical_mandate": "Immediate human safety evaluation required before the patient leaves the clinic or assessment session.",
+        "override_protection": "A low total EPDS score (<10) or any machine learning prediction must NEVER override a positive Question 10 response.",
+        "escalation_protocol": [
+          "1. Immediately notify the attending clinician or designated mental health professional.",
+          "2. Conduct a structured crisis suicide risk assessment (e.g., Columbia-Suicide Severity Rating Scale).",
+          "3. Ensure the patient is not left unattended if active intent or plan is identified.",
+          "4. Involve partner, family support, or emergency services in accordance with institutional crisis protocols."
+        ]
+      }
+    ]
+  },
+  "references": [
+    {
+      "id": "REF_COX_1987",
+      "authors": "Cox, J.L., Holden, J.M., and Sagovsky, R.",
+      "year": 1987,
+      "title": "Detection of postnatal depression: Development of the 10-item Edinburgh Postnatal Depression Scale",
+      "journal": "British Journal of Psychiatry",
+      "volume": "150",
+      "issue": "6",
+      "pages": "782-786",
+      "doi": "10.1192/bjp.150.6.782",
+      "notes": "Original development and validation of the 10-item EPDS instrument."
+    },
+    {
+      "id": "REF_WISNER_2002",
+      "authors": "Wisner, K.L., Parry, B.L., and Piontek, C.M.",
+      "year": 2002,
+      "title": "Postpartum Depression",
+      "journal": "New England Journal of Medicine",
+      "volume": "347",
+      "issue": "3",
+      "pages": "194-199",
+      "doi": "10.1056/NEJMcp011542",
+      "notes": "Clinical review establishing EPDS score >= 13 threshold for probable depression."
+    },
+    {
+      "id": "REF_SADAG",
+      "organization": "South African Depression and Anxiety Group (SADAG)",
+      "title": "Edinburgh Postnatal Depression Scale (EPDS) Questionnaire and Scoring Brochure",
+      "url": "https://www.sadag.org/images/brochures/edinburghscale.pdf"
+    },
+    {
+      "id": "REF_BLACK_DOG",
+      "organization": "Black Dog Institute",
+      "title": "The Edinburgh Postnatal Depression Scale (EPDS) Clinical Resource",
+      "url": "https://www.blackdoginstitute.org.au/wp-content/uploads/2020/04/edinburgh-postnatal-depression-scale.pdf"
+    },
+    {
+      "id": "REF_NJAAP",
+      "organization": "New Jersey Chapter, American Academy of Pediatrics (NJAAP)",
+      "title": "Edinburgh Postnatal Depression Scale Scoring Guidance",
+      "url": "https://njaap.org/wp-content/uploads/2023/06/Edinburgh-Postnatal-Depression-Scale-Scoring.pdf"
+    },
+    {
+      "id": "REF_COPE",
+      "organization": "Centre of Perinatal Excellence (COPE)",
+      "title": "Using the EPDS as a Screening Tool",
+      "url": "https://www.cope.org.au/health-professionals/screening-and-assessment-tools/using-the-epds-as-a-screening-tool"
+    },
+    {
+      "id": "REF_PSYCHOLOGY_TOOLS",
+      "organization": "Psychology Tools",
+      "title": "Edinburgh Postnatal Depression Scale (EPDS)",
+      "url": "https://psychology-tools.com/test/epds"
+    },
+    {
+      "id": "REF_MHA",
+      "organization": "Mental Health America (MHA)",
+      "title": "Postpartum Depression Screening Tool",
+      "url": "https://screening.mhanational.org/screening-tools/postpartum-depression/"
+    },
+    {
+      "id": "REF_PERINATOLOGY",
+      "organization": "Perinatology.com",
+      "title": "Edinburgh Depression Scale Calculator and Reference",
+      "url": "https://perinatology.com/calculators/Edinburgh%20Depression%20Scale.htm"
+    }
+  ]
+}
