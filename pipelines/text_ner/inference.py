@@ -72,6 +72,8 @@ class TextNERPredictor:
         self._model: Optional[TextNERModel] = None
         self._load_model()
 
+    _MODEL_CACHE: Dict[str, TextNERModel] = {}
+
     def _load_model(self) -> None:
         """Load the persisted model artifact or raise an informative error."""
         if not self.model_path.exists():
@@ -80,7 +82,10 @@ class TextNERPredictor:
                 f"Please execute `python -m pipelines.text_ner.train_v130` (or `train`) "
                 f"to generate the artifact before serving inference."
             )
-        self._model = TextNERModel.load(self.model_path)
+        cache_key = str(self.model_path.resolve())
+        if cache_key not in self._MODEL_CACHE:
+            self._MODEL_CACHE[cache_key] = TextNERModel.load(self.model_path)
+        self._model = self._MODEL_CACHE[cache_key]
 
     def predict(self, text: Optional[str]) -> TextNEROutput:
         """Extract structured entity spans from a raw text input string.
