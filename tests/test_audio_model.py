@@ -12,9 +12,12 @@ Validates:
 
 from pathlib import Path
 import json
+# pyrefly: ignore[missing-import]
 import joblib
+# pyrefly: ignore[missing-import]
 import numpy as np
 import pandas as pd
+# pyrefly: ignore[missing-import]
 import pytest
 
 from pipelines.synthetic_audio.config import (
@@ -196,6 +199,9 @@ def test_4_oof_coverage_and_schema(audio_artifacts: Path) -> None:
         # Check alignment between probability threshold and predicted label
         expected_pred = (oof_df[prob_col] >= 0.5).astype(int)
         assert (oof_df[pred_col] == expected_pred).all()
+        # Verify explicit data types: float for probabilities, integer for class predictions
+        assert np.issubdtype(oof_df[prob_col].dtype, np.floating), f"{prob_col} must be float"
+        assert np.issubdtype(oof_df[pred_col].dtype, np.integer), f"{pred_col} must be integer"
 
 
 # ==============================================================================
@@ -208,6 +214,18 @@ def test_5_holdout_isolation_and_balance(audio_artifacts: Path) -> None:
     assert len(test_df) == EXPECTED_TEST_PARTICIPANTS == 160
     assert test_df[PARTICIPANT_ID_COLUMN].nunique() == 160
 
+    required_cols = [
+        PARTICIPANT_ID_COLUMN,
+        SPLIT_COLUMN,
+        "true_target",
+        "logistic_regression_prob",
+        "logistic_regression_pred",
+        "random_forest_prob",
+        "random_forest_pred",
+    ]
+    for col in required_cols:
+        assert col in test_df.columns, f"Missing required column {col} in test_predictions.csv"
+
     # Canonical test class distribution: 90 negative (0), 70 positive (1)
     class_counts = test_df["true_target"].value_counts().to_dict()
     assert class_counts.get(0) == 90, f"Expected 90 class 0 in test, got {class_counts.get(0)}"
@@ -218,6 +236,10 @@ def test_5_holdout_isolation_and_balance(audio_artifacts: Path) -> None:
         pred_col = f"{model}_pred"
         assert (test_df[prob_col] >= 0.0).all() and (test_df[prob_col] <= 1.0).all()
         assert set(test_df[pred_col].unique()).issubset({0, 1})
+        expected_pred = (test_df[prob_col] >= 0.5).astype(int)
+        assert (test_df[pred_col] == expected_pred).all()
+        assert np.issubdtype(test_df[prob_col].dtype, np.floating), f"{prob_col} must be float"
+        assert np.issubdtype(test_df[pred_col].dtype, np.integer), f"{pred_col} must be integer"
 
 
 # ==============================================================================
@@ -295,4 +317,29 @@ def test_7_output_artifacts_schemas_and_integrity(audio_artifacts: Path) -> None
         assert "confidence_intervals_95" in test_info
         ci = test_info["confidence_intervals_95"]["roc_auc"]
         assert 0.0 <= ci["ci_lower"] <= ci["ci_upper"] <= 1.0
+
+
+# ==============================================================================
+# 8. Regression: Explicit Column Types, Semantic Naming & Range Verification
+# ==============================================================================
+def test_8_oof_and_holdout_schema_types_and_ranges(audio_artifacts: Path) -> None:
+    """Requirement: Audio OOF and holdout tables strictly separate continuous probabilities from binary classes."""
+    for filename in ("oof_predictions.csv", "test_predictions.csv"):
+        df = pd.read_csv(audio_artifacts / filename)
+        for model in ("logistic_regression", "random_forest"):
+            prob_col = f"{model}_prob"
+            pred_col = f"{model}_pred"
+            assert prob_col in df.columns, f"{prob_col} missing in {filename}"
+            assert pred_col in df.columns, f"{pred_col} missing in {filename}"
+
+            # Probabilities are continuous floats in [0.0, 1.0]
+            assert np.issubdtype(df[prob_col].dtype, np.floating), f"{prob_col} is not float in {filename}"
+            assert (df[prob_col] >= 0.0).all() and (df[prob_col] <= 1.0).all()
+            assert len(df[prob_col].unique()) > 10, f"{prob_col} has degenerate distribution in {filename}"
+
+            # Predictions are binary integers in {0, 1}
+            assert np.issubdtype(df[pred_col].dtype, np.integer), f"{pred_col} is not int in {filename}"
+            assert set(df[pred_col].unique()).issubset({0, 1})
+            assert (df[pred_col] == (df[prob_col] >= 0.5).astype(int)).all()
+
 

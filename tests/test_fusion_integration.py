@@ -37,7 +37,20 @@ from pipelines.fusion.config import (
 )
 from tests.test_backend_screening import _get_valid_clinical_features
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module", autouse=True)
+def ensure_video_fixtures():
+    """Ensure canonical-aligned video OOF fixtures exist before running integration tests."""
+    from pipelines.video_model.generate_ci_video_fixtures import ensure_ci_video_fixtures
+
+    ensure_ci_video_fixtures()
+
+
+@pytest.fixture(scope="module")
+def client() -> TestClient:
+    """Create a TestClient with application lifespan active."""
+    with TestClient(app) as test_client:
+        yield test_client
 
 REQUIRED_MULTIMODAL_OOF_PATHS = [CLINICAL_OOF_PATH, AUDIO_OOF_PATH, TEXT_OOF_PATH, VIDEO_OOF_PATH]
 MULTIMODAL_OOF_AVAILABLE = all(p.is_file() for p in REQUIRED_MULTIMODAL_OOF_PATHS)
@@ -125,13 +138,12 @@ def test_no_target_leakage_in_fusion():
         assert len(s.unique()) > 10, f"Probability distribution for {name} appears degenerate"
 
 
-def test_eligibility_enforcement_api():
+def test_eligibility_enforcement_api(client: TestClient):
     """Verify that screening requests with false eligibility are rejected with HTTP 403."""
     payload = {
         "motherId": "M-ELIG-01",
         "modalities": json.dumps({"clinical": True}),
         "consentConfirmed": "true",
-        "eligibilityConfirmed": "true",
         "eligibilityConfirmed": "false",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
@@ -140,7 +152,7 @@ def test_eligibility_enforcement_api():
     assert "eligibility confirmation is required" in resp.json()["detail"].lower()
 
 
-def test_missing_modality_handling_without_fabrication():
+def test_missing_modality_handling_without_fabrication(client: TestClient):
     """Verify that requested modalities without data report unavailable without fabricating scores."""
     payload = {
         "motherId": "M-MISSING-01",
@@ -162,7 +174,7 @@ def test_missing_modality_handling_without_fabrication():
     assert data["status"] == "partially_completed"
 
 
-def test_audio_feature_inference_and_provenance():
+def test_audio_feature_inference_and_provenance(client: TestClient):
     """Verify predictive audio inference when 7 acoustic features are supplied."""
     payload = {
         "motherId": "M-AUDIO-01",
@@ -185,7 +197,7 @@ def test_audio_feature_inference_and_provenance():
     assert "synthetic" in pred["provenance_notice"].lower()
 
 
-def test_multimodal_late_fusion_and_discordance():
+def test_multimodal_late_fusion_and_discordance(client: TestClient):
     """Verify multimodal late fusion and cross-modal discordance when clinical and audio are both active."""
     payload = {
         "motherId": "M-FUSION-02",

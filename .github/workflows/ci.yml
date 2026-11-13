@@ -31,6 +31,7 @@ jobs:
         python pipelines/generate_synthetic_multimodal.py
         python -m pipelines.synthetic_audio.train_audio_model
         python -m pipelines.synthetic_text.train_text_model
+        python -m pipelines.video_model.generate_ci_video_fixtures
 
     - name: Run Pytest Test Suite
       run: |
