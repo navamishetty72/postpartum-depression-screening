@@ -87,6 +87,12 @@ class DiscordanceResult:
 class DiscordanceAnalyzer:
     """Analyzes divergence between comparable predictive modality signals.
 
+    NOTE ON CLINICAL VALIDITY:
+    The default threshold (0.25) is an exploratory research heuristic for evaluating
+    divergence across multiple predictive modalities under simulated benchmark conditions.
+    It is NOT a clinically validated diagnostic cut-off and must be calibrated against
+    prospective multi-site clinical trial cohorts.
+
     Requires at least two comparable calibrated risk probabilities. Never compares
     Text NER entity confidence with clinical risk probability.
     """
@@ -94,7 +100,7 @@ class DiscordanceAnalyzer:
     DEFAULT_DISCORDANCE_THRESHOLD: float = 0.25
 
     def __init__(self, threshold: float = DEFAULT_DISCORDANCE_THRESHOLD) -> None:
-        self.threshold: float = threshold
+        self.threshold: float = float(threshold)
 
     def analyze(self, candidates: List[ModalityCandidate]) -> DiscordanceResult:
         """Evaluate discordance across candidates with valid continuous risk probabilities."""
@@ -440,3 +446,4 @@ fusion_engine = MultimodalFusionEngine()
 def get_fusion_engine() -> MultimodalFusionEngine:
     """FastAPI dependency provider for MultimodalFusionEngine."""
     return fusion_engine
+

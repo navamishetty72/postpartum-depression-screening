@@ -12,12 +12,13 @@ import logging
 from typing import Any, Dict, List, Optional, Union
 import uuid
 
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from pydantic import ValidationError
 
 from backend.ml.fusion_engine import (
     MultimodalFusionEngine,
     fusion_engine,
+    get_fusion_engine,
 )
 from backend.schemas.clinical_numerical import ClinicalFeatures
 from backend.schemas.screening import (
@@ -32,9 +33,11 @@ from backend.schemas.screening import (
 from backend.services.clinical_service import (
     ClinicalScreeningService,
     clinical_service,
+    get_clinical_service,
 )
 from backend.services.text_ner_service import (
     TextNERService,
+    get_text_ner_service,
     text_ner_service,
 )
 from pipelines.text_ner.inference import TextNERPredictor
@@ -342,11 +345,31 @@ class ScreeningOrchestrationService:
         )
 
 
-# Global singleton instance
+# Global default instances
+default_mother_validator = MotherValidator()
 screening_service = ScreeningOrchestrationService()
 
 
-def get_screening_service() -> ScreeningOrchestrationService:
+def get_mother_validator() -> MotherValidator:
+    """FastAPI dependency provider for MotherValidator.
+
+    Designed for Member 2 to plug in their database patient existence verification:
+        app.dependency_overrides[get_mother_validator] = lambda: SQLDatabaseMotherValidator(db_session)
+    """
+    return default_mother_validator
+
+
+def get_screening_service(
+    clinical_svc: ClinicalScreeningService = Depends(get_clinical_service),
+    text_svc: TextNERService = Depends(get_text_ner_service),
+    mother_val: MotherValidator = Depends(get_mother_validator),
+    fusion_eng: MultimodalFusionEngine = Depends(get_fusion_engine),
+) -> ScreeningOrchestrationService:
     """FastAPI dependency provider for ScreeningOrchestrationService."""
-    return screening_service
+    return ScreeningOrchestrationService(
+        clinical_svc=clinical_svc,
+        text_svc=text_svc,
+        mother_val=mother_val,
+        fusion_eng=fusion_eng,
+    )
 
