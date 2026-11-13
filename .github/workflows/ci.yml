@@ -2,7 +2,7 @@ name: CI Test Suite
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, "feature/**" ]
   pull_request:
     branches: [ main ]
 
@@ -32,4 +32,4 @@ jobs:
 
     - name: Run Pytest Test Suite
       run: |
-        python -m pytest tests/integration/ tests/test_*pipeline.py -q
+        python -m pytest -v
