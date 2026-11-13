@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Miora — Screening Results Styles
+   Unified with Clinician Dashboard Visual Hierarchy & Design System
+   ========================================================================== */
+
+.results-page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.results-content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Card 1: Top Card (About PPD + Gauge) */
+.results-top-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 32px;
+}
+
+.results-about-section {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.results-about-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--patient-radius-pill);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--patient-brand-rose-deep);
+  background: var(--patient-blush-soft);
+  border: 1px solid #f4d3db;
+  align-self: flex-start;
+}
+
+.results-about-text {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--patient-muted);
+  line-height: 1.5;
+}
+
+.results-reassurance-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 12px;
+}
+
+.results-heart-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--patient-brand-rose);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.results-reassurance-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--patient-ink);
+  line-height: 1.45;
+}
+
+.results-card-vdivider {
+  width: 1px;
+  height: 140px;
+  background: var(--patient-blush-border);
+  flex-shrink: 0;
+}
+
+/* Right: Gauge Section */
+.results-risk-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 220px;
+}
+
+.results-risk-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--patient-ink);
+  text-align: center;
+}
+
+.results-circular-gauge {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.results-gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.results-gauge-bg {
+  fill: none;
+  stroke: #f6e8ec;
+  stroke-width: 9;
+}
+
+.results-gauge-fill {
+  fill: none;
+  stroke: #ea3a7a;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.results-gauge-value {
+  position: absolute;
+  font-family: var(--patient-font-sans);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--patient-brand-rose-deep);
+}
+
+.results-risk-label-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--patient-brand-rose-deep);
+  background: var(--patient-blush-pill);
+  border: 1px solid rgba(217, 60, 117, 0.2);
+  padding: 3px 12px;
+  border-radius: var(--patient-radius-pill);
+}
+
+/* Card 2: Key Insights */
+.results-insights-card {
+  padding: 24px 32px;
+}
+
+.results-insights-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--patient-brand-rose);
+  margin-bottom: 20px;
+}
+
+.results-insights-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.results-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.results-insight-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 14px;
+}
+
+.insight-icon-pill {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  border: 1px solid #f4d3db;
+}
+
+.results-insight-name {
+  font-size: 14px;
+  color: var(--patient-ink);
+  margin-bottom: 4px;
+}
+
+.results-insight-desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--patient-subtle);
+  line-height: 1.4;
+}
+
+/* Actions Row */
+.results-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.results-action-btn {
+  padding: 11px 22px;
+  font-size: 13.5px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .results-top-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .results-card-vdivider {
+    display: none;
+  }
+  .results-risk-section {
+    width: 100%;
+  }
+  .results-insights-grid {
+    grid-template-columns: 1fr;
+  }
+  .results-actions-row {
+    flex-direction: column;
+  }
+  .results-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

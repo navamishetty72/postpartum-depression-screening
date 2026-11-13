@@ -38,7 +38,8 @@ describe('Miora Screen 01: Dashboard', () => {
     renderDashboard();
 
     // Top Navigation
-    expect(screen.getByText('Maternal Emotional')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Miora Dashboard' })).toBeInTheDocument();
+    expect(screen.queryByText('Maternal Emotional')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Mothers & Cases' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Screening' })).toBeInTheDocument();
@@ -122,26 +123,24 @@ describe('Miora Screen 01: Dashboard', () => {
     expect(screen.getByRole('button', { name: /Complete Screening/i })).toBeInTheDocument();
   });
 
-  it('navigates from Landing Page Dashboard button to Dashboard', () => {
+  it('navigates from Landing Page Get Started button to Login', () => {
     render(
       <ClinicalProvider>
         <MemoryRouter initialEntries={['/']}>
           <Routes>
             <Route path="/" element={<LandingPageRoute />} />
-            <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<CommandCenterPage />} />
-            </Route>
+            <Route path="/login" element={<div><h1>Welcome Back</h1></div>} />
           </Routes>
         </MemoryRouter>
       </ClinicalProvider>
     );
 
-    const dashboardLink = screen.getByRole('link', { name: /Dashboard/i });
-    expect(dashboardLink).toHaveAttribute('href', '/dashboard');
-    fireEvent.click(dashboardLink);
+    const getStartedLink = screen.getAllByRole('link', { name: /Get Started/i })[0];
+    expect(getStartedLink).toHaveAttribute('href', '/login');
+    fireEvent.click(getStartedLink);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Postpartum Health Intelligence'
+      'Welcome Back'
     );
   });
 });

@@ -208,4 +208,3 @@ describe('Miora Screen 08: Clinical Review & Assessment', () => {
     expect(screen.getAllByText('Unavailable').length).toBeGreaterThanOrEqual(3);
   });
 });
-

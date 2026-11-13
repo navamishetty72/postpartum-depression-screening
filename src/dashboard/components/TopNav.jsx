@@ -82,11 +82,6 @@ export function TopNav() {
           >
             <BrandWordmark />
           </Link>
-          <span className="dash-brand-divider" aria-hidden="true" />
-          <div className="dash-tagline">
-            <span>Maternal Emotional</span>
-            <span>Intelligence</span>
-          </div>
         </div>
 
         <nav className="dash-nav-links" aria-label="Clinician workspace navigation">
@@ -256,10 +251,29 @@ export function TopNav() {
                     type="button"
                     onClick={() => {
                       setOpenMenu(null);
+                      navigate('/patient/dashboard');
+                    }}
+                  >
+                    Switch to Patient Portal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMenu(null);
                       navigate('/');
                     }}
                   >
                     View Miora Landing Page
+                  </button>
+                  <button
+                    type="button"
+                    style={{ color: '#c73566', fontWeight: '500' }}
+                    onClick={() => {
+                      setOpenMenu(null);
+                      navigate('/login');
+                    }}
+                  >
+                    Sign Out
                   </button>
                 </div>
               </div>

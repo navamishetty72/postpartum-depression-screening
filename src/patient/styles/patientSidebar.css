@@ -1,0 +1,184 @@
+/* ==========================================================================
+   Miora Patient Portal — Unified Sidebar Styles
+   ========================================================================== */
+
+.patient-sidebar {
+  width: var(--patient-sidebar-width);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: rgba(253, 249, 247, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-right: 1px solid var(--patient-blush-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px 20px;
+  z-index: 40;
+  transition: transform 220ms ease;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+/* Brand Section */
+.patient-sidebar-brand {
+  padding: 0 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.patient-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.patient-brand-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.patient-brand-link .brand-wordmark {
+  font-size: 28px;
+  color: var(--patient-brand-rose);
+  padding-bottom: 0.12em;
+}
+
+.patient-brand-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--patient-blush-border);
+}
+
+.patient-brand-tagline {
+  font-size: 11.5px;
+  line-height: 1.25;
+  color: var(--patient-muted);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.patient-sidebar-line {
+  height: 1px;
+  background: var(--patient-blush-border);
+  margin: 4px 8px 16px;
+}
+
+/* Main Navigation */
+.patient-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-nav-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--patient-subtle);
+  font-weight: 600;
+  padding: 8px 12px 4px;
+  margin: 0;
+}
+
+.patient-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--patient-ink-light);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: var(--patient-transition);
+  position: relative;
+}
+
+.patient-nav-link:hover {
+  background: #fdf0f2;
+  color: var(--patient-ink);
+  transform: translateX(2px);
+}
+
+.patient-nav-link.is-active {
+  background: var(--patient-blush-pill);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+  border-color: rgba(217, 60, 117, 0.16);
+  box-shadow: 0 2px 8px rgba(217, 60, 117, 0.05);
+}
+
+.patient-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.patient-nav-link.is-active .patient-nav-icon {
+  color: var(--patient-brand-rose-deep);
+}
+
+.patient-nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bottom Nav (Profile, Settings, Support) */
+.patient-sidebar-footer {
+  border-top: 1px solid var(--patient-blush-border);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Close button for mobile drawer */
+.patient-sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--patient-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+/* Mobile responsive sidebar */
+@media (max-width: 900px) {
+  .patient-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .patient-sidebar.is-mobile-open {
+    transform: translateX(0);
+  }
+
+  .patient-sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+

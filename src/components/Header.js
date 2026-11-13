@@ -7,9 +7,14 @@ export const Header = () => `
       <a class="brand" href="#top" aria-label="Miora — Maternal Emotional Intelligence">
         ${BrandLogo()}
       </a>
-      <a class="button button-small header-cta" href="/dashboard">
-        Dashboard <span>${icon('arrow', 15)}</span>
-      </a>
+      <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+        <a class="button button-small button-outline header-signin" href="/login">
+          Sign In
+        </a>
+        <a class="button button-small header-cta" href="/login">
+          Get Started <span>${icon('arrow', 15)}</span>
+        </a>
+      </div>
     </div>
   </header>
 `;

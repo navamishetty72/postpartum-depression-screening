@@ -1,0 +1,1082 @@
+/* ==========================================================================
+   Miora — Patient Reports & Doctor Consultations Styles
+   Unified with Clinician Dashboard Visual Hierarchy & Design System
+   ========================================================================== */
+
+.reports-page-container,
+.patient-consultations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Hero Banner Card */
+.reports-hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #fdf5f7 100%);
+  overflow: hidden;
+}
+
+.reports-hero-text {
+  max-width: 640px;
+}
+
+.reports-title {
+  margin: 0 0 6px;
+}
+
+.reports-subtitle {
+  margin: 0;
+}
+
+.reports-hero-illu-wrap {
+  width: 140px;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reports-hero-illustration {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Tabs Bar */
+.reports-tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--patient-blush-border);
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.reports-tabs-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reports-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--patient-radius-pill);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--patient-ink-light);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--patient-transition);
+}
+
+.reports-tab-btn:hover {
+  background: #fdf0f2;
+  color: var(--patient-ink);
+}
+
+.reports-tab-btn.is-active {
+  background: var(--patient-blush-pill);
+  border-color: rgba(217, 60, 117, 0.16);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+}
+
+.reports-empty-state-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 11.5px;
+  color: var(--patient-subtle);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.reports-empty-state-toggle-btn:hover {
+  color: var(--patient-brand-rose);
+}
+
+/* Overview Layout */
+.reports-overview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reports-top-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.reports-bottom-cards-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Card General */
+.reports-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reports-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.reports-card-icon {
+  color: var(--patient-brand-rose);
+  display: flex;
+  align-items: center;
+}
+
+.reports-card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+/* Card 1: Screening Result with Gauge */
+.screening-result-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+}
+
+.screening-gauge-wrap {
+  position: relative;
+  width: 94px;
+  height: 94px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screening-gauge-svg {
+  transform: rotate(-90deg);
+}
+
+.screening-gauge-track {
+  fill: none;
+  stroke: #f6e8ec;
+}
+
+.screening-gauge-fill {
+  fill: none;
+  stroke: #ea3a7a;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease-in-out;
+}
+
+.screening-gauge-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screening-gauge-pct {
+  font-family: var(--patient-font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--patient-brand-rose-deep);
+}
+
+.screening-result-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.screening-risk-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--patient-radius-pill);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose-deep);
+  border: 1px solid #f4d3db;
+  align-self: flex-start;
+}
+
+.screening-date-text {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--patient-muted);
+}
+
+.screening-recom-note {
+  margin: 2px 0 8px;
+  font-size: 12px;
+  color: var(--patient-subtle);
+  line-height: 1.35;
+}
+
+.reports-inline-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--patient-brand-rose);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reports-inline-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* Card 2: Trend Chart */
+.trend-chart-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.trend-svg {
+  width: 100%;
+  height: 115px;
+  overflow: visible;
+}
+
+.trend-point-dot {
+  cursor: pointer;
+  transition: r 120ms ease;
+}
+
+.trend-point-dot:hover {
+  stroke-width: 3.5;
+}
+
+.trend-labels-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px 0;
+}
+
+.trend-x-label {
+  font-size: 11px;
+  color: var(--patient-subtle);
+}
+
+.trend-footer-text {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--patient-subtle);
+  line-height: 1.35;
+}
+
+/* Card 3: Download Reports */
+.reports-download-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-download-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: var(--patient-radius-md);
+}
+
+.download-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.download-row-title {
+  font-size: 13px;
+  color: var(--patient-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.download-row-sub {
+  font-size: 11.5px;
+  color: var(--patient-subtle);
+}
+
+.download-action-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Bottom Row: Key Insights */
+.reports-insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-insight-box {
+  padding: 12px 14px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 12px;
+}
+
+.insight-box-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.insight-box-title {
+  font-size: 13.5px;
+  color: var(--patient-ink);
+}
+
+.insight-box-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--patient-brand-rose);
+  background: var(--patient-blush-soft);
+  border: 1px solid #f4d3db;
+  padding: 2px 8px;
+  border-radius: var(--patient-radius-pill);
+}
+
+.insight-box-p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--patient-muted);
+  line-height: 1.4;
+}
+
+/* Bottom Row: Summary & Next Steps */
+.reports-summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-clinical-quote {
+  margin: 0;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--patient-ink);
+  background: var(--patient-blush-soft);
+  border-left: 3px solid var(--patient-brand-rose);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.45;
+}
+
+.summary-next-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.step-num-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--patient-brand-rose);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.summary-step-item strong {
+  display: block;
+  font-size: 13px;
+  color: var(--patient-ink);
+}
+
+.summary-step-item p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--patient-muted);
+}
+
+.summary-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Tab Views */
+.reports-tab-view {
+  width: 100%;
+}
+
+.reports-tab-card {
+  padding: 28px;
+}
+
+.reports-tab-heading {
+  margin: 0 0 4px;
+  font-family: var(--patient-font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.reports-tab-sub {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  color: var(--patient-muted);
+}
+
+.tab-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* Screening Tab Details Grid */
+.screening-tab-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.detail-stat-box {
+  padding: 16px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-stat-label {
+  font-size: 12px;
+  color: var(--patient-subtle);
+}
+
+.detail-stat-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--patient-brand-rose-deep);
+}
+
+.detail-stat-sub {
+  font-size: 11.5px;
+  color: var(--patient-muted);
+}
+
+.reports-tab-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Consultations Tab */
+.consultations-tab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultation-tab-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 12px;
+}
+
+.consultation-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--patient-ink);
+}
+
+.consultation-row-meta {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--patient-muted);
+}
+
+/* Mood Table */
+.mood-progress-table-wrap {
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mood-progress-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mood-progress-table th,
+.mood-progress-table td {
+  padding: 12px 18px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.mood-progress-table th {
+  background: var(--patient-surface-subtle);
+  color: var(--patient-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--patient-blush-border);
+}
+
+.mood-progress-table tr:not(:last-child) td {
+  border-bottom: 1px solid #f6e8ec;
+}
+
+/* Toast */
+.patient-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--patient-radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+}
+
+.patient-toast.is-success {
+  background: #1e7e34;
+  color: #ffffff;
+}
+
+.patient-toast.is-error {
+  background: #c82333;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Connect to Doctor Specific Styles
+   ========================================================================== */
+
+.connect-disclaimer-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--patient-blush-soft);
+  border-color: #f4d3db;
+}
+
+.connect-disclaimer-icon-wrap {
+  color: var(--patient-brand-rose);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.connect-disclaimer-title {
+  display: block;
+  font-size: 13.5px;
+  color: var(--patient-ink);
+  margin-bottom: 2px;
+}
+
+.connect-disclaimer-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--patient-muted);
+  line-height: 1.4;
+}
+
+.connect-success-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: var(--patient-success-bg);
+  border: 1px solid var(--patient-success-border);
+  color: var(--patient-success-text);
+  border-radius: var(--patient-radius-md);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.connect-joining-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #fff8f9;
+  border: 1px solid var(--patient-brand-rose);
+  color: var(--patient-brand-rose-deep);
+  border-radius: var(--patient-radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.connect-joining-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(217, 60, 117, 0.25);
+  border-top-color: var(--patient-brand-rose);
+  border-radius: 50%;
+  animation: spinnerRotate 0.8s infinite linear;
+}
+
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Doctor Profile Card */
+.connect-doctor-card {
+  padding: 28px;
+}
+
+.connect-doctor-main {
+  display: flex;
+  gap: 28px;
+}
+
+.connect-doctor-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.connect-doctor-avatar-circle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--patient-blush-pill);
+  border: 2.5px solid var(--patient-brand-rose);
+  color: var(--patient-brand-rose-deep);
+  font-family: var(--patient-font-serif);
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connect-doctor-online-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #27ae60;
+  background: #eaf7ee;
+  border: 1px solid #c4ebd0;
+  padding: 3px 8px;
+  border-radius: var(--patient-radius-pill);
+  white-space: nowrap;
+}
+
+.connect-online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #27ae60;
+}
+
+.connect-doctor-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.connect-doctor-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.connect-doctor-name {
+  margin: 0;
+  font-family: var(--patient-font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.connect-doctor-designation {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--patient-muted);
+}
+
+.connect-doctor-bio {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  color: var(--patient-muted);
+  line-height: 1.5;
+}
+
+.connect-doctor-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.connect-tag {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--patient-brand-rose-deep);
+  background: var(--patient-blush-soft);
+  border: 1px solid #f4d3db;
+  padding: 3px 10px;
+  border-radius: var(--patient-radius-pill);
+}
+
+/* Consultations Records List */
+.connect-records-card {
+  padding: 28px;
+}
+
+.connect-records-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.connect-records-title {
+  margin: 0;
+  font-family: var(--patient-font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.connect-records-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--patient-subtle);
+}
+
+.connect-records-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--patient-muted);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  padding: 4px 12px;
+  border-radius: var(--patient-radius-pill);
+}
+
+.connect-consultations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.connect-consultation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 20px;
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-blush-border);
+  border-radius: 14px;
+  transition: var(--patient-transition);
+}
+
+.connect-consultation-row:hover {
+  background: #ffffff;
+  border-color: rgba(217, 60, 117, 0.3);
+  box-shadow: 0 4px 14px rgba(182, 45, 91, 0.05);
+}
+
+.connect-row-icon-col {
+  flex-shrink: 0;
+}
+
+.connect-row-icon-pill {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--patient-blush-border);
+  color: var(--patient-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connect-row-icon-pill.is-active-pill {
+  background: var(--patient-blush-soft);
+  color: var(--patient-brand-rose);
+  border-color: #f4d3db;
+}
+
+.connect-row-info-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.connect-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.connect-row-type {
+  font-size: 14.5px;
+  color: var(--patient-ink);
+}
+
+.connect-status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--patient-radius-pill);
+}
+
+.status-scheduled {
+  background: #eaf7ee;
+  color: #1d7338;
+  border: 1px solid #c4ebd0;
+}
+
+.status-completed {
+  background: var(--patient-surface-subtle);
+  color: var(--patient-subtle);
+  border: 1px solid var(--patient-blush-border);
+}
+
+.connect-row-doctor-info {
+  margin: 0;
+  font-size: 13px;
+  color: var(--patient-muted);
+}
+
+.connect-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.connect-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--patient-subtle);
+}
+
+.connect-row-action-col {
+  flex-shrink: 0;
+}
+
+.connect-join-btn,
+.connect-summary-btn {
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+/* Booking Modal Form */
+.connect-booking-modal,
+.connect-summary-modal {
+  max-width: 500px;
+  width: 100%;
+}
+
+.connect-booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.booking-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.booking-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patient-ink);
+}
+
+.booking-modes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.booking-mode-pill {
+  padding: 10px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--patient-blush-border);
+  color: var(--patient-ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--patient-transition);
+}
+
+.booking-mode-pill.is-selected {
+  background: var(--patient-blush-pill);
+  border-color: var(--patient-brand-rose);
+  color: var(--patient-brand-rose-deep);
+  font-weight: 600;
+}
+
+.booking-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.booking-input,
+.booking-textarea {
+  padding: 9px 14px;
+  border: 1.5px solid var(--patient-blush-border);
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--patient-ink);
+  background: #ffffff;
+  outline: none;
+  transition: var(--patient-transition);
+}
+
+.booking-input:focus,
+.booking-textarea:focus {
+  border-color: var(--patient-brand-rose);
+  box-shadow: 0 0 0 3px rgba(217, 60, 117, 0.12);
+}
+
+.booking-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.connect-summary-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--patient-ink);
+}
+
+.summary-meta-header {
+  padding: 10px 14px;
+  background: var(--patient-surface-subtle);
+  border-radius: 8px;
+  border: 1px solid var(--patient-blush-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+}
+
+.summary-p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.summary-ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+  color: var(--patient-muted);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .reports-top-cards-row {
+    grid-template-columns: 1fr;
+  }
+  .reports-bottom-cards-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .connect-doctor-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .connect-consultation-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .connect-row-action-col {
+    width: 100%;
+  }
+  .connect-join-btn,
+  .connect-summary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

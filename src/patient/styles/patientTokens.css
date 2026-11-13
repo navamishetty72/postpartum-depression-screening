@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Miora Patient Portal — Visual Design Tokens
+   Unified with Miora Clinician Dashboard Design Language
+   ========================================================================== */
+
+:root {
+  /* Typography */
+  --patient-font-serif: 'Playfair Display', Georgia, serif;
+  --patient-font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Color Palette */
+  --patient-ink: #271218;
+  --patient-ink-light: #46383d;
+  --patient-muted: #62555a;
+  --patient-subtle: #8a7880;
+
+  --patient-brand-rose: #d93c75;
+  --patient-brand-rose-deep: #ca2261;
+  --patient-brand-rose-light: #ea3a7a;
+
+  --patient-cream: #fdf8f4;
+  --patient-cream-deep: #fcf6f2;
+  --patient-blush-soft: #fdf0f3;
+  --patient-blush-pill: #fde7ec;
+  --patient-blush-border: #f0dfe2;
+  --patient-blush-border-light: rgba(226, 194, 206, 0.55);
+
+  --patient-surface: #ffffff;
+  --patient-surface-subtle: #fdfaf9;
+
+  /* Status Colors */
+  --patient-success-bg: #eaf7ee;
+  --patient-success-text: #1d7338;
+  --patient-success-border: #c4ebd0;
+
+  --patient-warning-bg: #fef7e8;
+  --patient-warning-text: #a06306;
+  --patient-warning-border: #fde4ba;
+
+  --patient-danger-bg: #fdeef0;
+  --patient-danger-text: #b62d5b;
+  --patient-danger-border: #f7cbd1;
+
+  --patient-info-bg: #edf5fe;
+  --patient-info-text: #1d5cb4;
+  --patient-info-border: #cde2fb;
+
+  /* Gradients */
+  --patient-page-bg: radial-gradient(circle at 88% 8%, #fcecef 0%, #fdf8f4 46%, #fcf6f2 100%);
+  --patient-primary-gradient: linear-gradient(90deg, #ea3a7a 0%, #ca2261 100%);
+  --patient-primary-gradient-hover: linear-gradient(90deg, #f04e8a 0%, #d82b6c 100%);
+
+  /* Shadows */
+  --patient-shadow-card: 0 4px 18px rgba(182, 45, 91, 0.04);
+  --patient-shadow-elevated: 0 8px 24px rgba(182, 45, 91, 0.08);
+  --patient-shadow-button: 0 4px 14px rgba(202, 34, 97, 0.22);
+  --patient-shadow-button-hover: 0 6px 18px rgba(202, 34, 97, 0.32);
+
+  /* Radii */
+  --patient-radius-sm: 8px;
+  --patient-radius-md: 12px;
+  --patient-radius-card: 16px;
+  --patient-radius-lg: 20px;
+  --patient-radius-pill: 9999px;
+
+  /* Dimensions */
+  --patient-sidebar-width: 260px;
+  --patient-header-height: 68px;
+  --patient-content-max: 1260px;
+
+  /* Transitions */
+  --patient-transition: all 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
