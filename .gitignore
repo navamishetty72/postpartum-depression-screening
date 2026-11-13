@@ -61,6 +61,9 @@ models/*
 !models/.gitkeep
 !models/clinical_numerical/
 !models/clinical_numerical/**
+!models/text_ner/
+!models/text_ner/**
+models/text_ner/**/*.joblib
 *.joblib
 !models/clinical_numerical/*.joblib
 *.pt

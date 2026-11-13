@@ -1,0 +1,43 @@
+{
+  "model_version": "1.3.0",
+  "base_git_commit": "24c291b",
+  "created_at_utc": "2026-11-12T10:51:42.561044+00:00",
+  "artifact_path": "models/text_ner/v1.3.0/text_ner_model.joblib",
+  "artifact_size_bytes": 94014515,
+  "artifact_size_mb": 89.66,
+  "artifact_sha256": "9797a6058b8c5500cc989d917184a61a266c12d0335d82db9bc5f3128633d5ef",
+  "allowed_entity_labels": [
+    "MMLite"
+  ],
+  "bio_classes": [
+    "B-MMLite",
+    "I-MMLite",
+    "O"
+  ],
+  "split_manifest_path": "data/processed/text_ner/final_dataset_splits.json",
+  "split_manifest_sha256": "d34767eac4583aa6c43b10f5e3eaf88d0d612702238dab60d7c866a2621296cf",
+  "split_seed": 2026,
+  "splits": {
+    "train_split_id": "final_dataset_splits_seed2026_train_7398",
+    "val_split_id": "final_dataset_splits_seed2026_val_1585",
+    "final_test_split_id": "final_dataset_splits_seed2026_final_test_1586",
+    "train_doc_count": 7398,
+    "val_doc_count": 1585,
+    "final_test_doc_count": 1586,
+    "excluded_prior_exposed_doc_count": 1800,
+    "train_doc_ids_sha256": "ee7fc32b9889446059fd8fa98f24b7e799e0a6ba7e402d40538e31b42af748ef",
+    "val_doc_ids_sha256": "eb6a7c6a3e247301ab709fc8ad877f80b7d1c1293c1458bc6f2b14c3751092b3",
+    "final_test_doc_ids_sha256": "3bd7d6f4157360fd915a0c0dd4962ffb3d46390ede97b9aa0e6623cc2879ab22"
+  },
+  "training_stats": {
+    "non_empty_documents": 7394,
+    "total_tokens": 5864667,
+    "num_features": 1930365,
+    "sparse_nnz": 234666673,
+    "n_iter": 14,
+    "training_seconds": 1539.56,
+    "peak_working_set_mb": 3742.2,
+    "warnings": []
+  },
+  "scientific_scope_note": "Extracts MMLite biomedical mentions from forum text only. Not a participant-level PPD diagnosis or severity classifier."
+}
