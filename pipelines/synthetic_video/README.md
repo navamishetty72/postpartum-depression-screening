@@ -1,0 +1,72 @@
+# Synthetic Video Feature Pipeline
+
+## Scientific Framework & Modality Disclaimer
+> [!IMPORTANT]
+> **Architectural Benchmark Only:** The Bangladeshi clinical survey cohort contains **zero video recordings, camera footage, or facial imagery**.
+> The features generated in this pipeline are **abstract synthetic temporal feature trajectories** (24-channel numerical `.npy` arrays). They exist solely as engineering fixtures to benchmark temporal sequence ingestion, dynamic temporal pooling (mean, max, attention), tracking dropout resilience, and multimodal late fusion combiner architectures.
+> - **Zero Facial Imagery:** No actual video footage, facial pictures, or identifiable human faces are generated or processed.
+> - **Zero Diagnostic Biomarkers:** Facial Action Units and head pose dynamics do **not** diagnose postpartum depression in this study and must not be treated as clinical evidence.
+> - **Autonomous Fixtures:** Trajectories are generated independently of clinical survey targets to prevent encoding unsupported behavioral assumptions.
+> - **Target Isolation:** Complete isolation from EPDS items, EPDS scores, PHQ-9 items, and canonical screening targets.
+> - **Engineering Assumptions:** All distributions, covariance structures, and temporal dynamics are explicitly engineering assumptions, not observed biological or psychological traits.
+
+## Exact Channel Schema (24 Channels per Frame)
+Channels are structured into two distinct categories:
+
+### A. OpenFace-Style Facial & Head Dynamics (Channels 0–18)
+- **Channel 0:** `AU01_r` – Inner brow raiser intensity $[0.0, 5.0]$
+- **Channel 1:** `AU02_r` – Outer brow raiser intensity $[0.0, 5.0]$
+- **Channel 2:** `AU04_r` – Brow lowerer intensity $[0.0, 5.0]$
+- **Channel 3:** `AU05_r` – Upper lid raiser intensity $[0.0, 5.0]$
+- **Channel 4:** `AU06_r` – Cheek raiser intensity $[0.0, 5.0]$
+- **Channel 5:** `AU07_r` – Lid tightener intensity $[0.0, 5.0]$
+- **Channel 6:** `AU09_r` – Nose wrinkler intensity $[0.0, 5.0]$
+- **Channel 7:** `AU10_r` – Upper lip raiser intensity $[0.0, 5.0]$
+- **Channel 8:** `AU12_r` – Lip corner puller (zygomaticus) intensity $[0.0, 5.0]$
+- **Channel 9:** `AU14_r` – Dimpler intensity $[0.0, 5.0]$
+- **Channel 10:** `AU15_r` – Lip corner depressor intensity $[0.0, 5.0]$
+- **Channel 11:** `AU17_r` – Chin raiser intensity $[0.0, 5.0]$
+- **Channel 12:** `AU20_r` – Lip stretcher intensity $[0.0, 5.0]$
+- **Channel 13:** `AU25_r` – Lips part intensity $[0.0, 5.0]$
+- **Channel 14:** `pose_pitch` – 3D head pitch angle in radians $[-\pi/3, \pi/3]$
+- **Channel 15:** `pose_yaw` – 3D head yaw angle in radians $[-\pi/3, \pi/3]$
+- **Channel 16:** `pose_roll` – 3D head roll angle in radians $[-\pi/3, \pi/3]$
+- **Channel 17:** `gaze_angle_x` – Horizontal gaze direction in radians $[-0.6, 0.6]$
+- **Channel 18:** `gaze_angle_y` – Vertical gaze direction in radians $[-0.6, 0.6]$
+
+### B. Custom Engineered Summary & Tracking Status Features (Channels 19–23)
+*(Note: Channels 19–23 are custom engineering fixtures and not direct OpenFace outputs)*
+- **Channel 19:** `gaze_stability` – Fixation consistency scalar $[0.0, 1.0]$
+- **Channel 20:** `rigid_motion` – Head motion velocity summary $[0.0, 1.0]$
+- **Channel 21:** `non_rigid_motion` – Facial landmark deformation dispersion $[0.0, 1.0]$
+- **Channel 22:** `tracking_confidence` – Frame-level face tracker confidence score $[0.0, 1.0]$
+- **Channel 23:** `success_flag` – Binary tracking success indicator ($\{0.0, 1.0\}$; $0.0$ indicates simulated tracking loss / occlusion)
+
+## Generated Outputs
+Outputs are saved to `data/synthetic/video/` (excluded from Git version control via `.gitignore`):
+- `video_manifest.csv`: 800 participant records (640 train, 160 test) linked to `BGD_001`–`BGD_800`, containing:
+  - `participant_id`
+  - `split_partition` (`train` / `test`)
+  - `data_origin` (`SYNTHETIC_ABSTRACT_VIDEO_FEATURES`)
+  - `generator_version` (`1.0.0`)
+  - `random_seed` (`42`)
+  - `feature_file_path` (`data/synthetic/video/features/BGD_xxx.npy`)
+  - `sequence_length` ($T_i \in [45, 120]$)
+  - `feature_dimension` (`24`)
+  - `dtype` (`float32`)
+  - `missing_frame_count`
+  - `mean_tracking_confidence`
+  - `dropout_rate`
+- `features/`: 800 individual NumPy `.npy` files (`BGD_001.npy` to `BGD_800.npy`) of shape $(T_i, 24)$ and dtype `float32`.
+
+## Execution & Verification
+To regenerate the synthetic video feature cohort:
+```bash
+python -m pipelines.synthetic_video.generator
+```
+
+To run the automated validation test suite:
+```bash
+pytest tests/test_synthetic_video.py -v
+```
+All 15 automated checks verify participant ID alignment, split distribution, tensor dimensions, bounds adherence, tracking quality consistency, deterministic reproducibility, target isolation, and absence of visual media files.
