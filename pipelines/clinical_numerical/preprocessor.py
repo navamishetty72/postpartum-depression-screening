@@ -150,6 +150,18 @@ class ClinicalPreprocessor(BaseEstimator, TransformerMixin):
     @classmethod
     def load(cls, filepath: Path) -> "ClinicalPreprocessor":
         """Load serialized preprocessor from disk."""
+        # Ensure backward compatibility for ColumnTransformer pickled in scikit-learn <1.7
+        try:
+            import sklearn.compose._column_transformer as _ct
+            from collections import UserList
+            if not hasattr(_ct, "_RemainderColsList"):
+                class _RemainderColsList(UserList):
+                    def __init__(self, columns=None, *args, **kwargs):
+                        super().__init__(columns if columns is not None else [])
+                _ct._RemainderColsList = _RemainderColsList
+        except Exception:
+            pass
+
         preprocessor = joblib.load(filepath)
         if not isinstance(preprocessor, cls):
             raise TypeError(f"Loaded object is not an instance of {cls.__name__}")
