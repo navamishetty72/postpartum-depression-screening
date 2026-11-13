@@ -11,6 +11,11 @@ from pathlib import Path
 import threading
 from typing import Any, Dict, Optional, Union
 
+try:
+    import torch
+except ImportError:
+    torch = None
+
 from backend.schemas.audio import (
     AcousticFeatures,
     AudioPredictionDetails,
@@ -27,7 +32,14 @@ DEFAULT_AUDIO_MODEL_DIR = PROJECT_ROOT / "models" / "audio_model"
 
 
 class AudioScreeningService:
-    """Singleton service for audio acoustic screening inference and validation."""
+    """Singleton service for audio acoustic screening inference and validation.
+
+    Follows the architectural patterns of ClinicalScreeningService and TextNERService:
+    - Thread-safe lazy or startup initialization.
+    - Explicit is_loaded and is_available lifecycle readiness properties.
+    - Safe handling of missing model checkpoints without crashing application startup.
+    - Zero logging of sensitive patient biometric features.
+    """
 
     def __init__(
         self,
@@ -44,9 +56,14 @@ class AudioScreeningService:
         self._lock = threading.Lock()
 
     @property
-    def is_available(self) -> bool:
-        """Whether a genuine trained audio model checkpoint is loaded and ready."""
+    def is_loaded(self) -> bool:
+        """Whether a genuine trained audio model checkpoint is loaded and ready for inference."""
         return self._is_available and self._model is not None
+
+    @property
+    def is_available(self) -> bool:
+        """Alias for is_loaded indicating modality readiness."""
+        return self.is_loaded
 
     @property
     def model_dir_path(self) -> Path:
@@ -79,7 +96,17 @@ class AudioScreeningService:
 
             try:
                 # If weights exist in future, attempt load safely
-                import torch
+                if torch is None:
+                    # Handle missing torch dependency gracefully
+                    self._is_available = False
+                    self._load_error = "Required dependency 'torch' is not installed."
+                    logger.warning(
+                        "Audio model checkpoint found at %s, but 'torch' is not installed. "
+                        "Please install torch to enable audio screening inference.",
+                        model_path,
+                    )
+                    return
+
                 state_dict = torch.load(model_path, map_location="cpu", weights_only=True)
                 self._model = state_dict
                 self._is_available = True
@@ -118,8 +145,9 @@ class AudioScreeningService:
             validated_features = features
 
         # When model weights or pipeline artifacts are missing or experimental
-        if not self.is_available:
+        if not self.is_loaded:
             return AudioScreeningResponse(
+                mother_id=mother_id,
                 status="unavailable",
                 is_predictive=False,
                 data_origin=DATA_ORIGIN_TAG,
@@ -140,6 +168,7 @@ class AudioScreeningService:
 
         # If a real model is loaded in future, preserve non-predictive flag for synthetic benchmarks
         return AudioScreeningResponse(
+            mother_id=mother_id,
             status="completed",
             is_predictive=False,  # strictly False for current synthetic experimental pipeline
             data_origin=DATA_ORIGIN_TAG,
@@ -165,4 +194,3 @@ __all__ = [
     "audio_service",
     "get_audio_service",
 ]
-
