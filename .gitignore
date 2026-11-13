@@ -59,7 +59,10 @@ Thumbs.db
 # Trained models and large weights
 models/*
 !models/.gitkeep
+!models/clinical_numerical/
+!models/clinical_numerical/**
 *.joblib
+!models/clinical_numerical/*.joblib
 *.pt
 *.pth
 *.bin

@@ -1,0 +1,650 @@
+{
+  "metadata": {
+    "random_seed": 42,
+    "cv_folds": 5,
+    "train_samples": 640,
+    "test_samples": 160,
+    "feature_count_raw": 46,
+    "feature_count_encoded": 151
+  },
+  "cross_validation": {
+    "logistic_regression": {
+      "summary_across_folds": {
+        "roc_auc": {
+          "mean": 0.8381,
+          "std": 0.0487
+        },
+        "pr_auc": {
+          "mean": 0.8076,
+          "std": 0.0443
+        },
+        "accuracy": {
+          "mean": 0.75,
+          "std": 0.045
+        },
+        "balanced_accuracy": {
+          "mean": 0.751,
+          "std": 0.043
+        },
+        "sensitivity": {
+          "mean": 0.758,
+          "std": 0.0366
+        },
+        "specificity": {
+          "mean": 0.7439,
+          "std": 0.0638
+        },
+        "precision": {
+          "mean": 0.7013,
+          "std": 0.0554
+        },
+        "f1": {
+          "mean": 0.7278,
+          "std": 0.0423
+        },
+        "brier_score": {
+          "mean": 0.1644,
+          "std": 0.0251
+        }
+      },
+      "overall_oof_metrics": {
+        "roc_auc": 0.8373,
+        "pr_auc": 0.803,
+        "accuracy": 0.75,
+        "balanced_accuracy": 0.7509,
+        "sensitivity": 0.758,
+        "specificity": 0.7437,
+        "precision": 0.6984,
+        "f1": 0.727,
+        "brier_score": 0.1645,
+        "confusion_matrix": {
+          "tn": 267,
+          "fp": 92,
+          "fn": 68,
+          "tp": 213
+        },
+        "sample_count": 640,
+        "positive_count": 281,
+        "negative_count": 359,
+        "decision_threshold": 0.5
+      },
+      "fold_details": [
+        {
+          "roc_auc": 0.8638,
+          "pr_auc": 0.8196,
+          "accuracy": 0.7812,
+          "balanced_accuracy": 0.7786,
+          "sensitivity": 0.7544,
+          "specificity": 0.8028,
+          "precision": 0.7544,
+          "f1": 0.7544,
+          "brier_score": 0.1505,
+          "confusion_matrix": {
+            "tn": 57,
+            "fp": 14,
+            "fn": 14,
+            "tp": 43
+          },
+          "sample_count": 128,
+          "positive_count": 57,
+          "negative_count": 71,
+          "decision_threshold": 0.5,
+          "fold": 1
+        },
+        {
+          "roc_auc": 0.8304,
+          "pr_auc": 0.8025,
+          "accuracy": 0.7422,
+          "balanced_accuracy": 0.7391,
+          "sensitivity": 0.7143,
+          "specificity": 0.7639,
+          "precision": 0.7018,
+          "f1": 0.708,
+          "brier_score": 0.1664,
+          "confusion_matrix": {
+            "tn": 55,
+            "fp": 17,
+            "fn": 16,
+            "tp": 40
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 2
+        },
+        {
+          "roc_auc": 0.7986,
+          "pr_auc": 0.7729,
+          "accuracy": 0.75,
+          "balanced_accuracy": 0.752,
+          "sensitivity": 0.7679,
+          "specificity": 0.7361,
+          "precision": 0.6935,
+          "f1": 0.7288,
+          "brier_score": 0.1816,
+          "confusion_matrix": {
+            "tn": 53,
+            "fp": 19,
+            "fn": 13,
+            "tp": 43
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 3
+        },
+        {
+          "roc_auc": 0.9172,
+          "pr_auc": 0.885,
+          "accuracy": 0.8047,
+          "balanced_accuracy": 0.8065,
+          "sensitivity": 0.8214,
+          "specificity": 0.7917,
+          "precision": 0.7541,
+          "f1": 0.7863,
+          "brier_score": 0.1254,
+          "confusion_matrix": {
+            "tn": 57,
+            "fp": 15,
+            "fn": 10,
+            "tp": 46
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 4
+        },
+        {
+          "roc_auc": 0.7803,
+          "pr_auc": 0.758,
+          "accuracy": 0.6719,
+          "balanced_accuracy": 0.6786,
+          "sensitivity": 0.7321,
+          "specificity": 0.625,
+          "precision": 0.6029,
+          "f1": 0.6613,
+          "brier_score": 0.1982,
+          "confusion_matrix": {
+            "tn": 45,
+            "fp": 27,
+            "fn": 15,
+            "tp": 41
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 5
+        }
+      ]
+    },
+    "random_forest": {
+      "summary_across_folds": {
+        "roc_auc": {
+          "mean": 0.8438,
+          "std": 0.0457
+        },
+        "pr_auc": {
+          "mean": 0.8137,
+          "std": 0.0531
+        },
+        "accuracy": {
+          "mean": 0.7609,
+          "std": 0.0651
+        },
+        "balanced_accuracy": {
+          "mean": 0.7618,
+          "std": 0.0644
+        },
+        "sensitivity": {
+          "mean": 0.7687,
+          "std": 0.0666
+        },
+        "specificity": {
+          "mean": 0.7549,
+          "std": 0.0748
+        },
+        "precision": {
+          "mean": 0.7135,
+          "std": 0.0757
+        },
+        "f1": {
+          "mean": 0.7393,
+          "std": 0.0677
+        },
+        "brier_score": {
+          "mean": 0.1711,
+          "std": 0.0151
+        }
+      },
+      "overall_oof_metrics": {
+        "roc_auc": 0.8432,
+        "pr_auc": 0.8086,
+        "accuracy": 0.7609,
+        "balanced_accuracy": 0.7618,
+        "sensitivity": 0.7687,
+        "specificity": 0.7549,
+        "precision": 0.7105,
+        "f1": 0.7385,
+        "brier_score": 0.1711,
+        "confusion_matrix": {
+          "tn": 271,
+          "fp": 88,
+          "fn": 65,
+          "tp": 216
+        },
+        "sample_count": 640,
+        "positive_count": 281,
+        "negative_count": 359,
+        "decision_threshold": 0.5
+      },
+      "fold_details": [
+        {
+          "roc_auc": 0.8436,
+          "pr_auc": 0.807,
+          "accuracy": 0.7578,
+          "balanced_accuracy": 0.7575,
+          "sensitivity": 0.7544,
+          "specificity": 0.7606,
+          "precision": 0.7167,
+          "f1": 0.735,
+          "brier_score": 0.166,
+          "confusion_matrix": {
+            "tn": 54,
+            "fp": 17,
+            "fn": 14,
+            "tp": 43
+          },
+          "sample_count": 128,
+          "positive_count": 57,
+          "negative_count": 71,
+          "decision_threshold": 0.5,
+          "fold": 1
+        },
+        {
+          "roc_auc": 0.8373,
+          "pr_auc": 0.8027,
+          "accuracy": 0.7734,
+          "balanced_accuracy": 0.7688,
+          "sensitivity": 0.7321,
+          "specificity": 0.8056,
+          "precision": 0.7455,
+          "f1": 0.7387,
+          "brier_score": 0.1706,
+          "confusion_matrix": {
+            "tn": 58,
+            "fp": 14,
+            "fn": 15,
+            "tp": 41
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 2
+        },
+        {
+          "roc_auc": 0.7919,
+          "pr_auc": 0.7676,
+          "accuracy": 0.6641,
+          "balanced_accuracy": 0.6657,
+          "sensitivity": 0.6786,
+          "specificity": 0.6528,
+          "precision": 0.6032,
+          "f1": 0.6387,
+          "brier_score": 0.1874,
+          "confusion_matrix": {
+            "tn": 47,
+            "fp": 25,
+            "fn": 18,
+            "tp": 38
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 3
+        },
+        {
+          "roc_auc": 0.9278,
+          "pr_auc": 0.9156,
+          "accuracy": 0.8672,
+          "balanced_accuracy": 0.8681,
+          "sensitivity": 0.875,
+          "specificity": 0.8611,
+          "precision": 0.8305,
+          "f1": 0.8522,
+          "brier_score": 0.1459,
+          "confusion_matrix": {
+            "tn": 62,
+            "fp": 10,
+            "fn": 7,
+            "tp": 49
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 4
+        },
+        {
+          "roc_auc": 0.8182,
+          "pr_auc": 0.7758,
+          "accuracy": 0.7422,
+          "balanced_accuracy": 0.749,
+          "sensitivity": 0.8036,
+          "specificity": 0.6944,
+          "precision": 0.6716,
+          "f1": 0.7317,
+          "brier_score": 0.1857,
+          "confusion_matrix": {
+            "tn": 50,
+            "fp": 22,
+            "fn": 11,
+            "tp": 45
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 5
+        }
+      ]
+    },
+    "hist_gradient_boosting": {
+      "summary_across_folds": {
+        "roc_auc": {
+          "mean": 0.8297,
+          "std": 0.0477
+        },
+        "pr_auc": {
+          "mean": 0.7896,
+          "std": 0.0461
+        },
+        "accuracy": {
+          "mean": 0.7531,
+          "std": 0.0524
+        },
+        "balanced_accuracy": {
+          "mean": 0.7549,
+          "std": 0.0508
+        },
+        "sensitivity": {
+          "mean": 0.7686,
+          "std": 0.0466
+        },
+        "specificity": {
+          "mean": 0.7411,
+          "std": 0.0684
+        },
+        "precision": {
+          "mean": 0.7021,
+          "std": 0.0626
+        },
+        "f1": {
+          "mean": 0.733,
+          "std": 0.0513
+        },
+        "brier_score": {
+          "mean": 0.1674,
+          "std": 0.0245
+        }
+      },
+      "overall_oof_metrics": {
+        "roc_auc": 0.8298,
+        "pr_auc": 0.7871,
+        "accuracy": 0.7531,
+        "balanced_accuracy": 0.7548,
+        "sensitivity": 0.7687,
+        "specificity": 0.7409,
+        "precision": 0.699,
+        "f1": 0.7322,
+        "brier_score": 0.1674,
+        "confusion_matrix": {
+          "tn": 266,
+          "fp": 93,
+          "fn": 65,
+          "tp": 216
+        },
+        "sample_count": 640,
+        "positive_count": 281,
+        "negative_count": 359,
+        "decision_threshold": 0.5
+      },
+      "fold_details": [
+        {
+          "roc_auc": 0.849,
+          "pr_auc": 0.8139,
+          "accuracy": 0.7891,
+          "balanced_accuracy": 0.7874,
+          "sensitivity": 0.7719,
+          "specificity": 0.8028,
+          "precision": 0.7586,
+          "f1": 0.7652,
+          "brier_score": 0.1544,
+          "confusion_matrix": {
+            "tn": 57,
+            "fp": 14,
+            "fn": 13,
+            "tp": 44
+          },
+          "sample_count": 128,
+          "positive_count": 57,
+          "negative_count": 71,
+          "decision_threshold": 0.5,
+          "fold": 1
+        },
+        {
+          "roc_auc": 0.8281,
+          "pr_auc": 0.7794,
+          "accuracy": 0.7578,
+          "balanced_accuracy": 0.755,
+          "sensitivity": 0.7321,
+          "specificity": 0.7778,
+          "precision": 0.7193,
+          "f1": 0.7257,
+          "brier_score": 0.1693,
+          "confusion_matrix": {
+            "tn": 56,
+            "fp": 16,
+            "fn": 15,
+            "tp": 41
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 2
+        },
+        {
+          "roc_auc": 0.784,
+          "pr_auc": 0.7574,
+          "accuracy": 0.7031,
+          "balanced_accuracy": 0.7063,
+          "sensitivity": 0.7321,
+          "specificity": 0.6806,
+          "precision": 0.6406,
+          "f1": 0.6833,
+          "brier_score": 0.1899,
+          "confusion_matrix": {
+            "tn": 49,
+            "fp": 23,
+            "fn": 15,
+            "tp": 41
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 3
+        },
+        {
+          "roc_auc": 0.909,
+          "pr_auc": 0.8646,
+          "accuracy": 0.8281,
+          "balanced_accuracy": 0.8313,
+          "sensitivity": 0.8571,
+          "specificity": 0.8056,
+          "precision": 0.7742,
+          "f1": 0.8136,
+          "brier_score": 0.1281,
+          "confusion_matrix": {
+            "tn": 58,
+            "fp": 14,
+            "fn": 8,
+            "tp": 48
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 4
+        },
+        {
+          "roc_auc": 0.7785,
+          "pr_auc": 0.7326,
+          "accuracy": 0.6875,
+          "balanced_accuracy": 0.6944,
+          "sensitivity": 0.75,
+          "specificity": 0.6389,
+          "precision": 0.6176,
+          "f1": 0.6774,
+          "brier_score": 0.1952,
+          "confusion_matrix": {
+            "tn": 46,
+            "fp": 26,
+            "fn": 14,
+            "tp": 42
+          },
+          "sample_count": 128,
+          "positive_count": 56,
+          "negative_count": 72,
+          "decision_threshold": 0.5,
+          "fold": 5
+        }
+      ]
+    }
+  },
+  "holdout_test": {
+    "logistic_regression": {
+      "roc_auc": 0.8027,
+      "pr_auc": 0.7845,
+      "accuracy": 0.7188,
+      "balanced_accuracy": 0.7198,
+      "sensitivity": 0.7286,
+      "specificity": 0.7111,
+      "precision": 0.6623,
+      "f1": 0.6939,
+      "brier_score": 0.182,
+      "confusion_matrix": {
+        "tn": 64,
+        "fp": 26,
+        "fn": 19,
+        "tp": 51
+      },
+      "sample_count": 160,
+      "positive_count": 70,
+      "negative_count": 90,
+      "decision_threshold": 0.5,
+      "confidence_intervals_95": {
+        "roc_auc": {
+          "ci_lower": 0.7299,
+          "ci_upper": 0.867
+        },
+        "pr_auc": {
+          "ci_lower": 0.6921,
+          "ci_upper": 0.872
+        },
+        "f1": {
+          "ci_lower": 0.6069,
+          "ci_upper": 0.7808
+        },
+        "balanced_accuracy": {
+          "ci_lower": 0.6529,
+          "ci_upper": 0.7928
+        }
+      }
+    },
+    "random_forest": {
+      "roc_auc": 0.8187,
+      "pr_auc": 0.8005,
+      "accuracy": 0.7625,
+      "balanced_accuracy": 0.7635,
+      "sensitivity": 0.7714,
+      "specificity": 0.7556,
+      "precision": 0.7105,
+      "f1": 0.7397,
+      "brier_score": 0.1796,
+      "confusion_matrix": {
+        "tn": 68,
+        "fp": 22,
+        "fn": 16,
+        "tp": 54
+      },
+      "sample_count": 160,
+      "positive_count": 70,
+      "negative_count": 90,
+      "decision_threshold": 0.5,
+      "confidence_intervals_95": {
+        "roc_auc": {
+          "ci_lower": 0.7518,
+          "ci_upper": 0.882
+        },
+        "pr_auc": {
+          "ci_lower": 0.7074,
+          "ci_upper": 0.8836
+        },
+        "f1": {
+          "ci_lower": 0.6567,
+          "ci_upper": 0.8133
+        },
+        "balanced_accuracy": {
+          "ci_lower": 0.7,
+          "ci_upper": 0.8294
+        }
+      }
+    },
+    "hist_gradient_boosting": {
+      "roc_auc": 0.831,
+      "pr_auc": 0.8137,
+      "accuracy": 0.7312,
+      "balanced_accuracy": 0.7278,
+      "sensitivity": 0.7,
+      "specificity": 0.7556,
+      "precision": 0.6901,
+      "f1": 0.695,
+      "brier_score": 0.1725,
+      "confusion_matrix": {
+        "tn": 68,
+        "fp": 22,
+        "fn": 21,
+        "tp": 49
+      },
+      "sample_count": 160,
+      "positive_count": 70,
+      "negative_count": 90,
+      "decision_threshold": 0.5,
+      "confidence_intervals_95": {
+        "roc_auc": {
+          "ci_lower": 0.77,
+          "ci_upper": 0.892
+        },
+        "pr_auc": {
+          "ci_lower": 0.7268,
+          "ci_upper": 0.8858
+        },
+        "f1": {
+          "ci_lower": 0.6,
+          "ci_upper": 0.7832
+        },
+        "balanced_accuracy": {
+          "ci_lower": 0.6568,
+          "ci_upper": 0.804
+        }
+      }
+    }
+  }
+}
