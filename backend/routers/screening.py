@@ -51,6 +51,10 @@ async def analyze_screening(
         None,
         description="JSON string containing the complete 46 clinical survey predictors (required if clinical=true)",
     ),
+    audio_features: Optional[str] = Form(
+        None,
+        description="Optional JSON string of 7 acoustic vocal biomarker features for audio screening",
+    ),
     files_text: Optional[UploadFile] = File(
         None,
         description="Optional narrative text file (.txt, .json) for biomedical entity extraction",
@@ -90,6 +94,7 @@ async def analyze_screening(
         consent_confirmed=effective_consent or False,
         modalities_raw=modalities,
         clinical_features_raw=clinical_features,
+        audio_features_raw=audio_features,
         files_text_bytes=files_text_bytes,
         text_content=text_content,
         files_voice_bytes=files_voice_bytes,

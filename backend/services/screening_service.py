@@ -20,6 +20,7 @@ from backend.ml.fusion_engine import (
     fusion_engine,
     get_fusion_engine,
 )
+from backend.schemas.audio import AcousticFeatures
 from backend.schemas.clinical_numerical import ClinicalFeatures
 from backend.schemas.screening import (
     AudioModalityResult,
@@ -29,6 +30,11 @@ from backend.schemas.screening import (
     ScreeningAnalysisResponse,
     TextModalityResult,
     VideoModalityResult,
+)
+from backend.services.audio_service import (
+    AudioScreeningService,
+    audio_service,
+    get_audio_service,
 )
 from backend.services.clinical_service import (
     ClinicalScreeningService,
@@ -69,11 +75,13 @@ class ScreeningOrchestrationService:
         self,
         clinical_svc: Optional[ClinicalScreeningService] = None,
         text_svc: Optional[TextNERService] = None,
+        audio_svc: Optional[AudioScreeningService] = None,
         mother_val: Optional[MotherValidator] = None,
         fusion_eng: Optional[MultimodalFusionEngine] = None,
     ) -> None:
         self.clinical_service: ClinicalScreeningService = clinical_svc or clinical_service
         self.text_ner_service: TextNERService = text_svc or text_ner_service
+        self.audio_service: AudioScreeningService = audio_svc or audio_service
         self.mother_validator: MotherValidator = mother_val or MotherValidator()
         self.fusion_engine: MultimodalFusionEngine = fusion_eng or fusion_engine
 
@@ -83,6 +91,7 @@ class ScreeningOrchestrationService:
         consent_confirmed: Union[bool, str],
         modalities_raw: Union[str, Dict[str, Any], List[str]],
         clinical_features_raw: Optional[Union[str, Dict[str, Any]]] = None,
+        audio_features_raw: Optional[Union[str, Dict[str, Any]]] = None,
         files_text_bytes: Optional[bytes] = None,
         text_content: Optional[str] = None,
         files_voice_bytes: Optional[bytes] = None,
@@ -269,15 +278,88 @@ class ScreeningOrchestrationService:
                 entities=[],
             )
 
-        # 6. Audio Modality (Unimplemented in Phase 3)
+        # 6. Audio Modality (Experimental Synthetic Baseline / Research Pathway)
         audio_result: AudioModalityResult
         if modalities.audio:
-            audio_result = AudioModalityResult(
-                status="unavailable",
-                prediction=None,
-                model_version=None,
-                message="Audio screening inference model is not yet implemented or trained.",
-            )
+            if audio_features_raw:
+                # Parse JSON if passed as string
+                if isinstance(audio_features_raw, str):
+                    try:
+                        audio_dict = json.loads(audio_features_raw)
+                    except Exception as exc:
+                        raise HTTPException(
+                            status_code=422,
+                            detail=f"Invalid audio_features JSON syntax: {exc}",
+                        )
+                elif isinstance(audio_features_raw, dict):
+                    audio_dict = audio_features_raw
+                else:
+                    raise HTTPException(
+                        status_code=422,
+                        detail="audio_features must be a valid JSON object string or dictionary.",
+                    )
+
+                # Validate against strict 7-feature physiological acoustic schema
+                try:
+                    validated_audio = AcousticFeatures.model_validate(audio_dict)
+                except (ValidationError, ValueError) as exc:
+                    raise HTTPException(
+                        status_code=422,
+                        detail=f"Audio features schema validation failed: {exc}",
+                    )
+
+                # Execute audio inference or safe unavailable handling
+                try:
+                    raw_audio_pred = self.audio_service.predict(
+                        features=validated_audio,
+                        mother_id=clean_mother_id,
+                        as_response=False,
+                    )
+                    audio_result = AudioModalityResult(
+                        status="completed",
+                        prediction=raw_audio_pred,
+                        model_version=raw_audio_pred.get("model_utilized", "audio_random_forest_v1"),
+                        message="Audio acoustic profile processed under experimental research protocol (non-predictive).",
+                    )
+                except HTTPException as exc:
+                    status_label = "unavailable" if exc.status_code == 503 else "failed"
+                    audio_result = AudioModalityResult(
+                        status=status_label,
+                        prediction=None,
+                        model_version=None,
+                        message=str(exc.detail),
+                        error=str(exc.detail) if status_label == "failed" else None,
+                    )
+                except Exception as exc:
+                    logger.error("Audio feature inference failed unexpectedly: %s", exc, exc_info=True)
+                    audio_result = AudioModalityResult(
+                        status="failed",
+                        prediction=None,
+                        model_version=None,
+                        error="Acoustic feature inference failed due to an internal error.",
+                    )
+            elif files_voice_bytes is not None and len(files_voice_bytes) > 0:
+                audio_result = AudioModalityResult(
+                    status="unavailable",
+                    prediction=None,
+                    model_version=None,
+                    message=(
+                        "Raw audio waveform extraction pipeline is offline in this environment. "
+                        "Audio screening requires 7 pre-extracted acoustic features (f0_mean_hz, "
+                        "f0_std_hz, jitter_local_percent, shimmer_local_percent, hnr_db, "
+                        "speech_rate_syllables_per_sec, pause_ratio)."
+                    ),
+                )
+            else:
+                audio_result = AudioModalityResult(
+                    status="unavailable",
+                    prediction=None,
+                    model_version=None,
+                    message=(
+                        "Audio screening inference model is unavailable or audio features were not provided. "
+                        "Audio acoustic feature profiles remain experimental benchmarks (non-predictive)."
+                    ),
+                )
         else:
             audio_result = AudioModalityResult(
                 status="not_requested",
@@ -285,14 +367,18 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 7. Video Modality (Unimplemented in Phase 3)
+        # 7. Video Modality (Experimental Synthetic Simulation / Offline Benchmark)
         video_result: VideoModalityResult
         if modalities.video:
             video_result = VideoModalityResult(
                 status="unavailable",
                 prediction=None,
                 model_version=None,
-                message="Video screening inference model is not yet implemented or trained.",
+                message=(
+                    "Video screening model is an experimental synthetic simulation / offline benchmark. "
+                    "In live screening, visual dynamics inference is unavailable to protect patient privacy "
+                    "and avoid uncalibrated diagnostic predictions."
+                ),
             )
         else:
             video_result = VideoModalityResult(
@@ -362,6 +448,7 @@ def get_mother_validator() -> MotherValidator:
 def get_screening_service(
     clinical_svc: ClinicalScreeningService = Depends(get_clinical_service),
     text_svc: TextNERService = Depends(get_text_ner_service),
+    audio_svc: AudioScreeningService = Depends(get_audio_service),
     mother_val: MotherValidator = Depends(get_mother_validator),
     fusion_eng: MultimodalFusionEngine = Depends(get_fusion_engine),
 ) -> ScreeningOrchestrationService:
@@ -369,6 +456,7 @@ def get_screening_service(
     return ScreeningOrchestrationService(
         clinical_svc=clinical_svc,
         text_svc=text_svc,
+        audio_svc=audio_svc,
         mother_val=mother_val,
         fusion_eng=fusion_eng,
     )

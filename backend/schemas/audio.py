@@ -126,7 +126,7 @@ class AudioInferenceRequest(BaseModel):
 
 
 class AudioPredictionDetails(BaseModel):
-    """Reserved structure for validated audio model predictions."""
+    """Structure for validated audio model predictions."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -134,17 +134,21 @@ class AudioPredictionDetails(BaseModel):
         default=None,
         ge=0.0,
         le=1.0,
-        description="Reserved for calibrated PPD risk probability (None when uncalibrated/unavailable)",
+        description="Predicted continuous risk probability in [0.0, 1.0]",
     )
     predicted_class: Optional[int] = Field(
         default=None,
         ge=0,
         le=1,
-        description="Reserved for binary screening classification (None when unavailable)",
+        description="Binary screening classification (1 = High Risk, 0 = Low Risk)",
     )
     risk_category: Optional[str] = Field(
         default=None,
         description="Categorical risk tier: 'HIGH_RISK', 'MODERATE_RISK', or 'LOW_RISK'",
+    )
+    decision_threshold: Optional[float] = Field(
+        default=0.5,
+        description="Operating decision threshold applied to predicted risk probability",
     )
 
 

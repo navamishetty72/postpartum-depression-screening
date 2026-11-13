@@ -1,6 +1,6 @@
 """Focused unit tests for Audio schema validation and AudioScreeningService foundation.
 
-Tests Phase 8C requirements:
+Tests Phase 8F reconciliation requirements:
 1. Schema validation of the 7 acoustic features against physiological bounds.
 2. Verification of documented clinical literature citations for all physiological boundaries.
 3. Extra and missing field rejection (extra='forbid').
@@ -9,11 +9,22 @@ Tests Phase 8C requirements:
 6. Safe unavailable response behavior when model checkpoints are missing (no fabricated predictions).
 7. Strict non-predictive flag (is_predictive=False) and provenance preservation.
 8. Proper propagation of participant/mother identifiers without exposing biometrics in logs.
+9. Temporary artifact mock loading and inference execution (RandomForest + StandardScaler).
+10. Verification of exact feature ordering in DataFrame transformation.
+11. Verification that no automatic training is triggered by startup or inference.
+12. Compatibility with both as_response=True (AudioScreeningResponse) and as_response=False (dict/HTTPException).
 """
 
 from pathlib import Path
+from unittest.mock import patch
+from fastapi import HTTPException
+import joblib
+import numpy as np
+import pandas as pd
 import pytest
 from pydantic import ValidationError
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 
 from backend.schemas.audio import (
     ACOUSTIC_FEATURE_BOUNDS,
@@ -23,7 +34,10 @@ from backend.schemas.audio import (
     AudioInferenceRequest,
     AudioScreeningResponse,
 )
-from backend.services.audio_service import AudioScreeningService
+from backend.services.audio_service import (
+    EXPECTED_AUDIO_FEATURES,
+    AudioScreeningService,
+)
 from pipelines.synthetic_audio.config import DATA_ORIGIN_TAG
 
 
@@ -39,6 +53,28 @@ def valid_acoustic_dict():
         "speech_rate_syllables_per_sec": 3.80,
         "pause_ratio": 0.24,
     }
+
+
+@pytest.fixture
+def temp_audio_artifacts(tmp_path):
+    """Create lightweight temporary scaler and Random Forest model artifacts for testing."""
+    model_dir = tmp_path / "test_audio_model"
+    model_dir.mkdir(parents=True)
+
+    # 1. Fit dummy scaler on 7 features with feature names
+    scaler = StandardScaler()
+    dummy_data = np.random.RandomState(42).randn(20, 7)
+    dummy_df = pd.DataFrame(dummy_data, columns=EXPECTED_AUDIO_FEATURES)
+    scaler.fit(dummy_df)
+    joblib.dump(scaler, model_dir / "scaler.joblib")
+
+    # 2. Fit dummy Random Forest classifier
+    rf = RandomForestClassifier(n_estimators=5, random_state=42)
+    dummy_labels = np.array([0, 1] * 10)
+    rf.fit(scaler.transform(dummy_df), dummy_labels)
+    joblib.dump(rf, model_dir / "random_forest.joblib")
+
+    return model_dir
 
 
 # =====================================================================
@@ -176,9 +212,9 @@ def test_audio_service_startup_missing_weights(tmp_path):
 
 
 def test_audio_service_predict_missing_model_returns_explicit_unavailable(valid_acoustic_dict, tmp_path):
-    """Verify predict() returns explicit unavailable result without fabricating predictions."""
+    """Verify predict(as_response=True) returns explicit unavailable result without fabricating predictions."""
     service = AudioScreeningService(model_dir=tmp_path / "missing")
-    response: AudioScreeningResponse = service.predict(valid_acoustic_dict, mother_id="M_001")
+    response: AudioScreeningResponse = service.predict(valid_acoustic_dict, mother_id="M_001", as_response=True)
 
     # Verification of requirements:
     assert response.mother_id == "M_001"
@@ -192,6 +228,15 @@ def test_audio_service_predict_missing_model_returns_explicit_unavailable(valid_
     assert response.acoustic_features.f0_mean_hz == 215.0
 
 
+def test_audio_service_predict_missing_model_raises_http_503(valid_acoustic_dict, tmp_path):
+    """Verify predict(as_response=False) raises HTTP 503 when model is missing."""
+    service = AudioScreeningService(model_dir=tmp_path / "missing")
+    with pytest.raises(HTTPException) as exc_info:
+        service.predict(valid_acoustic_dict, mother_id="M_001", as_response=False)
+    assert exc_info.value.status_code == 503
+    assert "unavailable" in exc_info.value.detail.lower()
+
+
 def test_audio_service_shutdown_cleans_state():
     """Verify shutdown resets internal service state."""
     service = AudioScreeningService()
@@ -201,3 +246,92 @@ def test_audio_service_shutdown_cleans_state():
     assert service.is_loaded is False
     assert service._startup_attempted is False
     assert service._model is None
+    assert service._scaler is None
+    assert service._rf_model is None
+
+
+def test_audio_service_never_automatically_trains(tmp_path):
+    """Verify neither startup() nor predict() automatically generates model files."""
+    test_dir = tmp_path / "no_train_dir"
+    service = AudioScreeningService(model_dir=test_dir)
+
+    service.startup()
+    assert not test_dir.exists()  # Directory was not even created
+
+    service.predict({
+        "f0_mean_hz": 215.0,
+        "f0_std_hz": 28.0,
+        "jitter_local_percent": 1.20,
+        "shimmer_local_percent": 4.50,
+        "hnr_db": 20.0,
+        "speech_rate_syllables_per_sec": 3.80,
+        "pause_ratio": 0.24,
+    }, as_response=True)
+
+    # Ensure no files were generated
+    assert not test_dir.exists() or len(list(test_dir.iterdir())) == 0
+
+
+# =====================================================================
+# 3. Model Inference & Artifact Loading Tests (with Temporary Mock)
+# =====================================================================
+
+
+def test_audio_service_loads_valid_artifacts(temp_audio_artifacts):
+    """Verify AudioScreeningService correctly loads valid scaler and RF artifacts."""
+    service = AudioScreeningService(model_dir=temp_audio_artifacts, model_name="random_forest")
+    service.startup()
+
+    assert service.is_loaded is True
+    assert service.is_available is True
+    assert service._scaler is not None
+    assert service._rf_model is not None
+    assert service._model_version == "audio_random_forest_v1"
+
+
+def test_audio_service_predict_with_valid_artifacts_as_response(temp_audio_artifacts, valid_acoustic_dict):
+    """Verify predict(as_response=True) produces valid completed AudioScreeningResponse."""
+    service = AudioScreeningService(model_dir=temp_audio_artifacts, model_name="random_forest")
+    service.startup()
+
+    res = service.predict(valid_acoustic_dict, mother_id="M_TEST_123", as_response=True)
+
+    assert isinstance(res, AudioScreeningResponse)
+    assert res.mother_id == "M_TEST_123"
+    assert res.status == "completed"
+    assert res.is_predictive is False  # Enforces synthetic non-predictive flag
+    assert res.data_origin == DATA_ORIGIN_TAG
+    assert res.prediction is not None
+    assert 0.0 <= res.prediction.predicted_risk_probability <= 1.0
+    assert res.prediction.predicted_class in (0, 1)
+    assert res.prediction.risk_category in ("LOW_RISK", "MODERATE_RISK", "HIGH_RISK")
+
+
+def test_audio_service_predict_with_valid_artifacts_as_dict(temp_audio_artifacts, valid_acoustic_dict):
+    """Verify predict(as_response=False) produces structured dictionary for fusion."""
+    service = AudioScreeningService(model_dir=temp_audio_artifacts, model_name="random_forest")
+    service.startup()
+
+    pred_dict = service.predict(valid_acoustic_dict, threshold=0.5, as_response=False)
+
+    assert isinstance(pred_dict, dict)
+    assert "predicted_risk_probability" in pred_dict
+    assert "predicted_class" in pred_dict
+    assert "risk_category" in pred_dict
+    assert pred_dict["decision_threshold"] == 0.5
+    assert pred_dict["data_origin"] == DATA_ORIGIN_TAG
+
+
+def test_audio_service_enforces_exact_feature_ordering(temp_audio_artifacts, valid_acoustic_dict):
+    """Verify that features are fed to the scaler in the exact EXPECTED_AUDIO_FEATURES order."""
+    service = AudioScreeningService(model_dir=temp_audio_artifacts, model_name="random_forest")
+    service.startup()
+
+    # Pass dictionary with deliberately reversed keys
+    reversed_dict = {k: valid_acoustic_dict[k] for k in reversed(list(valid_acoustic_dict.keys()))}
+
+    with patch.object(service._scaler, "transform", wraps=service._scaler.transform) as mock_transform:
+        service.predict(reversed_dict, as_response=False)
+        mock_transform.assert_called_once()
+        transformed_df = mock_transform.call_args[0][0]
+        assert list(transformed_df.columns) == EXPECTED_AUDIO_FEATURES

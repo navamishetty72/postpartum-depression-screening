@@ -201,6 +201,10 @@ class FusionModalityResult(BaseModel):
         default=None,
         description="Cross-modal divergence metrics",
     )
+    research_benchmarks: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Empirical multimodal benchmark metrics comparing single-modality and fusion architectures",
+    )
 
 
 class ScreeningAnalysisResponse(BaseModel):
