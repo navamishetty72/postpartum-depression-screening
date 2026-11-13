@@ -20,4 +20,4 @@ torch>=2.2.0
 scipy>=1.12.0
 
 # Generative AI & Voice Assistant Services
-google-genai>=3.0.0
+google-genai>=2.0.0
