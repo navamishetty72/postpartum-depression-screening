@@ -11,6 +11,7 @@ Guarantees:
 """
 
 from datetime import date, datetime, timezone
+import os
 import uuid
 import pytest
 from sqlalchemy import create_engine, delete, select, text
@@ -39,12 +40,28 @@ from backend.services.screening_service import screening_service, MotherNotFound
 TEST_TAG = "__TEST_SUPABASE_INTEGRATION__"
 
 
+def _is_live_postgres_available() -> bool:
+    """Return True only if a live PostgreSQL connection URL is configured in the environment."""
+    raw_url = os.getenv("DATABASE_URL", "").strip()
+    if not raw_url:
+        return False
+    url = get_database_url()
+    return "sqlite" not in url and ("postgres" in url or "postgresql" in url)
+
+
+pytestmark = pytest.mark.skipif(
+    not _is_live_postgres_available(),
+    reason="Live PostgreSQL/Supabase database not configured (DATABASE_URL missing or SQLite fallback in use; skipping integration tests in CI)",
+)
+
+
 @pytest.fixture(scope="module")
 def pg_session():
     """Create a live PostgreSQL session with robust cleanup of all test records."""
-    url = get_database_url()
-    assert "sqlite" not in url, "Expected PostgreSQL connection string, got SQLite"
+    if not _is_live_postgres_available():
+        pytest.skip("Live PostgreSQL database not configured in environment")
 
+    url = get_database_url()
     engine = create_engine(url, pool_pre_ping=True)
     SessionClass = sessionmaker(bind=engine, autocommit=False, autoflush=False)
     session: Session = SessionClass()
