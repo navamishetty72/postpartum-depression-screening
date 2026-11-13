@@ -1,0 +1,527 @@
+{
+  "model_version": "1.3.0",
+  "evaluated_at_utc": "2026-11-12T11:08:24.726974+00:00",
+  "dataset_partition": "final_test",
+  "documents_evaluated": 1586,
+  "privacy_notice": "Strict aggregate error statistics only. Zero raw forum post text or span strings included.",
+  "raw_argmax": {
+    "error_counts": {
+      "spurious_entity": 16534,
+      "boundary_mismatch_same_label": 1395,
+      "completely_missed_entity": 1975
+    },
+    "privacy_notice": "Aggregate counts only; contains zero raw forum text or span strings.",
+    "gold_span_char_length_stats": {
+      "count": 34878,
+      "min": 3,
+      "median": 6.0,
+      "mean": 7.05,
+      "p90": 10.0,
+      "max": 38
+    },
+    "predicted_span_char_length_stats": {
+      "count": 49372,
+      "min": 1,
+      "median": 7.0,
+      "mean": 7.37,
+      "p90": 11.0,
+      "max": 95
+    },
+    "gold_token_complexity_breakdown": {
+      "single_token": {
+        "support": 32256,
+        "boundary_mismatch_fn": 952,
+        "exact_match_tp": 29553,
+        "completely_missed_fn": 1751,
+        "exact_match_recall": 0.9162
+      },
+      "multi_token": {
+        "support": 2622,
+        "exact_match_tp": 1890,
+        "boundary_mismatch_fn": 508,
+        "completely_missed_fn": 224,
+        "exact_match_recall": 0.7208
+      }
+    },
+    "boundary_mismatch_length_comparison": {
+      "longer_pred": 761,
+      "shorter_pred": 634,
+      "other_overlap": 0
+    },
+    "spurious_fp_token_length_distribution": {
+      "1_token": 15817,
+      "3plus_tokens": 50,
+      "2_tokens": 667
+    },
+    "umls_semantic_type_recall_breakdown": {
+      "phsu": {
+        "gold_occurrences": 10318,
+        "exact_match_tp": 9473,
+        "boundary_mismatch_fn": 409,
+        "completely_missed_fn": 436,
+        "exact_match_recall": 0.9181,
+        "relaxed_overlap_recall": 0.9577
+      },
+      "menp": {
+        "gold_occurrences": 8882,
+        "exact_match_tp": 7995,
+        "boundary_mismatch_fn": 220,
+        "completely_missed_fn": 667,
+        "exact_match_recall": 0.9001,
+        "relaxed_overlap_recall": 0.9249
+      },
+      "orch": {
+        "gold_occurrences": 8569,
+        "exact_match_tp": 7891,
+        "boundary_mismatch_fn": 341,
+        "completely_missed_fn": 337,
+        "exact_match_recall": 0.9209,
+        "relaxed_overlap_recall": 0.9607
+      },
+      "mobd": {
+        "gold_occurrences": 7463,
+        "exact_match_tp": 6919,
+        "boundary_mismatch_fn": 408,
+        "completely_missed_fn": 136,
+        "exact_match_recall": 0.9271,
+        "relaxed_overlap_recall": 0.9818
+      },
+      "dsyn": {
+        "gold_occurrences": 2928,
+        "exact_match_tp": 2541,
+        "boundary_mismatch_fn": 165,
+        "completely_missed_fn": 222,
+        "exact_match_recall": 0.8678,
+        "relaxed_overlap_recall": 0.9242
+      },
+      "sosy": {
+        "gold_occurrences": 2770,
+        "exact_match_tp": 2383,
+        "boundary_mismatch_fn": 179,
+        "completely_missed_fn": 208,
+        "exact_match_recall": 0.8603,
+        "relaxed_overlap_recall": 0.9249
+      },
+      "socb": {
+        "gold_occurrences": 911,
+        "exact_match_tp": 749,
+        "boundary_mismatch_fn": 36,
+        "completely_missed_fn": 126,
+        "exact_match_recall": 0.8222,
+        "relaxed_overlap_recall": 0.8617
+      },
+      "inbe": {
+        "gold_occurrences": 797,
+        "exact_match_tp": 691,
+        "boundary_mismatch_fn": 18,
+        "completely_missed_fn": 88,
+        "exact_match_recall": 0.867,
+        "relaxed_overlap_recall": 0.8896
+      },
+      "antb": {
+        "gold_occurrences": 722,
+        "exact_match_tp": 689,
+        "boundary_mismatch_fn": 23,
+        "completely_missed_fn": 10,
+        "exact_match_recall": 0.9543,
+        "relaxed_overlap_recall": 0.9861
+      },
+      "bodm": {
+        "gold_occurrences": 512,
+        "exact_match_tp": 451,
+        "boundary_mismatch_fn": 11,
+        "completely_missed_fn": 50,
+        "exact_match_recall": 0.8809,
+        "relaxed_overlap_recall": 0.9023
+      },
+      "inch": {
+        "gold_occurrences": 227,
+        "exact_match_tp": 188,
+        "boundary_mismatch_fn": 8,
+        "completely_missed_fn": 31,
+        "exact_match_recall": 0.8282,
+        "relaxed_overlap_recall": 0.8634
+      },
+      "bacs": {
+        "gold_occurrences": 185,
+        "exact_match_tp": 153,
+        "boundary_mismatch_fn": 8,
+        "completely_missed_fn": 24,
+        "exact_match_recall": 0.827,
+        "relaxed_overlap_recall": 0.8703
+      },
+      "aapp": {
+        "gold_occurrences": 183,
+        "exact_match_tp": 148,
+        "boundary_mismatch_fn": 2,
+        "completely_missed_fn": 33,
+        "exact_match_recall": 0.8087,
+        "relaxed_overlap_recall": 0.8197
+      },
+      "bhvr": {
+        "gold_occurrences": 162,
+        "exact_match_tp": 144,
+        "boundary_mismatch_fn": 3,
+        "completely_missed_fn": 15,
+        "exact_match_recall": 0.8889,
+        "relaxed_overlap_recall": 0.9074
+      },
+      "horm": {
+        "gold_occurrences": 144,
+        "exact_match_tp": 116,
+        "boundary_mismatch_fn": 4,
+        "completely_missed_fn": 24,
+        "exact_match_recall": 0.8056,
+        "relaxed_overlap_recall": 0.8333
+      },
+      "vita": {
+        "gold_occurrences": 117,
+        "exact_match_tp": 83,
+        "boundary_mismatch_fn": 13,
+        "completely_missed_fn": 21,
+        "exact_match_recall": 0.7094,
+        "relaxed_overlap_recall": 0.8205
+      },
+      "imft": {
+        "gold_occurrences": 115,
+        "exact_match_tp": 105,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 9,
+        "exact_match_recall": 0.913,
+        "relaxed_overlap_recall": 0.9217
+      },
+      "hops": {
+        "gold_occurrences": 70,
+        "exact_match_tp": 52,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 17,
+        "exact_match_recall": 0.7429,
+        "relaxed_overlap_recall": 0.7571
+      },
+      "elii": {
+        "gold_occurrences": 64,
+        "exact_match_tp": 55,
+        "boundary_mismatch_fn": 2,
+        "completely_missed_fn": 7,
+        "exact_match_recall": 0.8594,
+        "relaxed_overlap_recall": 0.8906
+      },
+      "cgab": {
+        "gold_occurrences": 39,
+        "exact_match_tp": 12,
+        "boundary_mismatch_fn": 6,
+        "completely_missed_fn": 21,
+        "exact_match_recall": 0.3077,
+        "relaxed_overlap_recall": 0.4615
+      },
+      "acab": {
+        "gold_occurrences": 12,
+        "exact_match_tp": 11,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.9167,
+        "relaxed_overlap_recall": 0.9167
+      },
+      "irda": {
+        "gold_occurrences": 5,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 5,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      },
+      "clnd": {
+        "gold_occurrences": 4,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 3,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.75
+      },
+      "cell": {
+        "gold_occurrences": 2,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 2,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      },
+      "food": {
+        "gold_occurrences": 1,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 0,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 1.0
+      },
+      "anab": {
+        "gold_occurrences": 1,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      }
+    }
+  },
+  "frozen_viterbi": {
+    "error_counts": {
+      "spurious_entity": 15437,
+      "boundary_mismatch_same_label": 1118,
+      "completely_missed_entity": 2691
+    },
+    "privacy_notice": "Aggregate counts only; contains zero raw forum text or span strings.",
+    "gold_span_char_length_stats": {
+      "count": 34878,
+      "min": 3,
+      "median": 6.0,
+      "mean": 7.05,
+      "p90": 10.0,
+      "max": 38
+    },
+    "predicted_span_char_length_stats": {
+      "count": 47482,
+      "min": 3,
+      "median": 7.0,
+      "mean": 7.35,
+      "p90": 11.0,
+      "max": 95
+    },
+    "gold_token_complexity_breakdown": {
+      "single_token": {
+        "support": 32256,
+        "boundary_mismatch_fn": 921,
+        "exact_match_tp": 28924,
+        "completely_missed_fn": 2411,
+        "exact_match_recall": 0.8967
+      },
+      "multi_token": {
+        "support": 2622,
+        "exact_match_tp": 2003,
+        "boundary_mismatch_fn": 339,
+        "completely_missed_fn": 280,
+        "exact_match_recall": 0.7639
+      }
+    },
+    "boundary_mismatch_length_comparison": {
+      "longer_pred": 730,
+      "shorter_pred": 388,
+      "other_overlap": 0
+    },
+    "spurious_fp_token_length_distribution": {
+      "1_token": 14661,
+      "3plus_tokens": 64,
+      "2_tokens": 712
+    },
+    "umls_semantic_type_recall_breakdown": {
+      "phsu": {
+        "gold_occurrences": 10318,
+        "exact_match_tp": 9382,
+        "boundary_mismatch_fn": 358,
+        "completely_missed_fn": 578,
+        "exact_match_recall": 0.9093,
+        "relaxed_overlap_recall": 0.944
+      },
+      "menp": {
+        "gold_occurrences": 8882,
+        "exact_match_tp": 7751,
+        "boundary_mismatch_fn": 208,
+        "completely_missed_fn": 923,
+        "exact_match_recall": 0.8727,
+        "relaxed_overlap_recall": 0.8961
+      },
+      "orch": {
+        "gold_occurrences": 8569,
+        "exact_match_tp": 7811,
+        "boundary_mismatch_fn": 313,
+        "completely_missed_fn": 445,
+        "exact_match_recall": 0.9115,
+        "relaxed_overlap_recall": 0.9481
+      },
+      "mobd": {
+        "gold_occurrences": 7463,
+        "exact_match_tp": 6900,
+        "boundary_mismatch_fn": 368,
+        "completely_missed_fn": 195,
+        "exact_match_recall": 0.9246,
+        "relaxed_overlap_recall": 0.9739
+      },
+      "dsyn": {
+        "gold_occurrences": 2928,
+        "exact_match_tp": 2519,
+        "boundary_mismatch_fn": 119,
+        "completely_missed_fn": 290,
+        "exact_match_recall": 0.8603,
+        "relaxed_overlap_recall": 0.901
+      },
+      "sosy": {
+        "gold_occurrences": 2770,
+        "exact_match_tp": 2320,
+        "boundary_mismatch_fn": 138,
+        "completely_missed_fn": 312,
+        "exact_match_recall": 0.8375,
+        "relaxed_overlap_recall": 0.8874
+      },
+      "socb": {
+        "gold_occurrences": 911,
+        "exact_match_tp": 706,
+        "boundary_mismatch_fn": 34,
+        "completely_missed_fn": 171,
+        "exact_match_recall": 0.775,
+        "relaxed_overlap_recall": 0.8123
+      },
+      "inbe": {
+        "gold_occurrences": 797,
+        "exact_match_tp": 677,
+        "boundary_mismatch_fn": 15,
+        "completely_missed_fn": 105,
+        "exact_match_recall": 0.8494,
+        "relaxed_overlap_recall": 0.8683
+      },
+      "antb": {
+        "gold_occurrences": 722,
+        "exact_match_tp": 684,
+        "boundary_mismatch_fn": 22,
+        "completely_missed_fn": 16,
+        "exact_match_recall": 0.9474,
+        "relaxed_overlap_recall": 0.9778
+      },
+      "bodm": {
+        "gold_occurrences": 512,
+        "exact_match_tp": 440,
+        "boundary_mismatch_fn": 11,
+        "completely_missed_fn": 61,
+        "exact_match_recall": 0.8594,
+        "relaxed_overlap_recall": 0.8809
+      },
+      "inch": {
+        "gold_occurrences": 227,
+        "exact_match_tp": 189,
+        "boundary_mismatch_fn": 5,
+        "completely_missed_fn": 33,
+        "exact_match_recall": 0.8326,
+        "relaxed_overlap_recall": 0.8546
+      },
+      "bacs": {
+        "gold_occurrences": 185,
+        "exact_match_tp": 150,
+        "boundary_mismatch_fn": 7,
+        "completely_missed_fn": 28,
+        "exact_match_recall": 0.8108,
+        "relaxed_overlap_recall": 0.8486
+      },
+      "aapp": {
+        "gold_occurrences": 183,
+        "exact_match_tp": 138,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 44,
+        "exact_match_recall": 0.7541,
+        "relaxed_overlap_recall": 0.7596
+      },
+      "bhvr": {
+        "gold_occurrences": 162,
+        "exact_match_tp": 143,
+        "boundary_mismatch_fn": 3,
+        "completely_missed_fn": 16,
+        "exact_match_recall": 0.8827,
+        "relaxed_overlap_recall": 0.9012
+      },
+      "horm": {
+        "gold_occurrences": 144,
+        "exact_match_tp": 110,
+        "boundary_mismatch_fn": 4,
+        "completely_missed_fn": 30,
+        "exact_match_recall": 0.7639,
+        "relaxed_overlap_recall": 0.7917
+      },
+      "vita": {
+        "gold_occurrences": 117,
+        "exact_match_tp": 79,
+        "boundary_mismatch_fn": 12,
+        "completely_missed_fn": 26,
+        "exact_match_recall": 0.6752,
+        "relaxed_overlap_recall": 0.7778
+      },
+      "imft": {
+        "gold_occurrences": 115,
+        "exact_match_tp": 101,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 13,
+        "exact_match_recall": 0.8783,
+        "relaxed_overlap_recall": 0.887
+      },
+      "hops": {
+        "gold_occurrences": 70,
+        "exact_match_tp": 47,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 22,
+        "exact_match_recall": 0.6714,
+        "relaxed_overlap_recall": 0.6857
+      },
+      "elii": {
+        "gold_occurrences": 64,
+        "exact_match_tp": 50,
+        "boundary_mismatch_fn": 2,
+        "completely_missed_fn": 12,
+        "exact_match_recall": 0.7812,
+        "relaxed_overlap_recall": 0.8125
+      },
+      "cgab": {
+        "gold_occurrences": 39,
+        "exact_match_tp": 13,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 25,
+        "exact_match_recall": 0.3333,
+        "relaxed_overlap_recall": 0.359
+      },
+      "acab": {
+        "gold_occurrences": 12,
+        "exact_match_tp": 10,
+        "boundary_mismatch_fn": 1,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.8333,
+        "relaxed_overlap_recall": 0.9167
+      },
+      "irda": {
+        "gold_occurrences": 5,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 5,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      },
+      "clnd": {
+        "gold_occurrences": 4,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 3,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.75
+      },
+      "cell": {
+        "gold_occurrences": 2,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 2,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      },
+      "food": {
+        "gold_occurrences": 1,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      },
+      "anab": {
+        "gold_occurrences": 1,
+        "exact_match_tp": 0,
+        "boundary_mismatch_fn": 0,
+        "completely_missed_fn": 1,
+        "exact_match_recall": 0.0,
+        "relaxed_overlap_recall": 0.0
+      }
+    }
+  }
+}

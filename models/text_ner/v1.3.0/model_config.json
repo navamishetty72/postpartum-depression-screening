@@ -1,0 +1,188 @@
+{
+  "model_version": "1.3.0",
+  "frozen_before_final_test": true,
+  "artifact_path": "models/text_ner/v1.3.0/text_ner_model.joblib",
+  "artifact_sha256": "9797a6058b8c5500cc989d917184a61a266c12d0335d82db9bc5f3128633d5ef",
+  "hyperparameters": {
+    "feature_version": "v2",
+    "window": 2,
+    "min_feature_freq": 2,
+    "classifier_type": "sgd",
+    "loss": "modified_huber",
+    "c_param": 5.0,
+    "alpha": 0.0002,
+    "class_weight": {
+      "O": 1.0,
+      "B-MMLite": 8.0,
+      "I-MMLite": 10.0
+    },
+    "max_iter": 300,
+    "average": false,
+    "random_state": 2026,
+    "dtype": "float32",
+    "use_viterbi": true,
+    "decode_entity_bias": -0.15,
+    "decode_b_to_i_bonus": 0.3,
+    "decode_i_to_i_bonus": 0.3
+  },
+  "allowed_entity_labels": [
+    "MMLite"
+  ],
+  "feature_statistics": {
+    "non_empty_documents": 7394,
+    "total_tokens": 5864667,
+    "num_features": 1930365,
+    "sparse_nnz": 234666673
+  },
+  "n_iter": 14,
+  "training_seconds": 1539.56,
+  "training_warnings": [],
+  "split_provenance": {
+    "split_manifest_path": "data/processed/text_ner/final_dataset_splits.json",
+    "split_manifest_sha256": "d34767eac4583aa6c43b10f5e3eaf88d0d612702238dab60d7c866a2621296cf",
+    "split_seed": 2026,
+    "train_doc_count": 7398,
+    "val_doc_count": 1585,
+    "final_test_doc_count": 1586,
+    "train_doc_ids_sha256": "ee7fc32b9889446059fd8fa98f24b7e799e0a6ba7e402d40538e31b42af748ef",
+    "val_doc_ids_sha256": "eb6a7c6a3e247301ab709fc8ad877f80b7d1c1293c1458bc6f2b14c3751092b3"
+  },
+  "full_validation_metrics": {
+    "v1.3.0": {
+      "raw_argmax": {
+        "total_documents_evaluated": 1585,
+        "total_gold_entities": 35948,
+        "total_predicted_entities": 50945,
+        "true_positives": 32539,
+        "false_positives": 18406,
+        "false_negatives": 3409,
+        "micro_precision": 0.6387,
+        "micro_recall": 0.9052,
+        "micro_f1": 0.7489,
+        "macro_f1": 0.7489,
+        "per_label_metrics": {
+          "MMLite": {
+            "true_positives": 32539,
+            "false_positives": 18406,
+            "false_negatives": 3409,
+            "support": 35948,
+            "precision": 0.6387,
+            "recall": 0.9052,
+            "f1_score": 0.7489,
+            "is_reliable_estimate": true
+          }
+        },
+        "error_analysis": {
+          "boundary_mismatch_same_label": 1399,
+          "spurious_entity": 17007,
+          "completely_missed_entity": 1964
+        }
+      },
+      "frozen_viterbi": {
+        "total_documents_evaluated": 1585,
+        "total_gold_entities": 35948,
+        "total_predicted_entities": 49172,
+        "true_positives": 32078,
+        "false_positives": 17094,
+        "false_negatives": 3870,
+        "micro_precision": 0.6524,
+        "micro_recall": 0.8923,
+        "micro_f1": 0.7537,
+        "macro_f1": 0.7537,
+        "per_label_metrics": {
+          "MMLite": {
+            "true_positives": 32078,
+            "false_positives": 17094,
+            "false_negatives": 3870,
+            "support": 35948,
+            "precision": 0.6524,
+            "recall": 0.8923,
+            "f1_score": 0.7537,
+            "is_reliable_estimate": true
+          }
+        },
+        "error_analysis": {
+          "boundary_mismatch_same_label": 1133,
+          "spurious_entity": 15961,
+          "completely_missed_entity": 2619
+        },
+        "inference_seconds": 200.28,
+        "avg_latency_ms_per_doc": 126.36,
+        "decoder_config": {
+          "use_viterbi": true,
+          "decode_entity_bias": -0.15,
+          "decode_b_to_i_bonus": 0.3,
+          "decode_i_to_i_bonus": 0.3
+        }
+      }
+    },
+    "v1.2.0_archived": {
+      "raw_argmax": {
+        "total_documents_evaluated": 1585,
+        "total_gold_entities": 35948,
+        "total_predicted_entities": 54321,
+        "true_positives": 32357,
+        "false_positives": 21964,
+        "false_negatives": 3591,
+        "micro_precision": 0.5957,
+        "micro_recall": 0.9001,
+        "micro_f1": 0.7169,
+        "macro_f1": 0.7169,
+        "per_label_metrics": {
+          "MMLite": {
+            "true_positives": 32357,
+            "false_positives": 21964,
+            "false_negatives": 3591,
+            "support": 35948,
+            "precision": 0.5957,
+            "recall": 0.9001,
+            "f1_score": 0.7169,
+            "is_reliable_estimate": true
+          }
+        },
+        "error_analysis": {
+          "boundary_mismatch_same_label": 1483,
+          "spurious_entity": 20481,
+          "completely_missed_entity": 1918
+        }
+      },
+      "frozen_viterbi": {
+        "total_documents_evaluated": 1585,
+        "total_gold_entities": 35948,
+        "total_predicted_entities": 51123,
+        "true_positives": 31612,
+        "false_positives": 19511,
+        "false_negatives": 4336,
+        "micro_precision": 0.6184,
+        "micro_recall": 0.8794,
+        "micro_f1": 0.7261,
+        "macro_f1": 0.7261,
+        "per_label_metrics": {
+          "MMLite": {
+            "true_positives": 31612,
+            "false_positives": 19511,
+            "false_negatives": 4336,
+            "support": 35948,
+            "precision": 0.6184,
+            "recall": 0.8794,
+            "f1_score": 0.7261,
+            "is_reliable_estimate": true
+          }
+        },
+        "error_analysis": {
+          "spurious_entity": 18332,
+          "boundary_mismatch_same_label": 1179,
+          "completely_missed_entity": 2873
+        },
+        "inference_seconds": 108.05,
+        "avg_latency_ms_per_doc": 68.17,
+        "decoder_config": {
+          "use_viterbi": true,
+          "decode_entity_bias": -0.15,
+          "decode_b_to_i_bonus": 0.3,
+          "decode_i_to_i_bonus": 0.3
+        }
+      }
+    }
+  }
+}
