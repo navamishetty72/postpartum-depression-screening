@@ -487,7 +487,7 @@ class ScreeningOrchestrationService:
 
 # Global default instances
 default_mother_validator = MotherValidator()
-screening_service = ScreeningOrchestrationService()
+screening_orchestration_service = ScreeningOrchestrationService()
 
 
 def get_mother_validator() -> MotherValidator:
