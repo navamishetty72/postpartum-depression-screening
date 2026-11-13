@@ -54,6 +54,7 @@ export function ClinicalProvider({ children }) {
   const [isAddMotherOpen, setIsAddMotherOpen] = useState(false);
   const [screeningDrafts, setScreeningDrafts] = useState(() => readStoredMap(DRAFT_STORAGE_KEY));
   const [uploadDrafts, setUploadDrafts] = useState(() => readStoredMap(UPLOAD_DRAFT_STORAGE_KEY));
+  const [caseShares, setCaseShares] = useState([]);
 
   const metrics = useMemo(() => {
     const addedScreenings = screenings.filter(
@@ -166,21 +167,60 @@ export function ClinicalProvider({ children }) {
     capturedModalities,
     durationSeconds,
     preliminaryScore,
+    modalityContributions,
+    indicators,
   }) => {
     const mother = mothers.find((m) => m.id === motherId);
+    const cap = capturedModalities || { text: true, voice: false, video: false };
+    const nowTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const score = preliminaryScore ?? Number(((Number(epdsEquivalent) || 6) / 20).toFixed(2));
     const newScreening = {
       id: `SCR-${248 + (screenings.length - INITIAL_SCREENINGS.length)}`,
       motherId,
       motherName: mother?.name || motherId,
+      motherInitials: mother?.initials || 'N. M.',
       postpartumWeek: mother?.postpartumWeek || 4,
       status: 'Completed',
       completedAgo: 'Just now',
+      screeningDateTime: `Today · ${nowTime}`,
       risk,
       modality: modality || 'Multimodal (Text · Voice · Video)',
+      combinedScore: score,
       epdsEquivalent: Number(epdsEquivalent) || 6,
       discordanceScore: discordanceDetected ? 0.72 : 0.14,
       preliminaryScore: preliminaryScore ?? null,
-      capturedModalities: capturedModalities || { text: true, voice: false, video: false },
+      capturedModalities: cap,
+      modalities: {
+        text: cap.text
+          ? { status: 'completed', score: modalityContributions?.text ?? score }
+          : { status: 'unavailable', score: null },
+        voice: cap.voice
+          ? { status: 'completed', score: modalityContributions?.voice ?? score }
+          : { status: 'unavailable', score: null },
+        video: cap.video
+          ? { status: 'completed', score: modalityContributions?.video ?? score }
+          : { status: 'unavailable', score: null },
+      },
+      riskHistory: [
+        { week: `Week ${mother?.postpartumWeek || 4}`, score, label: risk },
+      ],
+      contributingFactors: (indicators || []).map((text, idx) => ({
+        id: `cf-${Date.now()}-${idx}`,
+        icon: idx === 0 ? 'alertTriangle' : idx === 1 ? 'waveform' : 'smile',
+        text,
+        severity: risk === 'High' ? 'High' : risk === 'Moderate' ? 'Moderate' : 'Low',
+      })),
+      interpretation: [
+        summary || 'Completed clinician-assisted screening session.',
+        !cap.voice || !cap.video
+          ? 'Partial modality availability: missing channels were excluded and not treated as negative.'
+          : 'All three screening modalities captured for multimodal review.',
+        'Assistive screening indicators only; confirm with clinician judgment.',
+      ],
+      limitations:
+        !cap.voice || !cap.video
+          ? 'Some modalities were unavailable during this session.'
+          : 'Assistive screening estimate; not a clinical diagnosis.',
       durationSeconds: durationSeconds || 0,
       conversation: conversation || [],
       summary,
@@ -267,6 +307,30 @@ export function ClinicalProvider({ children }) {
     });
   };
 
+  const shareCaseHandoff = ({ screeningId, motherId, recipientTeam, note, consentConfirmed }) => {
+    if (!consentConfirmed) return null;
+    const entry = {
+      id: `SHARE-${Date.now()}`,
+      screeningId,
+      motherId,
+      recipientTeam,
+      note: note?.trim() || '',
+      sharedAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+    };
+    setCaseShares((prev) => [entry, ...prev]);
+    setAlerts((prev) => [
+      {
+        id: `alert-share-${Date.now()}`,
+        motherId,
+        title: `Case ${motherId} securely shared with ${recipientTeam}`,
+        time: 'Just now',
+        severity: 'low',
+      },
+      ...prev,
+    ]);
+    return entry;
+  };
+
   const value = {
     mothers,
     screenings,
@@ -276,6 +340,7 @@ export function ClinicalProvider({ children }) {
     priorityCases,
     screeningDrafts,
     uploadDrafts,
+    caseShares,
     isAddMotherOpen,
     setIsAddMotherOpen,
     addMother,
@@ -285,6 +350,7 @@ export function ClinicalProvider({ children }) {
     clearScreeningDraft,
     saveUploadDraft,
     clearUploadDraft,
+    shareCaseHandoff,
   };
 
   return <ClinicalContext.Provider value={value}>{children}</ClinicalContext.Provider>;

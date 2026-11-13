@@ -19,9 +19,9 @@ export function StatusBadge({ status, showDot = true }) {
 export function RiskBadge({ risk, showDot = false }) {
   const normalized = (risk || '').toLowerCase();
   let variant = 'risk-low';
-  if (normalized === 'high') variant = 'risk-high';
-  else if (normalized === 'moderate') variant = 'risk-moderate';
-  else if (normalized === 'requires review') variant = 'risk-review';
+  if (normalized.startsWith('high')) variant = 'risk-high';
+  else if (normalized.startsWith('moderate')) variant = 'risk-moderate';
+  else if (normalized.startsWith('requires review')) variant = 'risk-review';
 
   return (
     <span className={`miora-badge ${variant}`}>

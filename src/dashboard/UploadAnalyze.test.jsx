@@ -154,7 +154,7 @@ describe('Miora Screen 04: Upload & Analyze', () => {
     fireEvent.click(screen.getByRole('button', { name: /Retry Analysis/i }));
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-        'Wellbeing Results Archive'
+        'Maternal Screening Results'
       );
     });
   });

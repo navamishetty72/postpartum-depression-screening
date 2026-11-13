@@ -246,6 +246,8 @@ export function UploadAnalyzePage({ analyzer = submitMultimodalAnalysis }) {
         video: activeSelectedModalities.includes('video'),
       },
       preliminaryScore: result.combinedScore,
+      modalityContributions: result.modalityContributions,
+      indicators: result.indicators,
     });
 
     clearUploadDraft(activeMother.id);

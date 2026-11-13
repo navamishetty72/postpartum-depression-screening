@@ -1,167 +1,408 @@
-import React, { useMemo } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useClinicalData } from '../context/ClinicalContext.jsx';
-import { RiskBadge, StatusBadge } from '../components/Badges.jsx';
+import { INITIAL_SCREENINGS } from '../data/mockClinicalData.js';
 import { DashboardIcon } from '../components/DashboardIcon.jsx';
+import { RiskBadge } from '../components/Badges.jsx';
+import {
+  ModalityAnalysisCard,
+  MultimodalSummaryCard,
+  OverallRiskCard,
+  RiskTrendCard,
+} from '../components/ResultsChartsAndVisuals.jsx';
+import {
+  ExportReportModal,
+  ShareCaseModal,
+  SupportResourcesModal,
+} from '../components/ResultsModals.jsx';
 
 export function ResultsPage() {
-  const { screenings } = useClinicalData();
+  const {
+    mothers,
+    screenings,
+    updateMotherStatus,
+    shareCaseHandoff,
+  } = useClinicalData();
   const { motherId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const riskFilter = searchParams.get('risk') || 'all';
+  const [exportOpen, setExportOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [followUpNotice, setFollowUpNotice] = useState('');
 
-  const filteredScreenings = useMemo(() => {
-    if (riskFilter === 'all') return screenings;
-    const normalized = riskFilter.replace(' Risk', '').toLowerCase();
-    return screenings.filter(
-      (s) =>
-        s.risk.toLowerCase() === normalized ||
-        (normalized === 'requires review' && s.status !== 'Completed')
+  const activeScreening = useMemo(() => {
+    if (motherId) {
+      return (
+        screenings.find((s) => s.motherId.toLowerCase() === motherId.toLowerCase()) ||
+        null
+      );
+    }
+    if (screenings.length > INITIAL_SCREENINGS.length) {
+      return screenings[0];
+    }
+    return screenings.find((s) => s.motherId === 'M-108') || screenings[0] || null;
+  }, [screenings, motherId]);
+
+  const activeMother = useMemo(() => {
+    if (!activeScreening) return null;
+    return mothers.find((m) => m.id === activeScreening.motherId) || null;
+  }, [mothers, activeScreening]);
+
+  const handleSelectSession = (nextMotherId) => {
+    setFollowUpNotice('');
+    navigate(`/results/${nextMotherId}`);
+  };
+
+  const handleScheduleFollowUp = () => {
+    if (!activeScreening) return;
+    updateMotherStatus(activeScreening.motherId, 'Follow-up');
+    setFollowUpNotice(`7-day follow-up scheduled for ${activeScreening.motherId}`);
+  };
+
+  if (motherId && !activeScreening) {
+    return (
+      <div className="miora-command-shell">
+        <div className="miora-command-frame">
+          <section className="miora-card miora-results-empty-state">
+            <h2>Screening Record Not Found</h2>
+            <p>
+              No completed or pending screening record was found for Mother ID{' '}
+              <strong>{motherId}</strong>.
+            </p>
+            <div className="miora-modal-actions">
+              <button
+                type="button"
+                className="miora-btn-secondary"
+                onClick={() => navigate('/mothers')}
+              >
+                Open Mothers &amp; Cases
+              </button>
+              <button
+                type="button"
+                className="miora-cta-primary"
+                onClick={() => navigate('/results')}
+              >
+                View Latest Results
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
     );
-  }, [screenings, riskFilter]);
+  }
 
-  const activeResult = motherId
-    ? screenings.find((s) => s.motherId.toLowerCase() === motherId.toLowerCase()) ||
-      filteredScreenings[0] ||
-      screenings[0]
-    : filteredScreenings[0] || screenings[0];
+  const isCompleted = activeScreening?.status === 'Completed';
 
   return (
     <div className="miora-command-shell">
       <div className="miora-command-frame">
-        <div className="miora-subpage-header">
-          <div>
+        {/* Flowing Blush Header Waves */}
+        <svg
+          className="miora-header-ribbon miora-mothers-ribbon"
+          viewBox="0 0 640 160"
+          fill="none"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="resultsWaveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fbdbe2" stopOpacity="0" />
+              <stop offset="50%" stopColor="#f8c9d5" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="#fce8ec" stopOpacity="0.16" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0 135 C 150 128, 225 42, 395 48 C 515 52, 565 88, 640 24 L 640 160 L 0 160 Z"
+            fill="url(#resultsWaveGrad)"
+          />
+        </svg>
+
+        {/* Page Header */}
+        <section className="miora-dash-header" aria-labelledby="results-page-heading">
+          <div className="miora-dash-header-copy">
             <div className="miora-dash-eyebrow">
               <span>SCREENING RESULTS</span>
               <span className="miora-dash-eyebrow-line" aria-hidden="true" />
             </div>
-            <h1 className="miora-dash-title miora-subpage-title">
-              Wellbeing <em>Results</em> Archive
+            <h1 id="results-page-heading" className="miora-dash-title">
+              Maternal Screening <em>Results</em>
             </h1>
             <p className="miora-dash-subtitle">
-              Completed multimodal screening outcomes, EPDS-equivalent scores, and risk stratification.
+              Multimodal analysis of the screening session with risk assessment and key insights.
             </p>
           </div>
-          <button
-            type="button"
-            className="miora-cta-primary"
-            onClick={() => navigate('/live-screening')}
-          >
-            <DashboardIcon name="plus" size={16} />
-            <span>Start Screening</span>
-          </button>
-        </div>
 
-        <div className="miora-filter-bar">
-          <div className="miora-filter-pills" role="tablist" aria-label="Risk category filter">
-            {['all', 'Low Risk', 'Moderate Risk', 'High Risk'].map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                role="tab"
-                aria-selected={riskFilter === cat}
-                className={`miora-filter-pill ${riskFilter === cat ? 'is-active' : ''}`}
-                onClick={() => setSearchParams(cat === 'all' ? {} : { risk: cat })}
-              >
-                {cat === 'all' ? 'All Results' : cat}
-              </button>
-            ))}
+          <div className="miora-results-header-actions">
+            <button
+              type="button"
+              className="miora-btn-secondary"
+              onClick={() => setExportOpen(true)}
+            >
+              <DashboardIcon name="download" size={15} />
+              <span>Export Report</span>
+            </button>
+            <button
+              type="button"
+              className="miora-btn-secondary"
+              onClick={() => setShareOpen(true)}
+            >
+              <DashboardIcon name="share" size={15} />
+              <span>Share Case</span>
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div className="miora-master-detail">
-          <section className="miora-card" aria-label="Screening results list">
-            <div className="miora-recent-list">
-              {filteredScreenings.map((entry) => (
-                <button
-                  key={entry.id}
-                  type="button"
-                  className={`miora-recent-item ${
-                    activeResult?.id === entry.id ? 'is-selected' : ''
-                  }`}
-                  onClick={() => navigate(`/results/${entry.motherId}`)}
-                >
-                  <div className="miora-recent-left">
-                    <span className="miora-recent-avatar" aria-hidden="true">
-                      <DashboardIcon name="user" size={17} />
-                    </span>
-                    <span className="miora-recent-id">
-                      {entry.motherId} · {entry.motherName}
-                    </span>
-                    <span className="miora-recent-meta">
-                      {entry.status} · {entry.completedAgo}
-                    </span>
-                  </div>
-                  <div className="miora-recent-right">
-                    <RiskBadge risk={entry.risk} />
-                    <DashboardIcon name="chevronRight" size={16} />
-                  </div>
-                </button>
-              ))}
+        {/* Patient Information Strip */}
+        {activeScreening && (
+          <section className="miora-card miora-patient-strip" aria-label="Screening session summary">
+            <div className="miora-patient-item">
+              <span className="miora-patient-icon" aria-hidden="true">
+                <DashboardIcon name="user" size={18} />
+              </span>
+              <div className="miora-patient-meta">
+                <div className="miora-patient-select-row">
+                  <label htmlFor="results-session-select" className="sr-only">
+                    Select screening session
+                  </label>
+                  <select
+                    id="results-session-select"
+                    className="miora-patient-id-select"
+                    value={activeScreening.motherId}
+                    onChange={(e) => handleSelectSession(e.target.value)}
+                  >
+                    {screenings.map((s) => (
+                      <option key={s.id} value={s.motherId}>
+                        {s.motherId}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <span className="miora-patient-sub">
+                  {activeScreening.motherInitials || activeMother?.initials || '—'}
+                </span>
+              </div>
+            </div>
+
+            <span className="miora-patient-divider" aria-hidden="true" />
+
+            <div className="miora-patient-item">
+              <span className="miora-patient-icon is-plain" aria-hidden="true">
+                <DashboardIcon name="calendar" size={18} />
+              </span>
+              <div className="miora-patient-meta">
+                <span className="miora-patient-label">Postpartum Week</span>
+                <strong>Week {activeScreening.postpartumWeek}</strong>
+              </div>
+            </div>
+
+            <span className="miora-patient-divider" aria-hidden="true" />
+
+            <div className="miora-patient-item">
+              <span className="miora-patient-icon is-plain" aria-hidden="true">
+                <DashboardIcon name="layers" size={18} />
+              </span>
+              <div className="miora-patient-meta">
+                <span className="miora-patient-label">Screening Type</span>
+                <strong>{activeScreening.modality}</strong>
+              </div>
+            </div>
+
+            <span className="miora-patient-divider" aria-hidden="true" />
+
+            <div className="miora-patient-item">
+              <span className="miora-patient-icon is-plain" aria-hidden="true">
+                <DashboardIcon name="clock" size={18} />
+              </span>
+              <div className="miora-patient-meta">
+                <span className="miora-patient-label">Screening Date</span>
+                <strong>{activeScreening.screeningDateTime || activeScreening.completedAgo}</strong>
+              </div>
+            </div>
+
+            <div className="miora-results-status-wrap">
+              <span
+                className={`miora-results-status-pill ${
+                  isCompleted ? 'is-completed' : 'is-pending'
+                }`}
+              >
+                <DashboardIcon
+                  name={isCompleted ? 'checkCircle' : 'clock'}
+                  size={15}
+                  strokeWidth={1.8}
+                />
+                <span>
+                  {isCompleted ? 'Screening Completed' : `Screening ${activeScreening.status}`}
+                </span>
+              </span>
             </div>
           </section>
+        )}
 
-          {activeResult && (
-            <aside className="miora-card miora-case-detail" aria-label="Selected screening details">
-              <div className="miora-case-detail-head">
-                <div>
-                  <span className="miora-case-id-tag">
-                    {activeResult.id} · {activeResult.motherId}
+        {/* Row 1: Overall Risk Assessment | Modality-wise Analysis | Multimodal Summary */}
+        {activeScreening && (
+          <div className="miora-results-row-3">
+            <OverallRiskCard screening={activeScreening} />
+            <ModalityAnalysisCard modalities={activeScreening.modalities} />
+            <MultimodalSummaryCard screening={activeScreening} />
+          </div>
+        )}
+
+        {/* Row 2: Risk Trend | Key Contributing Factors | Interpretation */}
+        {activeScreening && (
+          <div className="miora-results-row-3">
+            <RiskTrendCard history={activeScreening.riskHistory} />
+
+            {/* Key Contributing Factors */}
+            <section
+              className="miora-card miora-results-card"
+              aria-labelledby="contributing-factors-title"
+            >
+              <div className="miora-card-header">
+                <div className="miora-card-title-group">
+                  <span className="miora-card-icon" aria-hidden="true">
+                    <DashboardIcon name="leaf" size={20} strokeWidth={1.65} />
                   </span>
-                  <h3>{activeResult.motherName}</h3>
-                  <p>
-                    {activeResult.modality} · Week {activeResult.postpartumWeek} ·{' '}
-                    {activeResult.completedAgo}
-                  </p>
-                </div>
-                <RiskBadge risk={activeResult.risk} />
-              </div>
-
-              <div className="miora-detail-grid">
-                <div className="miora-detail-block">
-                  <span>Screening Status</span>
-                  <StatusBadge status={activeResult.status} />
-                </div>
-                <div className="miora-detail-block">
-                  <span>EPDS Equivalent</span>
-                  <strong>{activeResult.epdsEquivalent} / 30</strong>
-                </div>
-                <div className="miora-detail-block">
-                  <span>Discordance Index</span>
-                  <strong>{Math.round(activeResult.discordanceScore * 100)}%</strong>
+                  <h2 id="contributing-factors-title" className="miora-card-title">
+                    Key Contributing Factors
+                  </h2>
                 </div>
               </div>
 
-              <div className="miora-detail-notes">
-                <div>
-                  <h4>Clinical Summary</h4>
-                  <p>{activeResult.summary}</p>
+              {activeScreening.contributingFactors?.length > 0 ? (
+                <ul className="miora-factors-list">
+                  {activeScreening.contributingFactors.map((factor) => (
+                    <li key={factor.id} className="miora-factor-row">
+                      <span className="miora-factor-icon" aria-hidden="true">
+                        <DashboardIcon name={factor.icon || 'alertTriangle'} size={16} />
+                      </span>
+                      <span className="miora-factor-text">{factor.text}</span>
+                      <RiskBadge risk={factor.severity} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="miora-trend-empty">
+                  <p>No contributing factor outputs were generated for this session.</p>
+                </div>
+              )}
+            </section>
+
+            {/* Interpretation */}
+            <section
+              className="miora-card miora-results-card"
+              aria-labelledby="interpretation-title"
+            >
+              <div className="miora-card-header">
+                <div className="miora-card-title-group">
+                  <span className="miora-card-icon" aria-hidden="true">
+                    <DashboardIcon name="fileText" size={19} strokeWidth={1.65} />
+                  </span>
+                  <h2 id="interpretation-title" className="miora-card-title">
+                    Interpretation
+                  </h2>
                 </div>
               </div>
 
-              <div className="miora-detail-footer">
-                <button
-                  type="button"
-                  className="miora-btn-secondary"
-                  onClick={() => navigate(`/mothers/${activeResult.motherId}`)}
-                >
-                  Open Mother Profile
-                </button>
-                <button
-                  type="button"
-                  className="miora-cta-primary"
-                  onClick={() => navigate(`/live-screening?mother=${activeResult.motherId}`)}
-                >
-                  Re-screen Mother
-                </button>
-              </div>
-            </aside>
-          )}
-        </div>
+              <ul className="miora-interpretation-list">
+                {(activeScreening.interpretation || [activeScreening.summary]).map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        )}
+
+        {/* Recommended Next Steps */}
+        {activeScreening && (
+          <section
+            className="miora-card miora-next-steps-bar"
+            aria-labelledby="recommended-next-steps-title"
+          >
+            <div className="miora-next-steps-label">
+              <span className="miora-card-icon" aria-hidden="true">
+                <DashboardIcon name="calendar" size={20} strokeWidth={1.65} />
+              </span>
+              <h2 id="recommended-next-steps-title" className="miora-quick-title">
+                Recommended Next Steps
+              </h2>
+            </div>
+
+            <div className="miora-next-steps-cards">
+              <button
+                type="button"
+                className="miora-next-step-card"
+                onClick={handleScheduleFollowUp}
+              >
+                <span className="miora-next-step-icon" aria-hidden="true">
+                  <DashboardIcon name="calendar" size={19} strokeWidth={1.65} />
+                </span>
+                <span className="miora-next-step-copy">
+                  <strong>Schedule follow-up in 7 days</strong>
+                  <small>Update mother status &amp; queue check-in</small>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="miora-next-step-card"
+                onClick={() => navigate('/clinical-review')}
+              >
+                <span className="miora-next-step-icon" aria-hidden="true">
+                  <DashboardIcon name="users" size={19} strokeWidth={1.65} />
+                </span>
+                <span className="miora-next-step-copy">
+                  <strong>Consider brief clinical review</strong>
+                  <small>Inspect discordance &amp; multimodal notes</small>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="miora-next-step-card"
+                onClick={() => setResourcesOpen(true)}
+              >
+                <span className="miora-next-step-icon" aria-hidden="true">
+                  <DashboardIcon name="heart" size={19} strokeWidth={1.65} />
+                </span>
+                <span className="miora-next-step-copy">
+                  <strong>Provide support resources</strong>
+                  <small>View approved helplines &amp; care guides</small>
+                </span>
+              </button>
+            </div>
+          </section>
+        )}
+
+        {followUpNotice && (
+          <div className="miora-live-feedback-row miora-results-feedback">
+            <div className="miora-draft-pill" role="status">
+              <DashboardIcon name="check" size={14} />
+              <span>{followUpNotice}</span>
+            </div>
+          </div>
+        )}
       </div>
+
+      <ExportReportModal
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        screening={activeScreening}
+        mother={activeMother}
+      />
+
+      <ShareCaseModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        screening={activeScreening}
+        onShare={shareCaseHandoff}
+      />
+
+      <SupportResourcesModal
+        isOpen={resourcesOpen}
+        onClose={() => setResourcesOpen(false)}
+        motherId={activeScreening?.motherId || 'Mother'}
+      />
     </div>
   );
 }
-

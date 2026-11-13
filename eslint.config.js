@@ -15,6 +15,7 @@ export default [
         navigator: 'readonly',
         FormData: 'readonly',
         File: 'readonly',
+        Blob: 'readonly',
         URL: 'readonly',
         IntersectionObserver: 'readonly',
         ResizeObserver: 'readonly',

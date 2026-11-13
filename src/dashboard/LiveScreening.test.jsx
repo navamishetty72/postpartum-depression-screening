@@ -125,7 +125,7 @@ describe('Miora Screen 03: Live Screening', () => {
     // Complete Screening navigates to Results for M-108
     fireEvent.click(screen.getByRole('button', { name: /Complete Screening/i }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Wellbeing Results Archive'
+      'Maternal Screening Results'
     );
   });
 });
