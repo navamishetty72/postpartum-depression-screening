@@ -51,12 +51,18 @@ from pipelines.video_model.preprocessing import (
 @pytest.fixture(scope="module")
 def train_dataset() -> PPDVideoDataset:
     """Fixture providing initialized training dataset (640 participants)."""
+    if not V2_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator_v2 import run_generation_v2
+        run_generation_v2()
     return PPDVideoDataset(partition="train", validate_on_init=True)
 
 
 @pytest.fixture(scope="module")
 def test_dataset() -> PPDVideoDataset:
     """Fixture providing initialized holdout testing dataset (160 participants)."""
+    if not V2_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator_v2 import run_generation_v2
+        run_generation_v2()
     return PPDVideoDataset(partition="test", validate_on_init=True)
 
 

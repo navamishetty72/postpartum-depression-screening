@@ -43,7 +43,10 @@ from pipelines.synthetic_video.generator import SyntheticVideoGenerator
 
 @pytest.fixture(scope="module")
 def video_manifest() -> pd.DataFrame:
-    """Load the generated synthetic video manifest."""
+    """Load the generated synthetic video manifest, generating if not present."""
+    if not SYNTHETIC_VIDEO_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator import run_generation
+        run_generation()
     assert SYNTHETIC_VIDEO_MANIFEST_PATH.exists(), (
         f"Video manifest not found at {SYNTHETIC_VIDEO_MANIFEST_PATH}"
     )

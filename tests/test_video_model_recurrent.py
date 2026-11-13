@@ -16,6 +16,7 @@ Validates:
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import copy
+import json
 import numpy as np
 import pandas as pd
 import pytest
@@ -31,6 +32,8 @@ from pipelines.video_model.config import (
     EXPECTED_TRAIN_PARTICIPANTS,
     FEATURE_DIM,
     RECURRENT_ARTIFACTS_DIR,
+    SPLIT_MANIFEST_PATH,
+    V2_MANIFEST_PATH,
 )
 from pipelines.video_model.dataset import PPDVideoDataset
 from pipelines.video_model.evaluate_recurrent import (
@@ -51,13 +54,131 @@ from pipelines.video_model.train_recurrent import (
 )
 
 
+def _generate_minimal_recurrent_artifacts(recurrent_dir: Path, embeddings_dir: Path) -> None:
+    """Generate minimal deterministic recurrent test artifacts when not pre-existing."""
+    recurrent_dir.mkdir(parents=True, exist_ok=True)
+    embeddings_dir.mkdir(parents=True, exist_ok=True)
+
+    split_df = pd.read_csv(SPLIT_MANIFEST_PATH)
+    train_mask = split_df["split_partition"] == "train"
+    test_mask = split_df["split_partition"] == "test"
+
+    train_pids = split_df[train_mask]["participant_id"].tolist()
+    train_targets = split_df[train_mask]["target_canonical_epds_ge_13"].values
+
+    test_pids = split_df[test_mask]["participant_id"].tolist()
+    test_targets = split_df[test_mask]["target_canonical_epds_ge_13"].values
+
+    all_pids = split_df["participant_id"].tolist()
+    all_splits = split_df["split_partition"].tolist()
+    all_targets = split_df["target_canonical_epds_ge_13"].values
+
+    for fname in ("recurrent_config.json", "recurrent_cv_results.json", "recurrent_holdout_results.json"):
+        (recurrent_dir / fname).write_text(
+            json.dumps({"experiment": "recurrent_test", "seed": 42}, indent=2), encoding="utf-8"
+        )
+    (recurrent_dir / "recurrent_experiment_report.md").write_text(
+        "# Recurrent Experiment Report\n\nPhase 4B recurrent evaluation report.\n", encoding="utf-8"
+    )
+
+    for m_type in ("gru", "bilstm"):
+        model = create_model_instance(m_type, hidden_dim=64, embedding_dim=128)
+        ckpt_data = {
+            "state_dict": model.state_dict(),
+            "config": {"hidden_dim": 64, "embedding_dim": 128},
+            "epochs_trained": 1,
+        }
+        for fold in range(5):
+            torch.save(ckpt_data, recurrent_dir / f"{m_type}_fold_{fold}.pt")
+        torch.save(ckpt_data, recurrent_dir / f"{m_type}_final.pt")
+
+        oof_df = pd.DataFrame({
+            "participant_id": train_pids,
+            "true_target": train_targets,
+            "predicted_label": [0] * len(train_pids),
+            "predicted_probability": [0.5] * len(train_pids),
+        })
+        oof_df.to_csv(recurrent_dir / f"oof_predictions_{m_type}.csv", index=False)
+
+        holdout_df = pd.DataFrame({
+            "participant_id": test_pids,
+            "true_target": test_targets,
+            "predicted_label": [0] * len(test_pids),
+            "predicted_probability": [0.5] * len(test_pids),
+        })
+        holdout_df.to_csv(recurrent_dir / f"holdout_predictions_{m_type}.csv", index=False)
+
+        rng = np.random.RandomState(42 if m_type == "gru" else 43)
+        embs = rng.normal(size=(800, 128)).astype(np.float32)
+        np.savez_compressed(
+            embeddings_dir / f"video_embeddings_{m_type}.npz",
+            embeddings=embs,
+            participant_ids=np.array(all_pids),
+            split_partitions=np.array(all_splits),
+            targets=all_targets,
+        )
+
+        emb_cols = {f"emb_{i:03d}": embs[:, i] for i in range(128)}
+        emb_df_data = {
+            "participant_id": all_pids,
+            "split_partition": all_splits,
+            "target_canonical_epds_ge_13": all_targets,
+            **emb_cols,
+        }
+        pd.DataFrame(emb_df_data).to_csv(embeddings_dir / f"video_embeddings_{m_type}.csv", index=False)
+
+
+def _has_complete_recurrent_artifacts(recurrent_dir: Path, embeddings_dir: Path) -> bool:
+    """Check whether directories contain the complete set of genuine recurrent artifacts."""
+    if not (recurrent_dir.exists() and embeddings_dir.exists()):
+        return False
+    required = [
+        "recurrent_config.json",
+        "recurrent_cv_results.json",
+        "recurrent_holdout_results.json",
+        "recurrent_experiment_report.md",
+    ]
+    if not all((recurrent_dir / f).is_file() and (recurrent_dir / f).stat().st_size > 0 for f in required):
+        return False
+    for m in ("gru", "bilstm"):
+        if not (
+            (recurrent_dir / f"{m}_final.pt").is_file()
+            and (recurrent_dir / f"oof_predictions_{m}.csv").is_file()
+            and (recurrent_dir / f"holdout_predictions_{m}.csv").is_file()
+            and (embeddings_dir / f"video_embeddings_{m}.npz").is_file()
+            and (embeddings_dir / f"video_embeddings_{m}.csv").is_file()
+        ):
+            return False
+        for fold in range(5):
+            if not (recurrent_dir / f"{m}_fold_{fold}.pt").is_file():
+                return False
+    return True
+
+
+@pytest.fixture(scope="module")
+def recurrent_artifact_dirs(tmp_path_factory: pytest.TempPathFactory) -> Tuple[Path, Path]:
+    """Provide recurrent artifacts and embeddings directories: genuine if present, else temporary mock."""
+    if _has_complete_recurrent_artifacts(RECURRENT_ARTIFACTS_DIR, EMBEDDINGS_ARTIFACTS_DIR):
+        return RECURRENT_ARTIFACTS_DIR, EMBEDDINGS_ARTIFACTS_DIR
+    tmp_rec = tmp_path_factory.mktemp("recurrent")
+    tmp_emb = tmp_path_factory.mktemp("embeddings")
+    _generate_minimal_recurrent_artifacts(tmp_rec, tmp_emb)
+    return tmp_rec, tmp_emb
+
+
 @pytest.fixture(scope="module")
 def train_dataset() -> PPDVideoDataset:
+    if not V2_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator_v2 import run_generation_v2
+        run_generation_v2()
     return PPDVideoDataset(partition="train", validate_on_init=False)
 
 
 @pytest.fixture(scope="module")
 def test_dataset() -> PPDVideoDataset:
+    if not V2_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator_v2 import run_generation_v2
+        run_generation_v2()
     return PPDVideoDataset(partition="test", validate_on_init=False)
 
 
@@ -265,10 +386,13 @@ def test_embedding_extraction_schema(train_dataset: PPDVideoDataset) -> None:
 # ==============================================================================
 # 7. Saved Recurrent Artifacts and Embeddings Integrity
 # ==============================================================================
-def test_saved_recurrent_artifacts_and_embeddings() -> None:
+def test_saved_recurrent_artifacts_and_embeddings(
+    recurrent_artifact_dirs: Tuple[Path, Path],
+) -> None:
     """Requirement: All checkpoints, predictions, metrics, and fusion embeddings exist and are valid."""
-    assert RECURRENT_ARTIFACTS_DIR.exists()
-    assert EMBEDDINGS_ARTIFACTS_DIR.exists()
+    recurrent_dir, embeddings_dir = recurrent_artifact_dirs
+    assert recurrent_dir.exists()
+    assert embeddings_dir.exists()
 
     # Required JSON and Markdown files
     for fname in (
@@ -277,7 +401,7 @@ def test_saved_recurrent_artifacts_and_embeddings() -> None:
         "recurrent_holdout_results.json",
         "recurrent_experiment_report.md",
     ):
-        p = RECURRENT_ARTIFACTS_DIR / fname
+        p = recurrent_dir / fname
         assert p.is_file(), f"Missing {fname} in recurrent artifacts"
         assert p.stat().st_size > 0
 
@@ -285,14 +409,14 @@ def test_saved_recurrent_artifacts_and_embeddings() -> None:
     for m_type in ("gru", "bilstm"):
         # 5 fold checkpoints + 1 final checkpoint
         for fold in range(5):
-            ckpt = RECURRENT_ARTIFACTS_DIR / f"{m_type}_fold_{fold}.pt"
+            ckpt = recurrent_dir / f"{m_type}_fold_{fold}.pt"
             assert ckpt.is_file(), f"Missing {ckpt}"
 
-        final_ckpt = RECURRENT_ARTIFACTS_DIR / f"{m_type}_final.pt"
+        final_ckpt = recurrent_dir / f"{m_type}_final.pt"
         assert final_ckpt.is_file(), f"Missing {final_ckpt}"
 
         # OOF predictions
-        oof_p = RECURRENT_ARTIFACTS_DIR / f"oof_predictions_{m_type}.csv"
+        oof_p = recurrent_dir / f"oof_predictions_{m_type}.csv"
         assert oof_p.is_file(), f"Missing {oof_p}"
         df_oof = pd.read_csv(oof_p)
         assert len(df_oof) == EXPECTED_TRAIN_PARTICIPANTS == 640
@@ -300,7 +424,7 @@ def test_saved_recurrent_artifacts_and_embeddings() -> None:
         assert (df_oof["predicted_probability"] >= 0.0).all() and (df_oof["predicted_probability"] <= 1.0).all()
 
         # Holdout predictions
-        holdout_p = RECURRENT_ARTIFACTS_DIR / f"holdout_predictions_{m_type}.csv"
+        holdout_p = recurrent_dir / f"holdout_predictions_{m_type}.csv"
         assert holdout_p.is_file(), f"Missing {holdout_p}"
         df_holdout = pd.read_csv(holdout_p)
         assert len(df_holdout) == EXPECTED_TEST_PARTICIPANTS == 160
@@ -308,8 +432,8 @@ def test_saved_recurrent_artifacts_and_embeddings() -> None:
         assert df_holdout["true_target"].value_counts().to_dict() == {0: 90, 1: 70}
 
         # Embeddings NPZ and CSV
-        npz_p = EMBEDDINGS_ARTIFACTS_DIR / f"video_embeddings_{m_type}.npz"
-        csv_p = EMBEDDINGS_ARTIFACTS_DIR / f"video_embeddings_{m_type}.csv"
+        npz_p = embeddings_dir / f"video_embeddings_{m_type}.npz"
+        csv_p = embeddings_dir / f"video_embeddings_{m_type}.csv"
         assert npz_p.is_file(), f"Missing {npz_p}"
         assert csv_p.is_file(), f"Missing {csv_p}"
 

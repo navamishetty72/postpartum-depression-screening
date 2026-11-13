@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipelines.synthetic_audio.generator import run_generation as generate_audio
 from pipelines.synthetic_text.generator import run_generation as generate_text
 from pipelines.synthetic_video.generator import run_generation as generate_video
+from pipelines.synthetic_video.generator_v2 import run_generation_v2 as generate_video_v2
 
 
 def main():
@@ -18,8 +19,10 @@ def main():
     generate_audio()
     print("Generating synthetic text dataset...")
     generate_text()
-    print("Generating synthetic video dataset...")
+    print("Generating synthetic video v1 dataset...")
     generate_video()
+    print("Generating synthetic video v2 dataset...")
+    generate_video_v2()
     print("All synthetic multimodal datasets successfully generated.")
 
 

@@ -20,7 +20,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from pipelines.video_model.config import FEATURE_DIM
+from pipelines.video_model.config import FEATURE_DIM, V2_MANIFEST_PATH
 from pipelines.video_model.dataset import PPDVideoDataset
 from pipelines.video_model.models import (
     MaskedAttentionPooling,
@@ -415,6 +415,9 @@ def test_statistical_classifier_baselines_fit_predict() -> None:
 # ==============================================================================
 def test_end_to_end_dataloader_to_models() -> None:
     """Requirement: Integration test feeding actual V2 dataset batches to GRU and BiLSTM models."""
+    if not V2_MANIFEST_PATH.exists():
+        from pipelines.synthetic_video.generator_v2 import run_generation_v2
+        run_generation_v2()
     dataset = PPDVideoDataset(partition="train", validate_on_init=False)
     loader = DataLoader(
         dataset,
