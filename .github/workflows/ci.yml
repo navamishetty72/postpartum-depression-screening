@@ -28,8 +28,8 @@ jobs:
 
     - name: Generate Synthetic Multimodal Dataset
       run: |
-        python src/synthetic/generate_synthetic_multimodal.py
+        python pipelines/generate_synthetic_multimodal.py
 
     - name: Run Pytest Test Suite
       run: |
-        python -m pytest tests/integration/ tests/test_*pipeline.py -q
+        python -m pytest -v
