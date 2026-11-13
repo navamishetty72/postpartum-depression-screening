@@ -4,9 +4,18 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.routers.care_plans import router as care_plans_router
+from backend.routers.clinical_reviews import router as clinical_reviews_router
+from backend.routers.dashboard import router as dashboard_router
+from backend.routers.mothers import router as mothers_router
 from backend.routers.questionnaire import router as questionnaire_router
+from backend.routers.screenings import router as screenings_router
 from backend.routers.text_ner import router as text_ner_router
+
+
+
 from backend.services.text_ner_service import text_ner_service
+
 
 
 @asynccontextmanager
@@ -39,6 +48,15 @@ app.add_middleware(
 # Register routers
 app.include_router(questionnaire_router)
 app.include_router(text_ner_router)
+app.include_router(mothers_router)
+app.include_router(screenings_router)
+app.include_router(clinical_reviews_router)
+app.include_router(care_plans_router)
+app.include_router(dashboard_router)
+
+
+
+
 
 
 @app.get("/", tags=["Health Check"])
