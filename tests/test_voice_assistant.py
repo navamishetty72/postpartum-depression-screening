@@ -216,8 +216,9 @@ def test_emergency_bypasses_gemini_completely():
 # 4. Gemini Service: Mocked Normal Responses & Multi-turn History
 # =============================================================================
 
-def test_gemini_service_normal_response_mocked():
+def test_gemini_service_normal_response_mocked(monkeypatch):
     """Verify normal empathetic responses using mocked google-genai client."""
+    monkeypatch.delenv("GEMINI_MODEL", raising=False)
     mock_client = MagicMock()
     mock_response = MagicMock()
     mock_response.text = "You are doing wonderful, mama. Please take a gentle breath."
@@ -227,6 +228,7 @@ def test_gemini_service_normal_response_mocked():
         config=VoiceAssistantConfig(api_key="mock-key"),
         client=mock_client,
     )
+
 
     response = service.generate_response("I'm feeling a little overwhelmed today.")
 
