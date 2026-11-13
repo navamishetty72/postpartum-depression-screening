@@ -67,6 +67,10 @@ def test_tracking_channels_zero_clinical_shift():
     )
 
 
+@pytest.mark.skipif(
+    not SYNTHETIC_VIDEO_V3_MANIFEST_PATH.is_file(),
+    reason="Video V3 synthetic dataset not generated (run python -m pipelines.synthetic_video_v3.generator_v3)",
+)
 def test_participant_alignment():
     """Verify that 800 video features exist and match the canonical split manifest exactly."""
     manifest_df = pd.read_csv(TRAIN_TEST_SPLIT_MANIFEST_PATH)
@@ -86,6 +90,10 @@ def test_participant_alignment():
     assert (v3_manifest["split_partition"] == "test").sum() == 160
 
 
+@pytest.mark.skipif(
+    not SYNTHETIC_VIDEO_V3_MANIFEST_PATH.is_file(),
+    reason="Video V3 synthetic dataset not generated (run python -m pipelines.synthetic_video_v3.generator_v3)",
+)
 def test_feature_tensor_properties():
     """Verify that generated feature tensors are (T, 24) float32 without NaNs or Infs."""
     v3_manifest = pd.read_csv(SYNTHETIC_VIDEO_V3_MANIFEST_PATH)

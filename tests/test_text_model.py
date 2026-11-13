@@ -50,8 +50,10 @@ EXPECTED_ARTIFACT_FILES: List[str] = [
 
 @pytest.fixture(scope="module")
 def text_artifacts() -> Path:
-    """Fixture ensuring text baseline artifacts exist."""
-    assert ARTIFACTS_DIR.is_dir(), f"Text artifacts directory missing at {ARTIFACTS_DIR}"
+    """Fixture ensuring text baseline artifacts exist, training if necessary."""
+    missing = [f for f in EXPECTED_ARTIFACT_FILES if not (ARTIFACTS_DIR / f).is_file()]
+    if missing:
+        train_text_model(artifacts_dir=ARTIFACTS_DIR, save_artifacts=True)
     return ARTIFACTS_DIR
 
 

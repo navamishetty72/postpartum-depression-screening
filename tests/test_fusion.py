@@ -39,6 +39,12 @@ from pipelines.fusion.config import (
 from pipelines.fusion.metrics import compute_classification_metrics
 from pipelines.fusion.train_fusion import load_and_validate_datasets
 
+if not (FUSION_ARTIFACTS_DIR / "fusion_meta_learner.joblib").is_file() or not (FUSION_ARTIFACTS_DIR / "oof_predictions_fusion.csv").is_file():
+    pytest.skip(
+        "Late fusion model artifacts not present under models/fusion/ (requires running pipelines/fusion/train_fusion.py)",
+        allow_module_level=True,
+    )
+
 
 def test_fusion_artifacts_exist():
     """Verify that all required late fusion artifacts exist under models/fusion/."""

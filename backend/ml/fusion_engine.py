@@ -506,7 +506,7 @@ class MultimodalFusionEngine:
 
 
 # Global singleton instance for production runtime
-fusion_engine = MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
+fusion_engine = MultimodalFusionEngine()
 
 
 def get_fusion_engine() -> MultimodalFusionEngine:

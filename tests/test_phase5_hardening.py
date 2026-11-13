@@ -77,6 +77,7 @@ def test_member2_mother_validator_dependency_override(client: TestClient):
             "motherId": "M-REGISTERED-01",
             "modalities": json.dumps({"clinical": True}),
             "consentConfirmed": "true",
+            "eligibilityConfirmed": "true",
             "clinical_features": json.dumps(_get_valid_clinical_features()),
         }
         resp_200 = client.post("/api/screenings/analyze", data=payload_registered)
@@ -222,6 +223,7 @@ def test_response_fields_contract_for_member2_persistence(client: TestClient):
         "motherId": "M-PERSIST-TEST",
         "modalities": json.dumps(["clinical"]),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=payload)
@@ -260,3 +262,56 @@ def test_error_handling_sanitization(client: TestClient):
     # Ensure raw Python stack traces are not exposed
     assert "Traceback (most recent call last)" not in str(data)
     assert "File \"" not in str(data)
+
+
+# ---------------------------------------------------------------------------
+# 10. Eligibility Gate Contract & Dependency Override
+# ---------------------------------------------------------------------------
+def test_eligibility_gate_contract_and_dependency_override(client: TestClient):
+    """Verify strict self-declared eligibility gate contract, precedence over 422, and override capability."""
+    from backend.services.screening_service import EligibilityValidator, get_eligibility_validator
+
+    valid_payload = {
+        "motherId": "M-ELIG-TEST-01",
+        "modalities": json.dumps({"clinical": True}),
+        "consentConfirmed": "true",
+        "clinical_features": json.dumps(_get_valid_clinical_features()),
+    }
+
+    # Case A: Missing eligibility returns HTTP 403
+    resp_missing = client.post("/api/screenings/analyze", data=valid_payload)
+    assert resp_missing.status_code == 403
+    assert "eligibility confirmation is required" in resp_missing.json()["detail"].lower()
+
+    # Case B: False eligibility returns HTTP 403
+    payload_false = {**valid_payload, "eligibilityConfirmed": "false"}
+    resp_false = client.post("/api/screenings/analyze", data=payload_false)
+    assert resp_false.status_code == 403
+    assert "eligibility confirmation is required" in resp_false.json()["detail"].lower()
+
+    # Case C: True eligibility returns HTTP 200
+    payload_true = {**valid_payload, "eligibilityConfirmed": "true"}
+    resp_true = client.post("/api/screenings/analyze", data=payload_true)
+    assert resp_true.status_code == 200
+    assert resp_true.json()["status"] == "completed"
+
+    # Case D: Malformed request syntax returns HTTP 422 even if eligibility is missing
+    resp_syntax_err = client.post(
+        "/api/screenings/analyze",
+        data={"motherId": "M-SYNTAX", "consentConfirmed": "true", "modalities": "{"},
+    )
+    assert resp_syntax_err.status_code == 422
+
+    # Case E: EligibilityValidator dependency override
+    class MockPermissiveEligibilityValidator(EligibilityValidator):
+        def validate_eligibility(self, eligibility_confirmed):
+            return True
+
+    app.dependency_overrides[get_eligibility_validator] = lambda: MockPermissiveEligibilityValidator()
+    try:
+        # Request without eligibilityConfirmed now succeeds through the custom override
+        resp_override = client.post("/api/screenings/analyze", data=valid_payload)
+        assert resp_override.status_code == 200
+    finally:
+        app.dependency_overrides.clear()
+
