@@ -341,5 +341,6 @@ def test_existing_text_ner_endpoint_still_works(client: TestClient):
     if response.status_code == 200:
         data = response.json()
         assert "entities" in data
-        assert "text" in data
+        assert "total_entities_detected" in data
+        assert "processed_character_count" in data
 
