@@ -310,6 +310,7 @@ def test_screening_endpoint_regression_with_fusion_engine(client: TestClient):
         "motherId": "M-FUSION-01",
         "modalities": json.dumps({"clinical": True, "text": False}),
         "consentConfirmed": "true",
+        "eligibilityConfirmed": "true",
         "clinical_features": json.dumps(_get_valid_clinical_features()),
     }
     response = client.post("/api/screenings/analyze", data=payload)

@@ -1,0 +1,34 @@
+{
+  "experiment_name": "Phase 4A Statistical Baseline Experiment",
+  "random_seed": 42,
+  "cv_folds": 5,
+  "train_participants": 640,
+  "test_participants": 160,
+  "configurations": [
+    [
+      "logistic_regression",
+      "all"
+    ],
+    [
+      "random_forest",
+      "all"
+    ],
+    [
+      "logistic_regression",
+      "facial_motion"
+    ],
+    [
+      "random_forest",
+      "facial_motion"
+    ],
+    [
+      "logistic_regression",
+      "tracking_only"
+    ],
+    [
+      "random_forest",
+      "tracking_only"
+    ]
+  ],
+  "scientific_notice": "Synthetic Video V2 features are abstract numerical simulations. Video features alone do not represent authentic patient observations or diagnostic biomarkers. This experiment serves as a negative control and pipeline verification fixture."
+}

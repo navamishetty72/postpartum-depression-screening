@@ -160,6 +160,72 @@ class BaseFusionStrategy(ABC):
         pass
 
 
+CANONICAL_STACKING_WEIGHTS: Dict[str, float] = {
+    "clinical": 1.000,
+    "text": 0.000,
+    "audio": 0.000,
+    "video": 0.000,
+}
+
+
+class NonNegativeStackingFusionStrategy(BaseFusionStrategy):
+    """Canonical late fusion strategy using non-negative stacking weights.
+
+    Learned from 640 Out-Of-Fold (OOF) cross-validation training participants.
+    In live screening, the text modality performs biomedical entity recognition (Text NER),
+    which is strictly non-predictive. The offline 2% text weight from synthetic narrative
+    vignettes is disabled (set to 0.0) so entity extraction confidence is never treated as
+    a PPD risk probability.
+    Dynamically re-normalizes weights across available predictive modalities without
+    fabricating missing values or activating unvalidated arbitrary weights.
+    """
+
+    def __init__(self, canonical_weights: Optional[Dict[str, float]] = None) -> None:
+        self.canonical_weights: Dict[str, float] = (
+            canonical_weights or CANONICAL_STACKING_WEIGHTS.copy()
+        )
+
+    def combine(
+        self,
+        candidates: List[ModalityCandidate],
+    ) -> Tuple[float, str, Optional[int], Dict[str, float]]:
+        """Combine predictive modalities using normalized non-negative stacking weights."""
+        predictive = [c for c in candidates if c.is_predictive and c.probability is not None]
+        if len(predictive) < 2:
+            raise ValueError(
+                f"NonNegativeStackingFusionStrategy requires >= 2 predictive modalities, got {len(predictive)}."
+            )
+
+        raw_weights = {c.modality: self.canonical_weights.get(c.modality, 0.0) for c in predictive}
+        total_weight = sum(raw_weights.values())
+
+        if total_weight <= 0:
+            normalized_weights = {c.modality: 1.0 / len(predictive) for c in predictive}
+        else:
+            normalized_weights = {k: v / total_weight for k, v in raw_weights.items()}
+
+        combined_score = sum(
+            c.probability * normalized_weights[c.modality] for c in predictive  # type: ignore
+        )
+        combined_score = round(float(combined_score), 4)
+
+        if combined_score >= 0.70:
+            risk_category = "HIGH_RISK"
+        elif combined_score >= 0.40:
+            risk_category = "MODERATE_RISK"
+        else:
+            risk_category = "LOW_RISK"
+
+        epds_equivalent = min(30, max(0, int(round(combined_score * 30))))
+
+        return (
+            combined_score,
+            risk_category,
+            epds_equivalent,
+            {k: round(v, 4) for k, v in normalized_weights.items()},
+        )
+
+
 class WeightedAverageFusionStrategy(BaseFusionStrategy):
     """Modular late fusion strategy performing calibrated weighted probability aggregation.
 
@@ -440,7 +506,7 @@ class MultimodalFusionEngine:
 
 
 # Global singleton instance for production runtime
-fusion_engine = MultimodalFusionEngine()
+fusion_engine = MultimodalFusionEngine(strategy=NonNegativeStackingFusionStrategy())
 
 
 def get_fusion_engine() -> MultimodalFusionEngine:

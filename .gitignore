@@ -106,3 +106,6 @@ artifacts/video_model/**/*.pt
 artifacts/video_model/**/*.joblib
 artifacts/video_model/**/*.csv
 artifacts/video_model/**/*.npz
+
+# Exclude participant-level predictions and experiment outputs across artifacts
+artifacts/**/*.csv

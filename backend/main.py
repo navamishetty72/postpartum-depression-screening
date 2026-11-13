@@ -10,6 +10,7 @@ from backend.routers.clinical_numerical import router as clinical_router
 from backend.routers.screening import router as screening_router
 from backend.services.text_ner_service import text_ner_service
 from backend.services.clinical_service import clinical_service
+from backend.services.audio_service import audio_service
 
 
 @asynccontextmanager
@@ -17,6 +18,7 @@ async def lifespan(_app: FastAPI):
     """Manage application startup and shutdown lifecycle (load ML services once)."""
     text_ner_service.startup()
     clinical_service.startup()
+    audio_service.startup()
     yield
     clinical_service.shutdown()
     text_ner_service.shutdown()

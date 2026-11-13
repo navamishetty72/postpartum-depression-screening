@@ -30,6 +30,11 @@ from backend.schemas.screening import (
     TextModalityResult,
     VideoModalityResult,
 )
+from backend.services.audio_service import (
+    AudioScreeningService,
+    audio_service,
+    get_audio_service,
+)
 from backend.services.clinical_service import (
     ClinicalScreeningService,
     clinical_service,
@@ -71,11 +76,13 @@ class ScreeningOrchestrationService:
         text_svc: Optional[TextNERService] = None,
         mother_val: Optional[MotherValidator] = None,
         fusion_eng: Optional[MultimodalFusionEngine] = None,
+        audio_svc: Optional[AudioScreeningService] = None,
     ) -> None:
         self.clinical_service: ClinicalScreeningService = clinical_svc or clinical_service
         self.text_ner_service: TextNERService = text_svc or text_ner_service
         self.mother_validator: MotherValidator = mother_val or MotherValidator()
         self.fusion_engine: MultimodalFusionEngine = fusion_eng or fusion_engine
+        self.audio_service: AudioScreeningService = audio_svc or audio_service
 
     async def orchestrate_screening(
         self,
@@ -87,6 +94,8 @@ class ScreeningOrchestrationService:
         text_content: Optional[str] = None,
         files_voice_bytes: Optional[bytes] = None,
         files_video_bytes: Optional[bytes] = None,
+        eligibility_confirmed: Optional[Union[bool, str]] = None,
+        audio_features_raw: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> ScreeningAnalysisResponse:
         """Execute multimodal screening analysis preserving partial completion states."""
         # 1. Validate Consent
@@ -101,6 +110,23 @@ class ScreeningOrchestrationService:
             raise HTTPException(
                 status_code=400,
                 detail="Maternal consent must be confirmed before submitting screening files for analysis.",
+            )
+
+        # 2. Validate Eligibility (Self-declared postpartum status, not automated classification)
+        is_eligible = (
+            eligibility_confirmed is True
+            or (
+                isinstance(eligibility_confirmed, str)
+                and eligibility_confirmed.strip().lower() in ("true", "1", "yes")
+            )
+        )
+        if not is_eligible:
+            raise HTTPException(
+                status_code=403,
+                detail=(
+                    "Screening halted. Participant self-declared postpartum eligibility confirmation is required "
+                    "before screening predictions can be generated."
+                ),
             )
 
         # 2. Validate Mother ID Format & Existence
@@ -269,15 +295,55 @@ class ScreeningOrchestrationService:
                 entities=[],
             )
 
-        # 6. Audio Modality (Unimplemented in Phase 3)
+        # 6. Audio Modality (Predictive acoustic feature inference or unavailable placeholder)
         audio_result: AudioModalityResult
         if modalities.audio:
-            audio_result = AudioModalityResult(
-                status="unavailable",
-                prediction=None,
-                model_version=None,
-                message="Audio screening inference model is not yet implemented or trained.",
-            )
+            if audio_features_raw is not None:
+                if isinstance(audio_features_raw, str):
+                    try:
+                        audio_features_dict = json.loads(audio_features_raw)
+                    except Exception as exc:
+                        raise HTTPException(
+                            status_code=422,
+                            detail=f"Invalid audio_features JSON syntax: {exc}",
+                        )
+                elif isinstance(audio_features_raw, dict):
+                    audio_features_dict = audio_features_raw
+                else:
+                    raise HTTPException(
+                        status_code=422,
+                        detail="audio_features must be a valid JSON object string or dictionary.",
+                    )
+                try:
+                    pred_res = self.audio_service.predict(audio_features_dict)
+                    audio_result = AudioModalityResult(
+                        status="completed",
+                        prediction=pred_res,
+                        model_version=pred_res.get("model_utilized", "audio_random_forest_v1"),
+                        message="Clinically conditioned synthetic acoustic feature inference completed.",
+                    )
+                except HTTPException as exc:
+                    status_label = "unavailable" if exc.status_code == 503 else "failed"
+                    audio_result = AudioModalityResult(
+                        status=status_label,
+                        error=str(exc.detail),
+                    )
+                except Exception as exc:
+                    logger.error("Unexpected audio inference error: %s", exc, exc_info=True)
+                    audio_result = AudioModalityResult(
+                        status="failed",
+                        error="Audio inference failed due to an internal error.",
+                    )
+            else:
+                audio_result = AudioModalityResult(
+                    status="unavailable",
+                    prediction=None,
+                    model_version=None,
+                    message=(
+                        "Audio screening model requires extracted acoustic feature payload (7 features). "
+                        "Live acoustic extraction from raw audio is not deployed in production."
+                    ),
+                )
         else:
             audio_result = AudioModalityResult(
                 status="not_requested",
@@ -285,14 +351,17 @@ class ScreeningOrchestrationService:
                 model_version=None,
             )
 
-        # 7. Video Modality (Unimplemented in Phase 3)
+        # 7. Video Modality (Isolated simulation fixture notice)
         video_result: VideoModalityResult
         if modalities.video:
             video_result = VideoModalityResult(
                 status="unavailable",
                 prediction=None,
                 model_version=None,
-                message="Video screening inference model is not yet implemented or trained.",
+                message=(
+                    "Video screening model is an experimental synthetic simulation (Video V3). "
+                    "Real camera-derived facial video extraction is not deployed in production."
+                ),
             )
         else:
             video_result = VideoModalityResult(
@@ -364,6 +433,7 @@ def get_screening_service(
     text_svc: TextNERService = Depends(get_text_ner_service),
     mother_val: MotherValidator = Depends(get_mother_validator),
     fusion_eng: MultimodalFusionEngine = Depends(get_fusion_engine),
+    audio_svc: AudioScreeningService = Depends(get_audio_service),
 ) -> ScreeningOrchestrationService:
     """FastAPI dependency provider for ScreeningOrchestrationService."""
     return ScreeningOrchestrationService(
@@ -371,5 +441,6 @@ def get_screening_service(
         text_svc=text_svc,
         mother_val=mother_val,
         fusion_eng=fusion_eng,
+        audio_svc=audio_svc,
     )
 
