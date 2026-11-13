@@ -5,7 +5,6 @@ import {
   Color,
   DirectionalLight,
   Group,
-  IcosahedronGeometry,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
@@ -17,7 +16,6 @@ import {
   Scene,
   SphereGeometry,
   TorusGeometry,
-  Vector3,
   WebGLRenderer,
 } from 'three';
 
@@ -37,37 +35,37 @@ const hasWebGL = () => {
 
 const ORB_MODES = {
   share: {
-    color: new Color(0xe77498),
-    emissive: new Color(0x7a1c3c),
-    ringColor: new Color(0xf4b6c4),
-    speed: 1.05,
-    amp: 0.085,
-    freq: 2.1,
+    color: new Color(0xe66d93),
+    emissive: new Color(0x6d1936),
+    shellColor: new Color(0xffe1e8),
+    ringColor: new Color(0xebb0bf),
+    breatheSpeed: 1.35,
+    breatheAmp: 0.045,
     ringSpeed: 0.35,
   },
   understand: {
     color: new Color(0xc73566),
-    emissive: new Color(0x691433),
-    ringColor: new Color(0xe98ea7),
-    speed: 1.75,
-    amp: 0.135,
-    freq: 3.1,
+    emissive: new Color(0x5c102b),
+    shellColor: new Color(0xffccd8),
+    ringColor: new Color(0xe07b9b),
+    breatheSpeed: 2.1,
+    breatheAmp: 0.065,
     ringSpeed: 0.72,
   },
   support: {
-    color: new Color(0xe58682),
-    emissive: new Color(0x882c3a),
-    ringColor: new Color(0xf6cbbd),
-    speed: 1.25,
-    amp: 0.105,
-    freq: 2.4,
-    ringSpeed: 0.45,
+    color: new Color(0xe27e7a),
+    emissive: new Color(0x742530),
+    shellColor: new Color(0xffe5dc),
+    ringColor: new Color(0xf0beaf),
+    breatheSpeed: 1.55,
+    breatheAmp: 0.055,
+    ringSpeed: 0.48,
   },
 };
 
 /**
- * Mounts subtle 3D orbiting pearlescent spheres, glass rings, and luminous particles
- * around the Hero portrait.
+ * Mounts soft 3D orbiting pearlescent spheres and luminous motes behind the Hero
+ * portrait without crossing over the photo.
  */
 export const initHero3D = (canvas, container) => {
   if (!canvas || !container || !hasWebGL()) return () => {};
@@ -85,72 +83,45 @@ export const initHero3D = (canvas, container) => {
   }
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(36, 1, 0.1, 50);
-  camera.position.set(0, 0, 8.2);
+  const camera = new PerspectiveCamera(35, 1, 0.1, 50);
+  camera.position.set(0, 0, 9.8);
 
   const root = new Group();
   scene.add(root);
 
-  scene.add(new AmbientLight(0xfff4f2, 1.45));
-  const keyLight = new DirectionalLight(0xffe8e2, 2.1);
+  scene.add(new AmbientLight(0xfff5f3, 1.55));
+  const keyLight = new DirectionalLight(0xffe9e4, 2.1);
   keyLight.position.set(-4, 5, 6);
   scene.add(keyLight);
 
-  const rimLight = new PointLight(0xd93c75, 2.2, 24);
-  rimLight.position.set(4, -3, 3);
+  const rimLight = new PointLight(0xd93c75, 2.0, 24);
+  rimLight.position.set(4, -3, 4);
   scene.add(rimLight);
 
-  const warmFill = new PointLight(0xffd5c2, 1.8, 22);
+  const warmFill = new PointLight(0xffd7c4, 1.8, 22);
   warmFill.position.set(-3, -3, 4);
   scene.add(warmFill);
 
-  // Outer 3D tilted translucent rings framing the portrait
-  const ring1 = new Mesh(
-    new TorusGeometry(2.38, 0.018, 16, 120),
-    new MeshStandardMaterial({
-      color: 0xe688a6,
-      roughness: 0.3,
-      metalness: 0.15,
-      transparent: true,
-      opacity: 0.48,
-    })
-  );
-  ring1.rotation.set(0.45, -0.35, 0.25);
-  root.add(ring1);
-
-  const ring2 = new Mesh(
-    new TorusGeometry(2.55, 0.013, 16, 120),
-    new MeshStandardMaterial({
-      color: 0xf2b5a8,
-      roughness: 0.35,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.36,
-    })
-  );
-  ring2.rotation.set(-0.52, 0.42, -0.2);
-  root.add(ring2);
-
-  // Orbiting 3D pearlescent glass spheres
+  // Smooth round 3D pearlescent spheres orbiting gracefully around the outer rim
   const sphereSpecs = [
-    { r: 0.2, radius: 2.38, speed: 0.22, phase: 0.2, tiltX: 0.45, tiltZ: 0.25, color: 0xf7b8c7 },
-    { r: 0.14, radius: 2.55, speed: -0.18, phase: 2.1, tiltX: -0.52, tiltZ: -0.2, color: 0xe76d94 },
-    { r: 0.16, radius: 2.42, speed: 0.16, phase: 3.9, tiltX: 0.35, tiltZ: -0.45, color: 0xfad3c4 },
-    { r: 0.11, radius: 2.6, speed: -0.25, phase: 5.0, tiltX: -0.35, tiltZ: 0.4, color: 0xf5a2b8 },
-    { r: 0.13, radius: 2.34, speed: 0.19, phase: 1.1, tiltX: 0.65, tiltZ: 0.1, color: 0xffe4e6 },
+    { r: 0.16, radius: 2.74, speed: 0.18, phase: 0.4, tiltX: 0.24, tiltZ: 0.16, color: 0xf7b8c7 },
+    { r: 0.12, radius: 2.78, speed: -0.15, phase: 2.3, tiltX: -0.28, tiltZ: -0.14, color: 0xe76d94 },
+    { r: 0.14, radius: 2.7, speed: 0.14, phase: 4.1, tiltX: 0.2, tiltZ: -0.26, color: 0xfad3c4 },
+    { r: 0.1, radius: 2.8, speed: -0.2, phase: 5.2, tiltX: -0.2, tiltZ: 0.24, color: 0xf5a2b8 },
+    { r: 0.11, radius: 2.68, speed: 0.16, phase: 1.3, tiltX: 0.3, tiltZ: 0.1, color: 0xffe4e6 },
   ];
 
   const satellites = sphereSpecs.map((spec) => {
     const pivot = new Group();
     pivot.rotation.set(spec.tiltX, 0, spec.tiltZ);
     const mesh = new Mesh(
-      new SphereGeometry(spec.r, 24, 24),
+      new SphereGeometry(spec.r, 32, 32),
       new MeshPhysicalMaterial({
         color: spec.color,
-        roughness: 0.16,
-        metalness: 0.06,
+        roughness: 0.14,
+        metalness: 0.05,
         clearcoat: 1.0,
-        clearcoatRoughness: 0.12,
+        clearcoatRoughness: 0.1,
       })
     );
     pivot.add(mesh);
@@ -158,17 +129,17 @@ export const initHero3D = (canvas, container) => {
     return { ...spec, mesh };
   });
 
-  // Soft floating particle dust
-  const particleCount = 32;
+  // Soft luminous dust motes around the outer halo
+  const particleCount = 26;
   const positions = new Float32Array(particleCount * 3);
   const particleSeeds = [];
   for (let i = 0; i < particleCount; i++) {
     const angle = (i / particleCount) * Math.PI * 2;
-    const dist = 2.0 + (i % 5) * 0.24;
+    const dist = 2.45 + (i % 4) * 0.18;
     positions[i * 3] = Math.cos(angle) * dist;
     positions[i * 3 + 1] = Math.sin(angle) * dist;
-    positions[i * 3 + 2] = ((i % 7) - 3) * 0.25;
-    particleSeeds.push({ angle, dist, speed: 0.12 + (i % 4) * 0.04, bob: i * 0.7 });
+    positions[i * 3 + 2] = ((i % 5) - 2) * 0.22;
+    particleSeeds.push({ angle, dist, speed: 0.1 + (i % 4) * 0.035, bob: i * 0.7 });
   }
   const particleGeo = new BufferGeometry();
   particleGeo.setAttribute('position', new BufferAttribute(positions, 3));
@@ -176,9 +147,9 @@ export const initHero3D = (canvas, container) => {
     particleGeo,
     new PointsMaterial({
       color: 0xd93c75,
-      size: 0.055,
+      size: 0.05,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.38,
     })
   );
   root.add(particles);
@@ -190,8 +161,8 @@ export const initHero3D = (canvas, container) => {
     if (!rect.width || !rect.height) return;
     const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    targetRotY = nx * 0.22;
-    targetRotX = -ny * 0.18;
+    targetRotY = nx * 0.16;
+    targetRotX = -ny * 0.14;
   };
   const onPointerLeave = () => {
     targetRotX = 0;
@@ -202,8 +173,8 @@ export const initHero3D = (canvas, container) => {
   container.addEventListener('pointerleave', onPointerLeave);
 
   const resize = () => {
-    const width = container.clientWidth || 465;
-    const height = container.clientHeight || 465;
+    const width = canvas.clientWidth || container.clientWidth || 500;
+    const height = canvas.clientHeight || container.clientHeight || 500;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -212,7 +183,7 @@ export const initHero3D = (canvas, container) => {
   resize();
 
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
-  ro?.observe(container);
+  ro?.observe(canvas);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let rafId = 0;
@@ -222,17 +193,12 @@ export const initHero3D = (canvas, container) => {
     root.rotation.x += (targetRotX - root.rotation.x) * 0.05;
     root.rotation.y += (targetRotY - root.rotation.y) * 0.05;
 
-    ring1.rotation.z = 0.25 + elapsedSec * 0.08;
-    ring1.rotation.x = 0.45 + Math.sin(elapsedSec * 0.4) * 0.08;
-    ring2.rotation.z = -0.2 - elapsedSec * 0.06;
-    ring2.rotation.y = 0.42 + Math.cos(elapsedSec * 0.35) * 0.08;
-
     satellites.forEach((sat) => {
       const a = sat.phase + elapsedSec * sat.speed;
       sat.mesh.position.set(
         Math.cos(a) * sat.radius,
         Math.sin(a) * sat.radius,
-        Math.sin(a * 2) * 0.18
+        Math.sin(a * 2) * 0.16
       );
     });
 
@@ -243,8 +209,8 @@ export const initHero3D = (canvas, container) => {
       posAttr.setXYZ(
         i,
         Math.cos(a) * seed.dist,
-        Math.sin(a) * seed.dist + Math.sin(elapsedSec * 0.8 + seed.bob) * 0.08,
-        Math.cos(elapsedSec * 0.5 + seed.bob) * 0.35
+        Math.sin(a) * seed.dist + Math.sin(elapsedSec * 0.8 + seed.bob) * 0.06,
+        Math.cos(elapsedSec * 0.5 + seed.bob) * 0.3
       );
     }
     posAttr.needsUpdate = true;
@@ -273,8 +239,8 @@ export const initHero3D = (canvas, container) => {
 };
 
 /**
- * Mounts an interactive 3D vertex-morphed "Empathy Orb" centerpiece in the Approach section
- * with Share / Understand / Support state transitions.
+ * Mounts an interactive, silk-smooth 3D Empathy Core centerpiece with layered
+ * glass spheres and ring-locked orbiting pearls.
  */
 export const initEmpathyOrb3D = (canvas, container) => {
   if (!canvas || !container || !hasWebGL()) {
@@ -294,98 +260,113 @@ export const initEmpathyOrb3D = (canvas, container) => {
   }
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(38, 1, 0.1, 50);
-  camera.position.set(0, 0, 5.4);
+  const camera = new PerspectiveCamera(34, 1, 0.1, 50);
+  camera.position.set(0, 0, 5.9);
 
   const root = new Group();
   scene.add(root);
 
-  scene.add(new AmbientLight(0xfff4f2, 1.35));
-  const keyLight = new DirectionalLight(0xffe9e4, 2.2);
-  keyLight.position.set(-3, 4, 5);
+  scene.add(new AmbientLight(0xfff5f3, 1.45));
+  const keyLight = new DirectionalLight(0xfff0ec, 2.1);
+  keyLight.position.set(-3.5, 4.5, 5.5);
   scene.add(keyLight);
 
-  const roseRim = new PointLight(0xd93c75, 2.8, 18);
+  const roseRim = new PointLight(0xd93c75, 2.5, 18);
   roseRim.position.set(3.5, -2.5, 2.5);
   scene.add(roseRim);
 
-  const peachFill = new PointLight(0xffcfb8, 2.0, 18);
+  const peachFill = new PointLight(0xffd4c2, 2.0, 18);
   peachFill.position.set(-3, -2, 3);
   scene.add(peachFill);
 
-  // Morphable organic sphere
-  const orbGeo = new IcosahedronGeometry(1.12, 24);
-  const posAttr = orbGeo.getAttribute('position');
-  const basePos = new Float32Array(posAttr.array.length);
-  basePos.set(posAttr.array);
+  // Smooth indexed high-resolution core & layered glass shell (zero low-poly facets)
+  const coreGroup = new Group();
+  root.add(coreGroup);
 
   const orbMat = new MeshPhysicalMaterial({
     color: ORB_MODES.share.color.clone(),
     emissive: ORB_MODES.share.emissive.clone(),
-    emissiveIntensity: 0.28,
-    roughness: 0.22,
-    metalness: 0.05,
-    clearcoat: 0.9,
-    clearcoatRoughness: 0.14,
+    emissiveIntensity: 0.25,
+    roughness: 0.18,
+    metalness: 0.04,
+    clearcoat: 0.95,
+    clearcoatRoughness: 0.1,
   });
-  const orbMesh = new Mesh(orbGeo, orbMat);
-  root.add(orbMesh);
+  const orbMesh = new Mesh(new SphereGeometry(0.84, 64, 64), orbMat);
+  coreGroup.add(orbMesh);
 
-  // Warm inner core glow
+  // Soft frosted translucent outer glass shell
+  const shellMat = new MeshPhysicalMaterial({
+    color: ORB_MODES.share.shellColor.clone(),
+    roughness: 0.12,
+    metalness: 0.02,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.08,
+    transparent: true,
+    opacity: 0.34,
+  });
+  const shellMesh = new Mesh(new SphereGeometry(0.98, 64, 64), shellMat);
+  coreGroup.add(shellMesh);
+
+  // Soft glowing inner heart core
   const innerCore = new Mesh(
-    new SphereGeometry(0.68, 24, 24),
+    new SphereGeometry(0.52, 48, 48),
     new MeshBasicMaterial({
-      color: 0xffe4e8,
+      color: 0xffe8ec,
       transparent: true,
       opacity: 0.45,
     })
   );
-  root.add(innerCore);
+  coreGroup.add(innerCore);
 
-  // Sculpted 3D orbital halo rings
+  // Helper to build a smooth 3D ring with a pearl locked directly onto its local track
   const ringMat1 = new MeshStandardMaterial({
     color: ORB_MODES.share.ringColor.clone(),
     roughness: 0.25,
-    metalness: 0.2,
+    metalness: 0.18,
     transparent: true,
-    opacity: 0.65,
+    opacity: 0.7,
   });
-  const halo1 = new Mesh(new TorusGeometry(1.56, 0.022, 16, 100), ringMat1);
-  halo1.rotation.set(1.15, 0.35, 0);
-  root.add(halo1);
+  const ringMat2 = new MeshStandardMaterial({
+    color: 0xf7cbbd,
+    roughness: 0.28,
+    metalness: 0.15,
+    transparent: true,
+    opacity: 0.55,
+  });
 
-  const halo2 = new Mesh(
-    new TorusGeometry(1.78, 0.015, 16, 100),
-    new MeshStandardMaterial({
-      color: 0xf7cbbd,
-      roughness: 0.3,
-      metalness: 0.15,
-      transparent: true,
-      opacity: 0.48,
-    })
+  const R1 = 1.38;
+  const ring1Pivot = new Group();
+  ring1Pivot.rotation.set(1.12, 0.36, 0.15);
+  const halo1 = new Mesh(new TorusGeometry(R1, 0.02, 24, 128), ringMat1);
+  ring1Pivot.add(halo1);
+  const pearl1 = new Mesh(
+    new SphereGeometry(0.085, 28, 28),
+    new MeshPhysicalMaterial({ color: 0xf7b8c7, roughness: 0.14, clearcoat: 1.0 })
   );
-  halo2.rotation.set(-0.95, 0.55, 0.3);
-  root.add(halo2);
+  ring1Pivot.add(pearl1);
+  root.add(ring1Pivot);
 
-  // 3 cue satellites orbiting the Empathy Core
-  const cueColors = [0xf8b9c8, 0xc73566, 0xfad2c0];
-  const cueOrbs = cueColors.map((c, idx) => {
-    const m = new Mesh(
-      new SphereGeometry(0.095, 20, 20),
-      new MeshPhysicalMaterial({
-        color: c,
-        roughness: 0.18,
-        clearcoat: 1,
-      })
-    );
-    root.add(m);
-    return { mesh: m, offset: (idx * Math.PI * 2) / 3, radius: 1.56 + idx * 0.11 };
-  });
+  const R2 = 1.58;
+  const ring2Pivot = new Group();
+  ring2Pivot.rotation.set(-0.98, 0.52, -0.25);
+  const halo2 = new Mesh(new TorusGeometry(R2, 0.015, 24, 128), ringMat2);
+  ring2Pivot.add(halo2);
+  const pearl2 = new Mesh(
+    new SphereGeometry(0.075, 28, 28),
+    new MeshPhysicalMaterial({ color: 0xc73566, roughness: 0.16, clearcoat: 1.0 })
+  );
+  ring2Pivot.add(pearl2);
+  const pearl3 = new Mesh(
+    new SphereGeometry(0.068, 28, 28),
+    new MeshPhysicalMaterial({ color: 0xfad2c0, roughness: 0.14, clearcoat: 1.0 })
+  );
+  ring2Pivot.add(pearl3);
+  root.add(ring2Pivot);
 
   let activeMode = ORB_MODES.share;
-  let currentSpeed = activeMode.speed;
-  let currentAmp = activeMode.amp;
-  let currentFreq = activeMode.freq;
+  let currentBreatheSpeed = activeMode.breatheSpeed;
+  let currentBreatheAmp = activeMode.breatheAmp;
   let currentRingSpeed = activeMode.ringSpeed;
 
   let pointerX = 0;
@@ -404,8 +385,8 @@ export const initEmpathyOrb3D = (canvas, container) => {
   container.addEventListener('pointerleave', onPointerLeave);
 
   const resize = () => {
-    const width = container.clientWidth || 280;
-    const height = container.clientHeight || 260;
+    const width = canvas.clientWidth || container.clientWidth || 320;
+    const height = canvas.clientHeight || 250;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -414,62 +395,50 @@ export const initEmpathyOrb3D = (canvas, container) => {
   resize();
 
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
-  ro?.observe(container);
+  ro?.observe(canvas);
 
-  const tempVec = new Vector3();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let rafId = 0;
   let phase = 0;
+  let ringPhase = 0;
   let lastTime = Date.now();
 
   const renderFrame = (dt) => {
-    currentSpeed += (activeMode.speed - currentSpeed) * 0.06;
-    currentAmp += (activeMode.amp - currentAmp) * 0.06;
-    currentFreq += (activeMode.freq - currentFreq) * 0.06;
+    currentBreatheSpeed += (activeMode.breatheSpeed - currentBreatheSpeed) * 0.06;
+    currentBreatheAmp += (activeMode.breatheAmp - currentBreatheAmp) * 0.06;
     currentRingSpeed += (activeMode.ringSpeed - currentRingSpeed) * 0.06;
 
     orbMat.color.lerp(activeMode.color, 0.06);
     orbMat.emissive.lerp(activeMode.emissive, 0.06);
+    shellMat.color.lerp(activeMode.shellColor, 0.06);
     ringMat1.color.lerp(activeMode.ringColor, 0.06);
 
-    phase += dt * currentSpeed;
+    phase += dt * currentBreatheSpeed;
+    ringPhase += dt * currentRingSpeed;
 
-    // Organic vertex breathing displacement
-    for (let i = 0; i < posAttr.count; i++) {
-      const bx = basePos[i * 3];
-      const by = basePos[i * 3 + 1];
-      const bz = basePos[i * 3 + 2];
-      tempVec.set(bx, by, bz).normalize();
+    // Gentle symmetric breathing & floating levitation
+    const coreScale = 1 + Math.sin(phase) * currentBreatheAmp;
+    const shellScale = 1 + Math.sin(phase - 0.45) * (currentBreatheAmp * 1.15);
+    orbMesh.scale.setScalar(coreScale);
+    shellMesh.scale.setScalar(shellScale);
+    root.position.y = Math.sin(phase * 0.7) * 0.055;
 
-      const wave =
-        Math.sin(tempVec.x * currentFreq + phase) *
-          Math.cos(tempVec.y * currentFreq + phase * 0.85) +
-        Math.sin(tempVec.z * (currentFreq * 1.3) - phase * 0.7) * 0.55;
-      const breathe = Math.sin(phase * 1.1) * 0.035;
-      const offset = 1 + breathe + wave * currentAmp;
+    // Smooth interactive cursor tilt
+    root.rotation.y += (pointerX * 0.5 - root.rotation.y) * 0.05;
+    root.rotation.x += (pointerY * 0.35 - root.rotation.x) * 0.05;
 
-      posAttr.setXYZ(i, bx * offset, by * offset, bz * offset);
-    }
-    posAttr.needsUpdate = true;
-    orbGeo.computeVertexNormals();
+    // Precess rings smoothly and keep every pearl locked on its ring perimeter
+    ring1Pivot.rotation.y = 0.36 + Math.sin(ringPhase * 0.5) * 0.18;
+    ring1Pivot.rotation.x = 1.12 + Math.cos(ringPhase * 0.4) * 0.14;
+    const a1 = ringPhase * 1.4;
+    pearl1.position.set(Math.cos(a1) * R1, Math.sin(a1) * R1, 0);
 
-    root.rotation.y += (pointerX * 0.55 - root.rotation.y) * 0.05;
-    root.rotation.x += (pointerY * 0.4 - root.rotation.x) * 0.05;
-    orbMesh.rotation.y = phase * 0.25;
-
-    halo1.rotation.z = phase * currentRingSpeed;
-    halo1.rotation.x = 1.15 + Math.sin(phase * 0.45) * 0.15;
-    halo2.rotation.z = -phase * currentRingSpeed * 0.8;
-    halo2.rotation.y = 0.55 + Math.cos(phase * 0.4) * 0.16;
-
-    cueOrbs.forEach((cue, idx) => {
-      const angle = cue.offset + phase * (0.55 + idx * 0.14);
-      cue.mesh.position.set(
-        Math.cos(angle) * cue.radius,
-        Math.sin(angle * 1.2) * 0.55,
-        Math.sin(angle) * cue.radius
-      );
-    });
+    ring2Pivot.rotation.y = 0.52 - Math.cos(ringPhase * 0.45) * 0.18;
+    ring2Pivot.rotation.x = -0.98 + Math.sin(ringPhase * 0.38) * 0.14;
+    const a2 = -ringPhase * 1.15 + 1.2;
+    pearl2.position.set(Math.cos(a2) * R2, Math.sin(a2) * R2, 0);
+    const a3 = a2 + Math.PI;
+    pearl3.position.set(Math.cos(a3) * R2, Math.sin(a3) * R2, 0);
 
     renderer.render(scene, camera);
   };
@@ -495,6 +464,7 @@ export const initEmpathyOrb3D = (canvas, container) => {
         if (reducedMotion) {
           orbMat.color.copy(activeMode.color);
           orbMat.emissive.copy(activeMode.emissive);
+          shellMat.color.copy(activeMode.shellColor);
           ringMat1.color.copy(activeMode.ringColor);
           renderer.render(scene, camera);
         }
@@ -509,4 +479,3 @@ export const initEmpathyOrb3D = (canvas, container) => {
     },
   };
 };
-
