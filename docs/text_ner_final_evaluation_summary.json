@@ -1,0 +1,357 @@
+{
+  "generated_at_utc": "2026-11-11T11:27:40.103213+00:00",
+  "prior_commit_reference": "ec27965",
+  "legacy_evaluation_limitation": {
+    "legacy_seed": 42,
+    "legacy_test_total_docs": 1586,
+    "legacy_evaluated_subset_docs": 150,
+    "legacy_reported_metrics_150_docs": {
+      "precision": 0.5711,
+      "recall": 0.864,
+      "f1": 0.6877
+    },
+    "reason_for_refresh": "Legacy 150-doc subset was reused for error analysis that informed hyperparameter/feature iteration; full 1,586-doc test partition had not been evaluated."
+  },
+  "clean_split_metadata": {
+    "final_seed": 2026,
+    "total_documents": 10569,
+    "total_retained_annotations": 227699,
+    "excluded_prior_exposed_count": 1800,
+    "eligible_fresh_test_pool_count": 8769,
+    "overlap_verified_zero_doc_ids": true,
+    "overlap_verified_zero_thread_urls": true,
+    "final_test_zero_prior_exposure_verified": true,
+    "partitions": {
+      "train": {
+        "num_documents": 7398,
+        "num_annotations": 156873,
+        "label_counts": {
+          "MMLite": 156873
+        },
+        "semantic_type_counts": {
+          "inbe": 3686,
+          "menp": 40441,
+          "mobd": 33814,
+          "socb": 4072,
+          "sosy": 13022,
+          "phsu": 44570,
+          "dsyn": 13758,
+          "orch": 37004,
+          "hops": 378,
+          "aapp": 808,
+          "clnd": 19,
+          "antb": 3042,
+          "horm": 686,
+          "bhvr": 719,
+          "bacs": 1008,
+          "bodm": 2133,
+          "imft": 560,
+          "inch": 975,
+          "elii": 372,
+          "cgab": 216,
+          "vita": 435,
+          "acab": 100,
+          "food": 16,
+          "irda": 14,
+          "nnon": 7,
+          "enzy": 2,
+          "cell": 1
+        }
+      },
+      "val": {
+        "num_documents": 1585,
+        "num_annotations": 35948,
+        "label_counts": {
+          "MMLite": 35948
+        },
+        "semantic_type_counts": {
+          "mobd": 7609,
+          "dsyn": 3257,
+          "menp": 9311,
+          "phsu": 10302,
+          "sosy": 2840,
+          "aapp": 206,
+          "horm": 175,
+          "inbe": 848,
+          "orch": 8541,
+          "antb": 658,
+          "bodm": 471,
+          "socb": 974,
+          "bhvr": 177,
+          "hops": 97,
+          "acab": 22,
+          "bacs": 228,
+          "cgab": 47,
+          "imft": 124,
+          "inch": 220,
+          "vita": 106,
+          "food": 4,
+          "elii": 52,
+          "irda": 3,
+          "clnd": 2,
+          "nnon": 3
+        }
+      },
+      "final_test": {
+        "num_documents": 1586,
+        "num_annotations": 34878,
+        "label_counts": {
+          "MMLite": 34878
+        },
+        "semantic_type_counts": {
+          "mobd": 7463,
+          "menp": 8882,
+          "orch": 8569,
+          "phsu": 10318,
+          "sosy": 2770,
+          "antb": 722,
+          "inbe": 797,
+          "dsyn": 2928,
+          "socb": 911,
+          "inch": 227,
+          "bodm": 512,
+          "bacs": 185,
+          "aapp": 183,
+          "horm": 144,
+          "hops": 70,
+          "imft": 115,
+          "bhvr": 162,
+          "vita": 117,
+          "acab": 12,
+          "food": 1,
+          "elii": 64,
+          "cgab": 39,
+          "irda": 5,
+          "cell": 2,
+          "clnd": 4,
+          "anab": 1
+        }
+      }
+    },
+    "split_manifest_path": "data/processed/text_ner/final_dataset_splits.json"
+  },
+  "frozen_model_config": {
+    "selected_candidate": "Enhanced_ModifiedHuber_C2.0_TrainAll",
+    "model_version": "1.2.0",
+    "classifier_type": "sgd",
+    "loss": "modified_huber",
+    "c_param": 2.0,
+    "alpha": 0.0005,
+    "max_iter": 500,
+    "class_weight": "balanced",
+    "feature_window": 2,
+    "dtype": "float32",
+    "allowed_entity_labels": [
+      "MMLite"
+    ],
+    "split_seed": 2026,
+    "train_docs_used": 7398,
+    "feature_statistics": {
+      "non_empty_documents": 7394,
+      "total_tokens": 5864667,
+      "num_features": 1526503,
+      "sparse_nnz": 181693767
+    },
+    "full_validation_metrics": {
+      "documents": 1585,
+      "gold_entities": 35948,
+      "precision": 0.5957,
+      "recall": 0.9001,
+      "micro_f1": 0.7169,
+      "eval_seconds": 242.08
+    },
+    "validation_candidate_comparison": [
+      {
+        "name": "Enhanced_ModifiedHuber_C2.0_Train1500",
+        "loss": "modified_huber",
+        "c_param": 2.0,
+        "train_docs_used": 1500,
+        "fit_stats": {
+          "non_empty_documents": 1499,
+          "total_tokens": 1152191,
+          "num_features": 555410,
+          "sparse_nnz": 35695436
+        },
+        "fit_seconds": 148.39,
+        "val_docs_evaluated": 400,
+        "val_gold_entities": 9005,
+        "val_micro_precision": 0.581,
+        "val_micro_recall": 0.8841,
+        "val_micro_f1": 0.7012,
+        "val_eval_seconds": 23.52
+      },
+      {
+        "name": "Enhanced_ModifiedHuber_C2.0_Train3500",
+        "loss": "modified_huber",
+        "c_param": 2.0,
+        "train_docs_used": 3500,
+        "fit_stats": {
+          "non_empty_documents": 3498,
+          "total_tokens": 2737569,
+          "num_features": 949923,
+          "sparse_nnz": 84812169
+        },
+        "fit_seconds": 329.9,
+        "val_docs_evaluated": 400,
+        "val_gold_entities": 9005,
+        "val_micro_precision": 0.5926,
+        "val_micro_recall": 0.86,
+        "val_micro_f1": 0.7017,
+        "val_eval_seconds": 42.65
+      },
+      {
+        "name": "Enhanced_ModifiedHuber_C1.0_TrainAll",
+        "loss": "modified_huber",
+        "c_param": 1.0,
+        "train_docs_used": 7398,
+        "fit_stats": {
+          "non_empty_documents": 7394,
+          "total_tokens": 5864667,
+          "num_features": 1526503,
+          "sparse_nnz": 181693767
+        },
+        "fit_seconds": 1065.48,
+        "val_docs_evaluated": 400,
+        "val_gold_entities": 9005,
+        "val_micro_precision": 0.5855,
+        "val_micro_recall": 0.8815,
+        "val_micro_f1": 0.7036,
+        "val_eval_seconds": 40.19
+      },
+      {
+        "name": "Enhanced_ModifiedHuber_C2.0_TrainAll",
+        "loss": "modified_huber",
+        "c_param": 2.0,
+        "train_docs_used": 7398,
+        "fit_stats": {
+          "non_empty_documents": 7394,
+          "total_tokens": 5864667,
+          "num_features": 1526503,
+          "sparse_nnz": 181693767
+        },
+        "fit_seconds": 1074.25,
+        "val_docs_evaluated": 400,
+        "val_gold_entities": 9005,
+        "val_micro_precision": 0.5957,
+        "val_micro_recall": 0.9021,
+        "val_micro_f1": 0.7175,
+        "val_eval_seconds": 37.01
+      }
+    ]
+  },
+  "model_version_info": {
+    "model_version": "1.2.0",
+    "base_git_commit": "ec27965",
+    "created_at_utc": "2026-11-11T11:23:27.881671+00:00",
+    "artifact_path": "models/text_ner/text_ner_model.joblib",
+    "artifact_size_bytes": 70864435,
+    "artifact_size_mb": 67.58,
+    "artifact_sha256": "28d42e9b8c50f571c44e2fced9efcd25a60222ad37d9d3cbce029acab7941f2d",
+    "allowed_entity_labels": [
+      "MMLite"
+    ],
+    "bio_classes": [
+      "B-MMLite",
+      "I-MMLite",
+      "O"
+    ],
+    "scientific_scope_note": "Extracts MMLite biomedical mentions from forum text only. Not a participant-level PPD diagnosis or severity classifier."
+  },
+  "final_test_metrics_complete": {
+    "documents_evaluated": 1586,
+    "gold_entities_support": 34878,
+    "predicted_entities": 52621,
+    "true_positives": 31213,
+    "false_positives": 21408,
+    "false_negatives": 3665,
+    "strict_micro_precision": 0.5932,
+    "strict_micro_recall": 0.8949,
+    "strict_micro_f1": 0.7134,
+    "strict_macro_f1": 0.7134,
+    "error_analysis": {
+      "spurious_entity": 19917,
+      "boundary_mismatch_same_label": 1491,
+      "completely_missed_entity": 1971
+    },
+    "evaluation_runtime_seconds": 251.65,
+    "total_pipeline_runtime_seconds": 3304.11,
+    "model_artifact_size_bytes": 70864435,
+    "model_artifact_size_mb": 67.58
+  },
+  "semantic_type_audit": {
+    "total_validated_spans": 227699,
+    "distinct_semantic_types_observed": 28,
+    "spans_with_single_semantic_type": 169220,
+    "spans_with_multiple_semantic_types": 58479,
+    "multi_label_ambiguity_rate": 0.2568,
+    "types_per_span_histogram": {
+      "1": 169220,
+      "2": 51499,
+      "3": 6832,
+      "4": 132,
+      "6": 16
+    },
+    "semantic_type_counts": {
+      "phsu": 65190,
+      "menp": 58634,
+      "orch": 54114,
+      "mobd": 48886,
+      "dsyn": 19943,
+      "sosy": 18632,
+      "socb": 5957,
+      "inbe": 5331,
+      "antb": 4422,
+      "bodm": 3116,
+      "inch": 1422,
+      "bacs": 1421,
+      "aapp": 1197,
+      "bhvr": 1058,
+      "horm": 1005,
+      "imft": 799,
+      "vita": 658,
+      "hops": 545,
+      "elii": 488,
+      "cgab": 302,
+      "acab": 134,
+      "clnd": 25,
+      "irda": 22,
+      "food": 21,
+      "nnon": 10,
+      "cell": 3,
+      "enzy": 2,
+      "anab": 1
+    },
+    "single_label_only_counts": {
+      "menp": 58485,
+      "mobd": 43960,
+      "dsyn": 19693,
+      "sosy": 18481,
+      "phsu": 13193,
+      "socb": 5950,
+      "inbe": 5255,
+      "bodm": 2069,
+      "bhvr": 1043,
+      "orch": 667,
+      "cgab": 271,
+      "acab": 131,
+      "clnd": 22
+    },
+    "top_multi_label_combinations": {
+      "orch+phsu": 40816,
+      "mobd+orch+phsu": 4638,
+      "antb+orch": 4360,
+      "inch+phsu": 1371,
+      "bacs+orch": 1097,
+      "bodm+phsu": 904,
+      "aapp+phsu": 891,
+      "horm+orch+phsu": 874,
+      "imft+phsu": 616,
+      "orch+phsu+vita": 558,
+      "hops+orch": 423,
+      "elii+phsu": 292,
+      "imft+orch": 152,
+      "bacs+elii+phsu": 131,
+      "bodm+orch+phsu": 106
+    }
+  }
+}
