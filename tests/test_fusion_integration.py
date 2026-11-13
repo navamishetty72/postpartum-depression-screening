@@ -39,6 +39,9 @@ from tests.test_backend_screening import _get_valid_clinical_features
 
 client = TestClient(app)
 
+REQUIRED_MULTIMODAL_OOF_PATHS = [CLINICAL_OOF_PATH, AUDIO_OOF_PATH, TEXT_OOF_PATH, VIDEO_OOF_PATH]
+MULTIMODAL_OOF_AVAILABLE = all(p.is_file() for p in REQUIRED_MULTIMODAL_OOF_PATHS)
+
 
 def _get_valid_audio_features():
     return {
@@ -52,6 +55,10 @@ def _get_valid_audio_features():
     }
 
 
+@pytest.mark.skipif(
+    not MULTIMODAL_OOF_AVAILABLE,
+    reason="Requires all four multimodal OOF prediction artifacts (clinical, audio, text, video)",
+)
 def test_multimodal_participant_alignment():
     """Verify exact participant ID and target alignment across all 4 modalities on canonical 640 cohort."""
     manifest = pd.read_csv(SPLIT_MANIFEST_PATH)
@@ -72,6 +79,10 @@ def test_multimodal_participant_alignment():
         assert np.array_equal(df[target_col].values, expected_targets), f"Target mismatch in {name}"
 
 
+@pytest.mark.skipif(
+    not MULTIMODAL_OOF_AVAILABLE,
+    reason="Requires all four multimodal OOF prediction artifacts (clinical, audio, text, video)",
+)
 def test_multimodal_fold_isolation():
     """Verify that cross-validation folds are identically partitioned across all modalities."""
     audio_df = pd.read_csv(AUDIO_OOF_PATH)
@@ -90,6 +101,10 @@ def test_multimodal_fold_isolation():
         assert (audio_folds == f).sum() == 128, f"Expected exactly 128 participants in fold {f}"
 
 
+@pytest.mark.skipif(
+    not MULTIMODAL_OOF_AVAILABLE,
+    reason="Requires all four multimodal OOF prediction artifacts (clinical, audio, text, video)",
+)
 def test_no_target_leakage_in_fusion():
     """Verify that probability features are within [0.0, 1.0] and contain no raw EPDS targets."""
     clin_df = pd.read_csv(CLINICAL_OOF_PATH)

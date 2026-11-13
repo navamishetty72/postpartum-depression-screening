@@ -363,9 +363,10 @@ def train_audio_models(
             fold_m["fold"] = fold_idx
             fold_metrics_list.append(fold_m)
 
+        rounded_oof = np.round(oof_probs, 4)
         oof_predictions_df["fold"] = fold_assignments
-        oof_predictions_df[f"{name}_prob"] = np.round(oof_probs, 4)
-        oof_predictions_df[f"{name}_pred"] = (oof_probs >= DECISION_THRESHOLD).astype(int)
+        oof_predictions_df[f"{name}_prob"] = rounded_oof
+        oof_predictions_df[f"{name}_pred"] = (rounded_oof >= DECISION_THRESHOLD).astype(int)
 
         # Aggregate CV summary across folds
         cv_summary: Dict[str, Dict[str, float]] = {}
@@ -421,8 +422,9 @@ def train_audio_models(
 
         results["holdout_test"][name] = test_metrics
 
-        test_predictions_df[f"{name}_prob"] = np.round(test_probs, 4)
-        test_predictions_df[f"{name}_pred"] = (test_probs >= DECISION_THRESHOLD).astype(int)
+        rounded_test = np.round(test_probs, 4)
+        test_predictions_df[f"{name}_prob"] = rounded_test
+        test_predictions_df[f"{name}_pred"] = (rounded_test >= DECISION_THRESHOLD).astype(int)
 
         if save_artifacts:
             joblib.dump(final_model, artifacts_dir / f"{name}.joblib")
