@@ -1,7 +1,7 @@
 """Service layer for clinician-managed Care Plans."""
 
 import logging
-from typing import Optional
+from typing import List, Optional
 import uuid
 
 from sqlalchemy import desc, select
@@ -41,6 +41,21 @@ class CarePlanService:
             .order_by(desc(CarePlan.created_at))
         )
         return db.scalars(stmt).first()
+
+    @staticmethod
+    def list_care_plans(
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[CarePlan]:
+        """Retrieve all care plans, newest first."""
+        stmt = (
+            select(CarePlan)
+            .order_by(desc(CarePlan.updated_at), desc(CarePlan.created_at))
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
 
     @staticmethod
     def upsert_care_plan(

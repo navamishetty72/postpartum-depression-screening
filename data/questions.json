@@ -26,7 +26,7 @@
     {
       "id": "EPDS_Q01",
       "question_number": 1,
-      "question": "I have been able to laugh and see the funny side of things",
+      "question": "Have you been able to laugh and see the funny side of things?",
       "response_options": [
         {
           "label": "As much as I always could",
@@ -55,7 +55,7 @@
     {
       "id": "EPDS_Q02",
       "question_number": 2,
-      "question": "I have looked forward with enjoyment to things",
+      "question": "Have you looked forward with enjoyment to things?",
       "response_options": [
         {
           "label": "As much as I ever did",
@@ -84,7 +84,7 @@
     {
       "id": "EPDS_Q03",
       "question_number": 3,
-      "question": "I have blamed myself unnecessarily when things went wrong",
+      "question": "Have you blamed yourself unnecessarily when things went wrong?",
       "response_options": [
         {
           "label": "Yes, most of the time",
@@ -113,7 +113,7 @@
     {
       "id": "EPDS_Q04",
       "question_number": 4,
-      "question": "I have been anxious or worried for no good reason",
+      "question": "Have you been anxious or worried for no good reason?",
       "response_options": [
         {
           "label": "No, not at all",
@@ -142,7 +142,7 @@
     {
       "id": "EPDS_Q05",
       "question_number": 5,
-      "question": "I have felt scared or panicky for no very good reason",
+      "question": "Have you felt scared or panicky for no very good reason?",
       "response_options": [
         {
           "label": "Yes, quite a lot",
@@ -171,7 +171,7 @@
     {
       "id": "EPDS_Q06",
       "question_number": 6,
-      "question": "Things have been getting on top of me",
+      "question": "Have things been getting on top of you?",
       "response_options": [
         {
           "label": "Yes, most of the time I haven’t been able to cope at all",
@@ -200,7 +200,7 @@
     {
       "id": "EPDS_Q07",
       "question_number": 7,
-      "question": "I have been so unhappy that I have had difficulty sleeping",
+      "question": "Have you been so unhappy that you have had difficulty sleeping?",
       "response_options": [
         {
           "label": "Yes, most of the time",
@@ -229,7 +229,7 @@
     {
       "id": "EPDS_Q08",
       "question_number": 8,
-      "question": "I have felt sad or miserable",
+      "question": "Have you felt sad or miserable?",
       "response_options": [
         {
           "label": "Yes, most of the time",
@@ -258,7 +258,7 @@
     {
       "id": "EPDS_Q09",
       "question_number": 9,
-      "question": "I have been so unhappy that I have been crying",
+      "question": "Have you been so unhappy that you have been crying?",
       "response_options": [
         {
           "label": "Yes, most of the time",
@@ -287,7 +287,7 @@
     {
       "id": "EPDS_Q10",
       "question_number": 10,
-      "question": "The thought of harming myself has occurred to me",
+      "question": "Has the thought of harming yourself occurred to you?",
       "response_options": [
         {
           "label": "Yes, quite often",

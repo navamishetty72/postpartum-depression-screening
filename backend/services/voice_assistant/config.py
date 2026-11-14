@@ -9,8 +9,17 @@ from pathlib import Path
 import re
 from typing import Any, Dict, Optional
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if present
+load_dotenv()
+_project_root = Path(__file__).resolve().parent.parent.parent.parent
+_env_path = _project_root / ".env"
+if _env_path.exists():
+    load_dotenv(dotenv_path=_env_path, override=False)
+
 # Default verified model recommendation (configurable via GEMINI_MODEL)
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash"
 
 # Relative path to default system prompt file
 DEFAULT_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent / "system_prompt.txt"
@@ -141,10 +150,11 @@ class VoiceAssistantConfig:
             temperature: Sampling temperature for empathetic tone balance.
             max_output_tokens: Token budget keeping voice playback responses concise.
         """
-        env_key = os.getenv("GEMINI_API_KEY", "").strip()
-        self.api_key: Optional[str] = (
-            api_key.strip() if api_key and api_key.strip() else (env_key or None)
-        )
+        if api_key is not None:
+            self.api_key: Optional[str] = api_key.strip() or None
+        else:
+            env_key = os.getenv("GEMINI_API_KEY", "").strip()
+            self.api_key: Optional[str] = env_key or None
         self.model: str = (
             (model.strip() if model and model.strip() else None)
             or os.getenv("GEMINI_MODEL", "").strip()

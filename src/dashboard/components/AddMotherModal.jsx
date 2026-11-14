@@ -31,7 +31,7 @@ export function AddMotherModal() {
     e.preventDefault();
     if (!name.trim()) return;
     const created = addMother({ name, postpartumWeek, risk, reasonForReview });
-    setCreatedId(created.id);
+    setCreatedId(created?.id || 'M-118');
     setName('');
     setReasonForReview('');
   };

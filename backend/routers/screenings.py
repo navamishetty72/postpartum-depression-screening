@@ -9,21 +9,70 @@ import logging
 from typing import List
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from backend.database.base import utc_now
 from backend.database.connection import get_db
 from backend.models.screening import Screening
 from backend.schemas.handoff import ScreeningHandoffRequest, ScreeningHandoffResponse
-from backend.schemas.screening import ScreeningResponse
+from backend.schemas.screening import ScreeningPersistRequest, ScreeningResponse
 from backend.services.audit_service import audit_service
-from backend.services.screening_service import ScreeningService, screening_service
+from backend.services.screening_service import (
+    MotherNotFoundError,
+    ScreeningService,
+    screening_service,
+)
 
 
 logger = logging.getLogger("ppd.routers.screenings")
 
 router = APIRouter(tags=["Screenings"])
+
+
+@router.post(
+    "/api/screenings",
+    response_model=ScreeningResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Persist a completed screening session and multimodal results",
+)
+def create_screening(
+    payload: ScreeningPersistRequest,
+    db: Session = Depends(get_db),
+    service: ScreeningService = Depends(lambda: screening_service),
+) -> ScreeningResponse:
+    """Persist screening answers, EPDS score, risk tier, and multimodal predictions."""
+    try:
+        screening = service.persist_screening(db, payload)
+        return ScreeningResponse.model_validate(screening)
+    except MotherNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        ) from exc
+    except Exception as exc:
+        logger.error("Failed to persist screening: %s", type(exc).__name__)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to persist screening session due to an internal server error.",
+        ) from exc
+
+
+@router.get(
+    "/api/screenings",
+    response_model=List[ScreeningResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List all screenings across mothers",
+)
+def list_screenings(
+    skip: int = Query(default=0, ge=0, description="Offset for pagination"),
+    limit: int = Query(default=50, ge=1, le=200, description="Page limit"),
+    db: Session = Depends(get_db),
+    service: ScreeningService = Depends(lambda: screening_service),
+) -> List[ScreeningResponse]:
+    """Retrieve a paginated list of all screenings, ordered newest first."""
+    screenings = service.list_screenings(db, skip=skip, limit=limit)
+    return [ScreeningResponse.model_validate(s) for s in screenings]
 
 
 @router.get(

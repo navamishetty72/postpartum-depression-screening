@@ -17,7 +17,7 @@ const NAV_ITEMS = [
 ];
 
 export function TopNav() {
-  const { alerts, mothers, screenings } = useClinicalData();
+  const { alerts, mothers, screenings, backendStatus, isDemoData } = useClinicalData();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -104,6 +104,18 @@ export function TopNav() {
         </nav>
 
         <div className="dash-nav-utilities">
+          <span
+            className={`dash-db-pill ${backendStatus === 'connected' ? 'is-connected' : 'is-demo'}`}
+            title={
+              backendStatus === 'connected'
+                ? 'Connected to FastAPI clinical backend (SQLite/PostgreSQL database)'
+                : 'Displaying demo clinical dataset (FastAPI backend offline or empty)'
+            }
+          >
+            <span className="dash-db-dot" aria-hidden="true" />
+            {backendStatus === 'connected' ? (isDemoData ? 'Live DB (Demo baseline)' : 'Live DB') : 'Demo Mode'}
+          </span>
+
           <div className="dash-utility-wrap">
             <button
               type="button"

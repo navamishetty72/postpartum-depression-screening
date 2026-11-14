@@ -33,12 +33,12 @@ export async function submitMultimodalAnalysis({
   const apiBase =
     (typeof import.meta !== 'undefined' && import.meta.env?.VITE_MIORA_API_URL) || '';
 
-  if (!apiBase || !fetchImpl) {
+  if (!fetchImpl) {
     return {
       ok: false,
       reason: 'backend-unavailable',
       message:
-        'Multimodal analysis backend is not connected in this frontend environment. Your files were validated locally and have not been uploaded externally or assigned fabricated scores.',
+        'Network client unavailable in this environment. Your files were validated locally.',
     };
   }
 
@@ -53,7 +53,8 @@ export async function submitMultimodalAnalysis({
       }
     });
 
-    const response = await fetchImpl(`${apiBase.replace(/\/$/, '')}/api/screenings/analyze`, {
+    const targetUrl = apiBase ? `${apiBase.replace(/\/$/, '')}/api/screenings/analyze` : '/api/screenings/analyze';
+    const response = await fetchImpl(targetUrl, {
       method: 'POST',
       body: formData,
     });

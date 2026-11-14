@@ -9,7 +9,7 @@ import logging
 from typing import List
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from backend.database.connection import get_db
@@ -74,4 +74,42 @@ def get_mother_clinical_reviews(
             detail=f"Mother with ID '{mother_id}' was not found.",
         )
     return [ClinicalReviewResponse.model_validate(r) for r in reviews]
+
+
+@router.get(
+    "/api/clinical-reviews",
+    response_model=List[ClinicalReviewResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List all clinical reviews across mothers",
+)
+def list_clinical_reviews(
+    skip: int = Query(default=0, ge=0, description="Offset for pagination"),
+    limit: int = Query(default=50, ge=1, le=200, description="Page limit"),
+    db: Session = Depends(get_db),
+    service: ClinicalReviewService = Depends(lambda: clinical_review_service),
+) -> List[ClinicalReviewResponse]:
+    """Retrieve all clinical reviews, ordered newest first."""
+    reviews = service.list_reviews(db, skip=skip, limit=limit)
+    return [ClinicalReviewResponse.model_validate(r) for r in reviews]
+
+
+@router.get(
+    "/api/clinical-reviews/{review_id}",
+    response_model=ClinicalReviewResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve an individual clinical review by UUID",
+)
+def get_clinical_review(
+    review_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    service: ClinicalReviewService = Depends(lambda: clinical_review_service),
+) -> ClinicalReviewResponse:
+    """Retrieve details of a single clinical review event."""
+    review = service.get_review_by_id(db, review_id)
+    if not review:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Clinical review with ID '{review_id}' was not found.",
+        )
+    return ClinicalReviewResponse.model_validate(review)
 

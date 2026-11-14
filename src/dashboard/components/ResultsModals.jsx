@@ -271,8 +271,9 @@ export function ShareCaseModal({ isOpen, onClose, screening, onShare }) {
               />
             </label>
 
-            <label className="miora-checkbox-field">
+            <label className="miora-checkbox-field" htmlFor="consent-confirmed">
               <input
+                id="consent-confirmed"
                 type="checkbox"
                 checked={consentConfirmed}
                 onChange={(e) => setConsentConfirmed(e.target.checked)}
