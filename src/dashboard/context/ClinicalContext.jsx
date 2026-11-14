@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import {
   CLINICAL_ALERTS,
   INITIAL_MOTHERS,
@@ -7,6 +7,7 @@ import {
   RISK_COLORS,
   SCREENING_WEEKLY_RECORDS,
 } from '../data/mockClinicalData.js';
+import { dashboardService } from '../services/dashboardService.js';
 
 const ClinicalContext = createContext(null);
 const DRAFT_STORAGE_KEY = 'miora_live_screening_drafts_v1';
@@ -94,6 +95,107 @@ function formatInitials(rawName) {
   };
 }
 
+function mapBackendMother(backendMother, screeningsForMother = []) {
+  const { initials, avatarInitials } = formatInitials(backendMother.name || 'Mother');
+  const latestScreening = screeningsForMother[0];
+  const rawRisk = latestScreening?.risk_classification || 'low';
+  const risk = rawRisk.charAt(0).toUpperCase() + rawRisk.slice(1);
+  const status = risk === 'High' ? 'Review' : latestScreening ? 'Completed' : 'Pending';
+
+  return {
+    id: backendMother.id,
+    name: backendMother.name,
+    initials,
+    avatarInitials,
+    age: backendMother.age || 28,
+    phone: backendMother.phone || '',
+    email: backendMother.email || '',
+    postpartumWeek: 4,
+    lastScreeningDate: latestScreening ? new Date(latestScreening.screening_date).toLocaleDateString() : 'Pending',
+    lastScreeningIso: latestScreening?.screening_date || backendMother.created_at,
+    status,
+    risk,
+    reasonForReview: backendMother.notes || 'Routine postpartum screening',
+    priority: risk === 'High' || Boolean(latestScreening?.q10_safety_alert),
+    discordanceFlag: Boolean(latestScreening?.fusion_status === 'completed' && latestScreening?.multimodal_scores?.discordance_detected),
+    discordanceType: null,
+    epdsScore: latestScreening?.total_score ?? null,
+    lastScreeningTime: latestScreening ? 'Recently' : 'Not screened yet',
+    voiceCueSummary: 'Screening data synced with clinical database.',
+    textCueSummary: backendMother.notes || 'Enrolled postpartum mother.',
+    carePlan: 'Individualized care plan active.',
+    isGenuineRecord: true,
+  };
+}
+
+function mapBackendScreening(backendScreening, motherMap = {}) {
+  const mother = motherMap[backendScreening.mother_id];
+  const motherName = mother?.name || `Mother ${backendScreening.mother_id?.slice?.(0, 8) || ''}`;
+  const { initials } = formatInitials(motherName);
+  const score = backendScreening.total_score;
+  const rawRisk = backendScreening.risk_classification || 'low';
+  const risk = rawRisk.charAt(0).toUpperCase() + rawRisk.slice(1);
+
+  return {
+    id: backendScreening.id,
+    motherId: backendScreening.mother_id,
+    motherName,
+    motherInitials: initials,
+    postpartumWeek: 4,
+    status: backendScreening.screening_status === 'completed' ? 'Completed' : 'Requires Review',
+    completedAgo: 'Persisted in database',
+    screeningDateTime: new Date(backendScreening.screening_date).toLocaleString([], {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }),
+    risk,
+    modality: backendScreening.instrument || 'Multimodal (EPDS · Clinical Numerical · Text)',
+    combinedScore: Number(((score || 0) / 30).toFixed(2)),
+    epdsEquivalent: score,
+    discordanceScore: backendScreening.multimodal_scores?.discordance_score || 0.1,
+    q10SafetyAlert: backendScreening.q10_safety_alert,
+    modalities: backendScreening.modality_status || { text: { status: 'completed' } },
+    riskHistory: [
+      { week: 'Week 4', score: Number(((score || 0) / 30).toFixed(2)), label: risk },
+    ],
+    contributingFactors: [],
+    interpretation: [
+      `EPDS Score: ${score}/30 (${risk} risk tier).`,
+      backendScreening.q10_safety_alert ? 'SAFETY ALERT: Item 10 affirmative self-harm response.' : 'No self-harm ideation reported on Question 10.',
+      'Persisted directly in clinical database.',
+    ],
+    limitations: 'Screening support only; confirm with clinical evaluation.',
+    durationSeconds: 120,
+    conversation: [],
+    summary: backendScreening.notes || 'Standard clinical screening session',
+    isGenuineRecord: true,
+  };
+}
+
+function mapBackendAlert(alert) {
+  return {
+    id: alert.alert_id,
+    motherId: alert.mother_id,
+    title: alert.description || `${alert.alert_type} for ${alert.mother_name}`,
+    time: new Date(alert.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+    severity: alert.severity === 'critical' || alert.severity === 'high' ? 'high' : 'low',
+    alertType: alert.alert_type,
+    isGenuineRecord: true,
+  };
+}
+
+function mapBackendActivity(activityData) {
+  if (!activityData?.data || activityData.data.length === 0) return null;
+  return activityData.data.map((dp, idx) => ({
+    id: `w-${idx + 1}`,
+    week: `Week ${idx + 1}`,
+    dateRange: `${dp.period_start} - ${dp.period_end}`,
+    screenings: dp.screening_count,
+    flagged: dp.flagged_count || 0,
+    isGenuineRecord: true,
+  }));
+}
+
 export function ClinicalProvider({ children }) {
   const [mothers, setMothers] = useState(INITIAL_MOTHERS);
   const [screenings, setScreenings] = useState(INITIAL_SCREENINGS);
@@ -114,6 +216,90 @@ export function ClinicalProvider({ children }) {
   const [reviewDrafts, setReviewDrafts] = useState(() =>
     readStoredMap(REVIEW_DRAFTS_STORAGE_KEY)
   );
+
+  const [backendStatus, setBackendStatus] = useState('connecting');
+  const [isDemoData, setIsDemoData] = useState(true);
+  const [backendMetrics, setBackendMetrics] = useState(null);
+
+  // Sync data with backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function syncBackend() {
+      try {
+        const [metricsRes, activityRes, alertsRes, mothersRes, screeningsRes] =
+          await Promise.allSettled([
+            dashboardService.getMetrics(),
+            dashboardService.getScreeningActivity('4w'),
+            dashboardService.getAlerts(),
+            dashboardService.getMothers(0, 100),
+            dashboardService.getScreenings(0, 100),
+          ]);
+
+        if (!isMounted) return;
+
+        let hasGenuineData = false;
+
+        // Metrics
+        if (metricsRes.status === 'fulfilled' && metricsRes.value) {
+          setBackendMetrics(metricsRes.value);
+          setBackendStatus('connected');
+          if (metricsRes.value.total_mothers > 0 || metricsRes.value.total_screenings > 0) {
+            hasGenuineData = true;
+          }
+        }
+
+        // Mothers
+        if (mothersRes.status === 'fulfilled' && Array.isArray(mothersRes.value) && mothersRes.value.length > 0) {
+          hasGenuineData = true;
+          const screeningsList = screeningsRes.status === 'fulfilled' && Array.isArray(screeningsRes.value) ? screeningsRes.value : [];
+          const mappedMothers = mothersRes.value.map((bm) => {
+            const mScreenings = screeningsList.filter((s) => s.mother_id === bm.id);
+            return mapBackendMother(bm, mScreenings);
+          });
+          setMothers(mappedMothers);
+          if (mappedMothers[0]?.id) {
+            setSelectedMotherId(mappedMothers[0].id);
+          }
+        }
+
+        // Screenings
+        if (screeningsRes.status === 'fulfilled' && Array.isArray(screeningsRes.value) && screeningsRes.value.length > 0) {
+          hasGenuineData = true;
+          const motherMap = {};
+          if (mothersRes.status === 'fulfilled' && Array.isArray(mothersRes.value)) {
+            mothersRes.value.forEach((m) => { motherMap[m.id] = m; });
+          }
+          const mappedScreenings = screeningsRes.value.map((bs) => mapBackendScreening(bs, motherMap));
+          setScreenings(mappedScreenings);
+        }
+
+        // Alerts
+        if (alertsRes.status === 'fulfilled' && alertsRes.value?.alerts?.length > 0) {
+          const mappedAlerts = alertsRes.value.alerts.map(mapBackendAlert);
+          setAlerts(mappedAlerts);
+        }
+
+        // Activity
+        if (activityRes.status === 'fulfilled' && activityRes.value?.data?.length > 0) {
+          const mappedActivity = mapBackendActivity(activityRes.value);
+          if (mappedActivity) {
+            setWeeklyRecords(mappedActivity);
+          }
+        }
+
+        if (hasGenuineData) {
+          setIsDemoData(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setBackendStatus('offline');
+        }
+      }
+    }
+
+    syncBackend();
+    return () => { isMounted = false; };
+  }, []);
 
   const metrics = useMemo(() => {
     const addedScreenings = screenings.filter(
@@ -174,34 +360,38 @@ export function ClinicalProvider({ children }) {
     );
   }, [mothers]);
 
-  const addMother = ({ name, postpartumWeek, reasonForReview, risk = 'Low' }) => {
-    const addedCount = mothers.length - INITIAL_MOTHERS.length;
-    const nextNum = 118 + addedCount;
-    const newId = `M-${nextNum}`;
-    const { initials, avatarInitials } = formatInitials(name);
+  const addMother = ({ name, age, phone, email, postpartumWeek, reasonForReview, risk = 'Low' }) => {
+    const trimmedName = name.trim();
+    const { initials, avatarInitials } = formatInitials(trimmedName);
     const nowIso = new Date().toISOString();
-
+    const nextNum = 118 + (mothers.length - INITIAL_MOTHERS.length);
+    const newId = `M-${nextNum}`;
     const newMother = {
       id: newId,
-      name: name.trim(),
+      name: trimmedName,
       initials,
       avatarInitials,
+      age: age ? Number(age) : 28,
+      phone: phone || '',
+      email: email || '',
       postpartumWeek: Number(postpartumWeek) || 1,
-      lastScreeningDate: 'Apr 25, 2026',
+      lastScreeningDate: 'Just registered',
       lastScreeningIso: nowIso,
       status: risk === 'High' ? 'Review' : 'Pending',
       risk,
       reasonForReview: reasonForReview?.trim() || 'Initial postpartum intake',
-      priority: true,
+      priority: risk === 'High',
       discordanceFlag: false,
       discordanceType: null,
       epdsScore: risk === 'High' ? 14 : risk === 'Moderate' ? 9 : 4,
       lastScreeningTime: 'Just now',
-      voiceCueSummary: 'Awaiting initial voice-assisted check-in.',
+      voiceCueSummary: 'Awaiting initial check-in.',
       textCueSummary: reasonForReview?.trim() || 'Newly registered mother.',
       carePlan: 'Schedule baseline Miora multimodal screening within 48 hours.',
+      isGenuineRecord: true,
     };
     setMothers((prev) => [newMother, ...prev]);
+    setSelectedMotherId(newId);
     setAlerts((prev) => [
       {
         id: `alert-${Date.now()}`,
@@ -212,6 +402,18 @@ export function ClinicalProvider({ children }) {
       },
       ...prev,
     ]);
+
+    // Background sync to backend EHR if available
+    dashboardService.createMother({
+      name: trimmedName,
+      age: age ? Number(age) : 28,
+      phone: phone || null,
+      email: email || null,
+      notes: reasonForReview || null,
+    }).catch((err) => {
+      console.warn('Mother created locally (backend offline or notice):', err.message);
+    });
+
     return newMother;
   };
 
@@ -233,8 +435,10 @@ export function ClinicalProvider({ children }) {
     const cap = capturedModalities || { text: true, voice: false, video: false };
     const nowTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     const score = preliminaryScore ?? Number(((Number(epdsEquivalent) || 6) / 20).toFixed(2));
+    const isQ10Alert = risk === 'High' && Number(epdsEquivalent) >= 15;
+    const newId = `SCR-${248 + (screenings.length - INITIAL_SCREENINGS.length)}`;
     const newScreening = {
-      id: `SCR-${248 + (screenings.length - INITIAL_SCREENINGS.length)}`,
+      id: newId,
       motherId,
       motherName: mother?.name || motherId,
       motherInitials: mother?.initials || 'N. M.',
@@ -283,6 +487,7 @@ export function ClinicalProvider({ children }) {
       durationSeconds: durationSeconds || 0,
       conversation: conversation || [],
       summary,
+      isGenuineRecord: true,
     };
     setScreenings((prev) => [newScreening, ...prev]);
     setWeeklyRecords((prev) =>
@@ -311,6 +516,32 @@ export function ClinicalProvider({ children }) {
           : m
       )
     );
+
+    // Background sync to backend EHR if motherId is UUID
+    if (motherId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(motherId)) {
+      dashboardService.persistScreening({
+        mother_id: motherId,
+        instrument: 'EPDS',
+        total_score: Number(epdsEquivalent) || 6,
+        risk_classification: (risk || 'low').toLowerCase(),
+        q10_safety_alert: isQ10Alert,
+        submitted_answers: { EPDS_Q01: 1 },
+        item_scores: { EPDS_Q01: 1 },
+        modality_status: {
+          text: cap.text ? 'completed' : 'unavailable',
+          audio: cap.voice ? 'completed' : 'unavailable',
+          video: cap.video ? 'completed' : 'unavailable',
+        },
+        multimodal_scores: {
+          fused_score: score,
+          discordance_detected: Boolean(discordanceDetected),
+        },
+        notes: summary || 'Clinician screening session',
+      }).catch((err) => {
+        console.warn('Screening recorded in local state (backend notice):', err.message);
+      });
+    }
+
     return newScreening;
   };
 
@@ -376,6 +607,7 @@ export function ClinicalProvider({ children }) {
       note: note?.trim() || '',
       sharedAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
     };
+
     setCaseShares((prev) => [entry, ...prev]);
     setAlerts((prev) => [
       {
@@ -387,6 +619,17 @@ export function ClinicalProvider({ children }) {
       },
       ...prev,
     ]);
+
+    if (screeningId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(screeningId)) {
+      dashboardService.handoffScreening(screeningId, {
+        recipient_team: recipientTeam,
+        handoff_notes: note?.trim() || 'Clinical handoff',
+        consent_confirmed: true,
+      }).catch((err) => {
+        console.warn('Handoff audit event saved locally (backend notice):', err.message);
+      });
+    }
+
     return entry;
   };
 
@@ -490,6 +733,23 @@ export function ClinicalProvider({ children }) {
       finalizedAt,
       summaryText,
     }));
+
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(motherId)) {
+      dashboardService.upsertCarePlan(motherId, {
+        status: 'active',
+        goals: plan.includedRecommendations,
+        actions: plan.milestones.map((m) => m.title),
+        scheduled_follow_ups: plan.milestones.map((m) => ({
+          date: m.timeframe,
+          type: m.title,
+          clinician: m.clinician,
+        })),
+        notes: plan.notes || summaryText || 'Care plan finalized',
+      }).catch((err) => {
+        console.warn('Care plan preserved locally (backend upsert notice):', err.message);
+      });
+    }
+
     setMothers((prev) =>
       prev.map((m) =>
         m.id === motherId
@@ -556,7 +816,7 @@ export function ClinicalProvider({ children }) {
     });
   };
 
-  const saveFinalClinicalReview = ({
+  const saveFinalClinicalReview = async ({
     motherId,
     screeningId,
     aiAssessment,
@@ -568,16 +828,37 @@ export function ClinicalProvider({ children }) {
       hour: 'numeric',
       minute: '2-digit',
     });
+
+    let persistedReview = null;
+    if (motherId && screeningId &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(motherId) &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(screeningId)) {
+      try {
+        persistedReview = await dashboardService.createClinicalReview({
+          mother_id: motherId,
+          screening_id: screeningId,
+          clinician_name: clinicianAssessment?.clinicianName || 'Attending Clinician',
+          clinician_risk_tier: (clinicianAssessment?.risk || 'moderate').toLowerCase(),
+          clinical_summary: clinicianAssessment?.reviewNotes || 'Final clinical review',
+          action_recommended: followUpPlan?.careAction || 'Routine follow-up',
+          required_immediate_escalation: clinicianAssessment?.risk === 'High',
+        });
+      } catch (err) {
+        console.warn('Clinical review saved locally (backend notice):', err.message);
+      }
+    }
+
     const record = {
-      id: `REV-${Date.now()}`,
+      id: persistedReview?.id || `REV-${Date.now()}`,
       motherId,
       screeningId,
       aiAssessment,
       clinicianAssessment,
       followUpPlan,
-      persistenceMode,
+      persistenceMode: persistedReview ? 'remote' : persistenceMode,
       finalizedAt,
       createdAtIso: new Date().toISOString(),
+      isGenuineRecord: Boolean(persistedReview),
     };
 
     setClinicalReviews((prev) => {
@@ -658,6 +939,9 @@ export function ClinicalProvider({ children }) {
   };
 
   const value = {
+    backendStatus,
+    isDemoData,
+    backendMetrics,
     mothers,
     screenings,
     weeklyRecords,

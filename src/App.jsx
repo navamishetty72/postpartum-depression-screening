@@ -66,6 +66,7 @@ export function App() {
               <Route path="/patient/screening" element={<PatientScreeningPage />} />
               <Route path="/patient-screening" element={<PatientScreeningPage />} />
               <Route path="/patient/ai-screening" element={<PatientScreeningPage />} />
+              <Route path="/patient/live-screening" element={<Navigate to="/patient/screening" replace />} />
 
               <Route path="/screening-results" element={<ScreeningResultsPage />} />
               <Route path="/screening/results" element={<ScreeningResultsPage />} />

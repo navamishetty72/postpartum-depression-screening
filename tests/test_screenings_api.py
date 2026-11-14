@@ -255,3 +255,60 @@ def test_get_screening_invalid_uuid_rejected(client: TestClient):
     response = client.get("/api/screenings/malformed-uuid-string")
     assert response.status_code == 422
 
+
+def test_list_all_screenings_endpoint(client: TestClient, db_session):
+    """Test GET /api/screenings lists all screenings across mothers."""
+    mother = Mother(name="Sunita Rao", age=28)
+    db_session.add(mother)
+    db_session.commit()
+
+    s1 = Screening(
+        mother_id=mother.id,
+        instrument="EPDS",
+        total_score=6,
+        risk_classification="low",
+        q10_safety_alert=False,
+    )
+    s2 = Screening(
+        mother_id=mother.id,
+        instrument="EPDS",
+        total_score=14,
+        risk_classification="high",
+        q10_safety_alert=True,
+    )
+    db_session.add_all([s1, s2])
+    db_session.commit()
+
+    response = client.get("/api/screenings")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 2
+    ids = [item["id"] for item in data]
+    assert str(s1.id) in ids
+    assert str(s2.id) in ids
+
+
+def test_post_screening_endpoint(client: TestClient, db_session):
+    """Test POST /api/screenings persists screening directly via REST."""
+    mother = Mother(name="Meera Joshi", age=31)
+    db_session.add(mother)
+    db_session.commit()
+
+    payload = {
+        "mother_id": str(mother.id),
+        "total_score": 12,
+        "risk_classification": "moderate",
+        "q10_safety_alert": False,
+        "instrument": "EPDS",
+        "submitted_answers": {"EPDS_Q01": 2},
+        "item_scores": {"EPDS_Q01": 2},
+    }
+    response = client.post("/api/screenings", json=payload)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["mother_id"] == str(mother.id)
+    assert data["total_score"] == 12
+    assert data["risk_classification"] == "moderate"
+
+

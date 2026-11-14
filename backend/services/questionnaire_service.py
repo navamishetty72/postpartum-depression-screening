@@ -23,18 +23,25 @@ logger = logging.getLogger("ppd.questionnaire")
 # Path to the single source of truth
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 QUESTIONS_JSON_PATH = PROJECT_ROOT / "data" / "questions.json"
+TRANSLATIONS_JSON_PATH = PROJECT_ROOT / "data" / "epds_translations.json"
 
 
 class EPDSQuestionnaireService:
     """Encapsulates verified EPDS instrument retrieval and clinical scoring logic."""
 
-    def __init__(self, data_path: Optional[Path] = None) -> None:
+    def __init__(
+        self,
+        data_path: Optional[Path] = None,
+        translations_path: Optional[Path] = None,
+    ) -> None:
         self.data_path = data_path or QUESTIONS_JSON_PATH
+        self.translations_path = translations_path or TRANSLATIONS_JSON_PATH
         self._raw_data: Optional[dict] = None
         self._questions_by_id: Optional[Dict[str, dict]] = None
+        self._translations_data: Optional[dict] = None
 
     def _ensure_loaded(self) -> None:
-        """Load and cache the question bank from data/questions.json."""
+        """Load and cache the question bank from data/questions.json and translations."""
         if self._raw_data is None:
             if not self.data_path.exists():
                 raise FileNotFoundError(
@@ -47,10 +54,60 @@ class EPDSQuestionnaireService:
                 q["id"]: q for q in self._raw_data.get("questions", [])
             }
 
-    def get_questionnaire(self) -> EPDSQuestionnaireResponse:
-        """Return the complete EPDS questionnaire and guidance."""
+        if self._translations_data is None and self.translations_path.exists():
+            try:
+                with open(self.translations_path, "r", encoding="utf-8") as tf:
+                    self._translations_data = json.load(tf)
+            except Exception as exc:
+                logger.warning("Could not load EPDS translations: %s", exc)
+
+    def get_questionnaire(self, language: str = "en") -> EPDSQuestionnaireResponse:
+        """Return the complete EPDS questionnaire and guidance localized to the specified language."""
         self._ensure_loaded()
-        return EPDSQuestionnaireResponse.model_validate(self._raw_data)
+        assert self._raw_data is not None
+
+        lang = (language or "en").lower().strip()
+        supported = []
+        if self._translations_data:
+            supported = self._translations_data.get("supported_languages", [])
+
+        # Copy top-level dictionary
+        resp_data = dict(self._raw_data)
+        resp_data["language"] = lang
+        resp_data["supported_languages"] = supported
+
+        # Localize participant instructions if translation exists
+        instructions = dict(resp_data.get("instructions", {}))
+        if self._translations_data and lang in self._translations_data.get("instructions", {}):
+            instructions["participant"] = self._translations_data["instructions"][lang]
+        resp_data["instructions"] = instructions
+
+        # Localize question items and attach translations map
+        localized_questions = []
+        for q in self._raw_data.get("questions", []):
+            qid = q["id"]
+            q_copy = dict(q)
+            q_trans = (
+                self._translations_data.get("questions", {}).get(qid, {})
+                if self._translations_data
+                else {}
+            )
+            all_translations = q_trans.get("translations", {})
+            q_copy["translations"] = all_translations
+
+            if lang != "en" and lang in all_translations:
+                target_trans = all_translations[lang]
+                q_copy["question"] = target_trans.get("question", q["question"])
+                translated_opts = target_trans.get("response_options", [])
+                if len(translated_opts) == len(q["response_options"]):
+                    q_copy["response_options"] = [
+                        {"label": lbl, "score": orig["score"]}
+                        for lbl, orig in zip(translated_opts, q["response_options"])
+                    ]
+            localized_questions.append(q_copy)
+
+        resp_data["questions"] = localized_questions
+        return EPDSQuestionnaireResponse.model_validate(resp_data)
 
     def calculate_score(
         self,
@@ -104,13 +161,30 @@ class EPDSQuestionnaireService:
             if qid == "EPDS_Q10":
                 q10_score = opt_score
 
+            # Resolve question_text and option_label in requested language if available
+            q_text = q_def["question"]
+            opt_label = selected_opt["label"]
+            sub_lang = (getattr(submission, "language", None) or "en").lower().strip()
+            if self._translations_data and sub_lang != "en":
+                q_trans = (
+                    self._translations_data.get("questions", {})
+                    .get(qid, {})
+                    .get("translations", {})
+                    .get(sub_lang)
+                )
+                if q_trans:
+                    q_text = q_trans.get("question", q_text)
+                    t_opts = q_trans.get("response_options", [])
+                    if idx < len(t_opts):
+                        opt_label = t_opts[idx]
+
             item_scores.append(
                 ItemScoreResult(
                     question_id=qid,
                     question_number=q_def["question_number"],
-                    question_text=q_def["question"],
+                    question_text=q_text,
                     selected_option_index=idx,
-                    selected_option_label=selected_opt["label"],
+                    selected_option_label=opt_label,
                     score=opt_score,
                     reverse_scored=q_def["reverse_scored"],
                     safety_critical=q_def["safety_critical"],

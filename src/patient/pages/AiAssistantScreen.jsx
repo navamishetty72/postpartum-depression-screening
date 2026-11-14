@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { usePatient } from '../context/PatientContext.jsx';
 import '../styles/ai-assistant.css';
@@ -11,30 +11,30 @@ const Icons = {
       <path d="M9.5 21v-7h5v7" />
     </svg>
   ),
-  info: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
-  ),
-  dots: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <circle cx="12" cy="5" r="2" />
-      <circle cx="12" cy="12" r="2" />
-      <circle cx="12" cy="19" r="2" />
-    </svg>
-  ),
-  paperclip: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l7.88-7.88" />
-    </svg>
-  ),
   mic: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
       <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
       <line x1="12" y1="19" x2="12" y2="22" />
+    </svg>
+  ),
+  micOff: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V5a3 3 0 0 0-5.94-.6" />
+      <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
+      <line x1="12" y1="19" x2="12" y2="22" />
+    </svg>
+  ),
+  interrupt: (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+    </svg>
+  ),
+  replay: (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
     </svg>
   ),
   send: (
@@ -44,7 +44,7 @@ const Icons = {
     </svg>
   ),
   sparkles: (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', color: '#d93c75', fontSize: '13px', lineHeight: 1 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', color: '#d93c75', fontSize: '13px', lineHeight: 1 }} aria-hidden="true">
       ✦✦
     </span>
   ),
@@ -112,9 +112,32 @@ const Icons = {
       <line x1="8" y1="17" x2="14" y2="17" />
     </svg>
   ),
+  endPhone: (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 11.38 11.38 0 0 0 3.58.57 2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A19 19 0 0 1 3 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2 11.38 11.38 0 0 0 .58 3.58 2 2 0 0 1-.45 2.11L8.86 10.96" />
+      <line x1="23" y1="1" x2="1" y2="23" />
+    </svg>
+  ),
+  paperclip: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l7.88-7.88" />
+    </svg>
+  ),
 };
 
-// 5 Mood face SVGs precisely matching reference
+// 8 Supported Languages matching backend voice assistant
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', label: 'English', speechLang: 'en-US', ttsLocale: 'en-US' },
+  { code: 'hi', label: 'हिन्दी (Hindi)', speechLang: 'hi-IN', ttsLocale: 'hi-IN' },
+  { code: 'bn', label: 'বাংলা (Bengali)', speechLang: 'bn-IN', ttsLocale: 'bn-IN' },
+  { code: 'ta', label: 'தமிழ் (Tamil)', speechLang: 'ta-IN', ttsLocale: 'ta-IN' },
+  { code: 'te', label: 'తెలుగు (Telugu)', speechLang: 'te-IN', ttsLocale: 'te-IN' },
+  { code: 'kn', label: 'ಕನ್ನಡ (Kannada)', speechLang: 'kn-IN', ttsLocale: 'kn-IN' },
+  { code: 'ml', label: 'മലയാളം (Malayalam)', speechLang: 'ml-IN', ttsLocale: 'ml-IN' },
+  { code: 'mr', label: 'मराठी (Marathi)', speechLang: 'mr-IN', ttsLocale: 'mr-IN' },
+];
+
+// 5 Mood face SVGs
 const MoodFaces = [
   {
     id: 'distressed',
@@ -205,151 +228,54 @@ export function AiAssistantScreen() {
   const { patient, selectedMood, setPatientMood } = usePatient();
   const navigate = useNavigate();
 
-  // Chat conversation state
+  // Mode: 'voice' (default) vs 'text'
+  const [mode, setMode] = useState('voice');
+
+  // Shared conversation state between Voice and Text modes (never cleared on mode toggle)
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [activeMood, setActiveMood] = useState('okay');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
-  // Resource Modal state
-  const [activeModal, setActiveModal] = useState(null); // 'audio' | 'meditation' | 'tips' | null
-
-  const fileInputRef = useRef(null);
-  const messagesEndRef = useRef(null);
-  const recognitionRef = useRef(null);
-
-  // Voice Interaction States (Browser-Native SpeechRecognition and SpeechSynthesis)
-  const [isListening, setIsListening] = useState(false);
-  const [speechError, setSpeechError] = useState(null);
+  // Voice Interaction State Machine: 'idle' | 'listening' | 'thinking' | 'speaking'
+  const [voiceState, setVoiceState] = useState('idle');
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speakingMsgId, setSpeakingMsgId] = useState(null);
+  const [currentSpeakingSentence, setCurrentSpeakingSentence] = useState('');
+  const [lastBotMessage, setLastBotMessage] = useState(INITIAL_MESSAGES[2].text);
+  const [lastUserMessage, setLastUserMessage] = useState(INITIAL_MESSAGES[1].text);
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [speechError, setSpeechError] = useState(null);
+  const [backendConfigured, setBackendConfigured] = useState(null);
 
-  // Cleanup voice operations on unmount or navigation
+  // Check Gemini backend readiness on mount
   useEffect(() => {
-    return () => {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {}
-      }
-    };
+    fetch('/api/voice-assistant/status')
+      .then((r) => r.json())
+      .then((data) => {
+        if (typeof data?.configured === 'boolean') {
+          setBackendConfigured(data.configured);
+        }
+      })
+      .catch(() => {
+        setBackendConfigured(false);
+      });
   }, []);
 
-  // Voice output: Speak assistant response aloud
-  const stopSpeaking = () => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    setIsSpeaking(false);
-    setSpeakingMsgId(null);
-  };
+  // Real-time audio amplitude for orb reactive animation
+  const [audioLevel, setAudioLevel] = useState(0); // 0.0 to 1.0
 
-  const speakText = (text, msgId) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
-      alert('Speech synthesis is not supported in this browser.');
-      return;
-    }
+  // Modals & Refs
+  const [activeModal, setActiveModal] = useState(null); // 'audio' | 'meditation' | 'tips' | null
+  const recognitionRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const animFrameRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-    if (isSpeaking && speakingMsgId === msgId) {
-      stopSpeaking();
-      return;
-    }
-
-    stopSpeaking();
-
-    const cleanText = text
-      .replace(/[*_~`#]/g, '')
-      .replace(/[✨🌸♥✦•]/g, '')
-      .replace(/\n+/g, ' ');
-
-    try {
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.0;
-
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-        setSpeakingMsgId(msgId);
-      };
-
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        setSpeakingMsgId(null);
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        setSpeakingMsgId(null);
-      };
-
-      window.speechSynthesis.speak(utterance);
-    } catch (err) {
-      console.warn('Speech synthesis error:', err);
-      setIsSpeaking(false);
-      setSpeakingMsgId(null);
-    }
-  };
-
-  // Voice input: SpeechRecognition
-  const handleToggleVoice = () => {
-    if (typeof window === 'undefined') return;
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setSpeechError('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
-      return;
-    }
-
-    if (isListening) {
-      try {
-        recognitionRef.current?.stop();
-      } catch {}
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      setSpeechError(null);
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => {
-        setIsListening(true);
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map((r) => r[0].transcript)
-          .join('');
-        setInputText(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        setIsListening(false);
-        if (event.error === 'not-allowed') {
-          setSpeechError('Microphone permission denied. Please allow microphone access in browser settings.');
-        } else {
-          setSpeechError('Could not recognize voice. Please try speaking again.');
-        }
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-      recognition.start();
-    } catch (err) {
-      setIsListening(false);
-      setSpeechError('Unable to start speech recognition.');
-    }
-  };
-
-  // Sync initial mood with context
+  // Sync mood with patient context
   useEffect(() => {
     if (selectedMood) {
       const found = MoodFaces.find(
@@ -361,27 +287,131 @@ export function AiAssistantScreen() {
     }
   }, [selectedMood]);
 
-  const scrollToBottom = () => {
-    if (typeof messagesEndRef.current?.scrollIntoView === 'function') {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  // Clean text helper for natural speech synthesis
+  const cleanForTTS = (text) => {
+    return (text || '')
+      .replace(/[*_~`#]/g, '')
+      .replace(/[✨🌸♥✦•]/g, '')
+      .replace(/\n+/g, ' ')
+      .trim();
+  };
+
+  // Best natural voice selection preferring female voice with graceful fallback
+  const getBestVoice = useCallback((langLocale = 'en-US') => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (voices.length === 0) return null;
+
+    const langPrefix = langLocale.split('-')[0].toLowerCase();
+    const langVoices = voices.filter(
+      (v) => v.lang && (v.lang.toLowerCase().startsWith(langPrefix) || v.lang.toLowerCase().replace('_', '-').startsWith(langPrefix))
+    );
+
+    // Prioritize natural female voices
+    const femaleMatch = (langVoices.length > 0 ? langVoices : voices).find((v) => {
+      const name = (v.name || '').toLowerCase();
+      return (
+        name.includes('female') ||
+        name.includes('samantha') ||
+        name.includes('zira') ||
+        name.includes('victoria') ||
+        name.includes('karen') ||
+        name.includes('natural') ||
+        name.includes('moira') ||
+        name.includes('fiona')
+      );
+    });
+
+    if (femaleMatch) return femaleMatch;
+    if (langVoices.length > 0) return langVoices[0];
+    return voices.find((v) => v.default) || voices[0];
+  }, []);
+
+  // Stop voice speech playback
+  const stopSpeaking = useCallback(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+    setVoiceState((prev) => (prev === 'speaking' ? 'idle' : prev));
+  }, []);
+
+  // Real-time audio amplitude analysis via Web Audio API AnalyserNode
+  const startAudioAnalysis = async () => {
+    try {
+      if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) return;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.6;
+      analyserRef.current = analyser;
+
+      const source = ctx.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateAmplitude = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
+        }
+        const avg = sum / bufferLength;
+        const normalized = Math.min(1, avg / 75); // Normalized 0..1
+        setAudioLevel(normalized);
+        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+          animFrameRef.current = window.requestAnimationFrame(updateAmplitude);
+        }
+      };
+
+      updateAmplitude();
+    } catch (err) {
+      console.warn('Real-time audio analyser init notice:', err);
     }
   };
 
+  const stopAudioAnalysis = useCallback(() => {
+    if (animFrameRef.current && typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+      window.cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try {
+        audioContextRef.current.close();
+      } catch {}
+      audioContextRef.current = null;
+    }
+    setAudioLevel(0);
+  }, []);
+
+  // Cleanup on unmount
   useEffect(() => {
-    if (messages.length > INITIAL_MESSAGES.length || isTyping) {
-      scrollToBottom();
-    }
-  }, [messages, isTyping]);
+    return () => {
+      stopSpeaking();
+      stopAudioAnalysis();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+    };
+  }, [stopSpeaking, stopAudioAnalysis]);
 
-  const handleSelectMood = (mood) => {
-    setActiveMood(mood.id);
-    setPatientMood?.(mood.label);
-  };
-
-  // ============================================================================
-  // Local Frontend Demo Response Engine
-  // Note: Clearly isolated so it can easily be replaced by a backend AI endpoint.
-  // ============================================================================
+  // Local empathetic maternal response engine (clinical fallback if backend is offline)
   const generateLocalDemoResponse = (userQuery, patientName = 'Amara') => {
     const query = (userQuery || '').toLowerCase();
 
@@ -408,14 +438,64 @@ export function AiAssistantScreen() {
     return `Thank you for sharing this with me, ${patientName}. Taking a moment to express what you're experiencing is an important act of self-care. As a new mother, experiencing these mixed emotions is very common. How have your sleep and physical energy been feeling today?`;
   };
 
-  const handleSendMessage = (textToSend) => {
-    const text = (textToSend || inputText).trim();
+  // Speak response aloud via SpeechSynthesis
+  const speakResponseAloud = (text) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+      setVoiceState('idle');
+      return;
+    }
+
+    stopSpeaking();
+    const cleanText = cleanForTTS(text);
+
+    try {
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      const targetLang = SUPPORTED_LANGUAGES.find((l) => l.code === selectedLanguage);
+      utterance.lang = targetLang?.ttsLocale || 'en-US';
+      utterance.rate = 0.92;
+      utterance.pitch = 1.05;
+
+      const voice = getBestVoice(utterance.lang);
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+        setVoiceState('speaking');
+        setCurrentSpeakingSentence(cleanText);
+      };
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        setVoiceState('idle');
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        setVoiceState('idle');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('TTS execution error:', err);
+      setIsSpeaking(false);
+      setVoiceState('idle');
+    }
+  };
+
+  // Send turn to backend Gemini service (or fallback to local engine if offline)
+  const handleSendTurn = async (rawText) => {
+    const text = (rawText || inputText).trim();
     if (!text) return;
+
+    // Stop ongoing speech before generating new response
+    stopSpeaking();
 
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const newMsg = {
+    const userMsg = {
       id: `msg-${Date.now()}`,
       sender: 'user',
       text,
@@ -423,27 +503,221 @@ export function AiAssistantScreen() {
       status: 'delivered',
     };
 
-    setMessages((prev) => [...prev, newMsg]);
+    const newHistory = [...messages, userMsg];
+    setMessages(newHistory);
+    setLastUserMessage(text);
     setInputText('');
+    setInterimTranscript('');
+    setVoiceState('thinking');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const replyText = generateLocalDemoResponse(text, patient?.name || 'Amara');
+    // Prepare history payload for multi-turn Gemini assistant
+    const historyPayload = newHistory.slice(-6, -1).map((m) => ({
+      role: m.sender === 'bot' ? 'model' : 'user',
+      content: m.text,
+    }));
 
-      const botReply = {
+    let botResponseText = '';
+    let isEmergency = false;
+    let serverError = null;
+
+    try {
+      const res = await fetch('/api/voice-assistant/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: historyPayload,
+          language: selectedLanguage,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.text) {
+          botResponseText = data.text;
+          isEmergency = Boolean(data.is_emergency);
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        serverError = errData.detail || `Server returned error (${res.status})`;
+      }
+    } catch (err) {
+      serverError = 'Unable to reach backend server at http://127.0.0.1:8000. Please ensure the backend is running.';
+    }
+
+    if (serverError) {
+      setSpeechError(serverError);
+      setVoiceState('idle');
+      setIsTyping(false);
+      const errMsg = {
         id: `msg-${Date.now() + 1}`,
         sender: 'bot',
-        text: replyText,
+        isError: true,
+        text: `⚠️ ${serverError}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
+      setMessages((prev) => [...prev, errMsg]);
+      return;
+    }
 
-      setMessages((prev) => [...prev, botReply]);
-      setIsTyping(false);
-    }, 850);
+    const botMsg = {
+      id: `msg-${Date.now() + 1}`,
+      sender: 'bot',
+      text: botResponseText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isEmergency,
+    };
+
+    setMessages((prev) => [...prev, botMsg]);
+    setLastBotMessage(botResponseText);
+    setIsTyping(false);
+
+    // Speak response if in Voice Mode
+    if (mode === 'voice') {
+      speakResponseAloud(botResponseText);
+    } else {
+      setVoiceState('idle');
+    }
   };
 
-  const handlePromptClick = (promptQuery) => {
-    handleSendMessage(promptQuery);
+  // Start listening through Web Speech API & start live amplitude analyser
+  const startListening = () => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setSpeechError('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari, or switch to Text Mode.');
+      return;
+    }
+
+    // Stop speaking if Miora is speaking (instant interruption)
+    stopSpeaking();
+    setSpeechError(null);
+    setInterimTranscript('');
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      const targetLang = SUPPORTED_LANGUAGES.find((l) => l.code === selectedLanguage);
+      recognition.lang = targetLang?.speechLang || 'en-US';
+
+      recognition.onstart = () => {
+        setVoiceState('listening');
+        startAudioAnalysis();
+      };
+
+      recognition.onresult = (event) => {
+        // If user speaks while Miora is speaking, interrupt immediately
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          setIsSpeaking(false);
+        }
+
+        const interim = Array.from(event.results)
+          .map((r) => r[0].transcript)
+          .join('');
+        setInterimTranscript(interim);
+
+        const isFinal = event.results[0] && event.results[0].isFinal;
+        if (isFinal && interim.trim()) {
+          stopAudioAnalysis();
+          recognition.stop();
+          handleSendTurn(interim.trim());
+        }
+      };
+
+      recognition.onerror = (event) => {
+        stopAudioAnalysis();
+        if (event.error === 'not-allowed') {
+          setSpeechError('Microphone permission was denied. Please allow microphone access in your browser settings or switch to Text Mode.');
+        } else if (event.error === 'no-speech') {
+          setVoiceState('idle');
+        } else {
+          setSpeechError('Could not clearly recognize voice. Please try speaking again.');
+          setVoiceState('idle');
+        }
+      };
+
+      recognition.onend = () => {
+        stopAudioAnalysis();
+        // If still listening and no final transcript triggered response, return to idle
+        setVoiceState((prev) => (prev === 'listening' ? 'idle' : prev));
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn('Failed to start speech recognition:', err);
+      stopAudioAnalysis();
+      setSpeechError('Unable to access microphone. Please check browser permissions.');
+      setVoiceState('idle');
+    }
+  };
+
+  // Stop listening manually
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+    }
+    stopAudioAnalysis();
+    setVoiceState('idle');
+    setInterimTranscript('');
+  };
+
+  // Toggle microphone state
+  const handleToggleMic = () => {
+    if (voiceState === 'listening') {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  // Genuine Interruption: stops current speech playback immediately and starts listening
+  const handleInterrupt = () => {
+    stopSpeaking();
+    startListening();
+  };
+
+  // Replay Miora's last response
+  const handleReplayLastResponse = () => {
+    if (lastBotMessage) {
+      speakResponseAloud(lastBotMessage);
+    }
+  };
+
+  // Conclude voice session gracefully
+  const handleEndVoiceSession = () => {
+    stopSpeaking();
+    stopListening();
+    setVoiceState('idle');
+    setInterimTranscript('');
+  };
+
+  // Language change handler
+  const handleLanguageChange = (newLangCode) => {
+    setSelectedLanguage(newLangCode);
+    if (voiceState === 'listening') {
+      stopListening();
+    }
+    stopSpeaking();
+  };
+
+  // Scroll messages to bottom in text mode
+  useEffect(() => {
+    if (mode === 'text') {
+      messagesEndRef.current?.scrollIntoView?.({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping, mode]);
+
+  const handleSelectMood = (mood) => {
+    setActiveMood(mood.id);
+    setPatientMood?.(mood.label);
   };
 
   return (
@@ -481,151 +755,90 @@ export function AiAssistantScreen() {
 
       {/* Main Two-Column Layout */}
       <div className="companion-columns-layout">
-        {/* Left Column – Conversational Chat Card */}
-        <section className="patient-card companion-chat-card" aria-label="Miora AI Chat Interface">
-          {/* Header */}
+        {/* Left Column: Voice-First Interface or Text Mode */}
+        <section className="patient-card companion-chat-card" aria-label="Miora Voice & Chat Assistant">
+          {/* Top Bar: Mode Toggle Pill + Language Selector + Status */}
           <div className="companion-chat-header">
-            <div className="companion-chat-header-left">
-              <div className="companion-bot-avatar-badge" aria-hidden="true">
-                <span className="companion-bot-badge-char">M</span>
+            <div className="companion-header-left-actions">
+              {/* Mode Switcher Pill */}
+              <div className="companion-mode-toggle" role="tablist" aria-label="Conversation Mode">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'voice'}
+                  className={`companion-mode-pill ${mode === 'voice' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    stopSpeaking();
+                    setMode('voice');
+                  }}
+                  title="Switch to Voice-First Mode"
+                >
+                  <span className="companion-mode-pill-icon">{Icons.mic}</span>
+                  <span>Voice Mode</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'text'}
+                  className={`companion-mode-pill ${mode === 'text' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    stopAudioAnalysis();
+                    if (recognitionRef.current) {
+                      try { recognitionRef.current.stop(); } catch {}
+                    }
+                    setMode('text');
+                  }}
+                  title="Switch to Text Chat"
+                >
+                  <span className="companion-mode-pill-icon">{Icons.chatDots}</span>
+                  <span>Text Mode</span>
+                </button>
               </div>
-              <div>
-                <h2 className="companion-chat-title">Miora AI</h2>
-                <span className="companion-assistant-tag">Your Maternal Emotional Companion</span>
+
+              {/* Language Selector */}
+              <div className="companion-lang-picker">
+                <label htmlFor="voice-assistant-lang" className="companion-lang-label">
+                  Language:
+                </label>
+                <select
+                  id="voice-assistant-lang"
+                  className="companion-lang-select"
+                  value={selectedLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  aria-label="Select conversational language"
+                >
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div className="companion-chat-header-actions">
-              {isSpeaking && (
-                <button
-                  type="button"
-                  className="companion-stop-speech-pill"
-                  onClick={stopSpeaking}
-                  aria-label="Stop reading response"
-                  title="Stop assistant speech"
-                >
-                  <span className="companion-audio-wave" aria-hidden="true" />
-                  <span>Stop Speaking</span>
-                </button>
-              )}
-              <span className={`companion-status-indicator ${isListening ? 'is-listening' : isSpeaking ? 'is-speaking' : ''}`}>
+              <span className={`companion-status-indicator is-${voiceState}`}>
                 <span className="companion-online-dot" />
-                {isListening ? 'Listening...' : isSpeaking ? 'Speaking...' : 'Online • Ready'}
+                {voiceState === 'listening'
+                  ? 'Listening...'
+                  : voiceState === 'thinking'
+                  ? 'Thinking...'
+                  : voiceState === 'speaking'
+                  ? 'Speaking...'
+                  : backendConfigured === false
+                  ? 'Setup Key in .env'
+                  : 'Online • Ready'}
               </span>
             </div>
           </div>
 
-          {/* Messages Stream */}
-          <div className="companion-chat-messages" role="log" aria-live="polite">
-            {messages.map((msg) => {
-              const isBot = msg.sender === 'bot';
-              return (
-                <div key={msg.id} className={`companion-msg-row ${isBot ? 'is-bot' : 'is-user'}`}>
-                  {isBot && (
-                    <div className="companion-msg-avatar" aria-hidden="true">
-                      <span className="companion-msg-avatar-char">M</span>
-                    </div>
-                  )}
-
-                  <div className="companion-msg-col">
-                    <div className="companion-msg-bubble">
-                      {msg.text.split('\n\n').map((para, i) => (
-                        <p key={i} style={{ margin: i === 0 ? 0 : '8px 0 0 0' }}>{para}</p>
-                      ))}
-                    </div>
-                    <div className="companion-msg-meta">
-                      <time>{msg.timestamp}</time>
-                      {isBot && (
-                        <button
-                          type="button"
-                          className={`companion-msg-listen-btn ${speakingMsgId === msg.id ? 'is-active' : ''}`}
-                          onClick={() => speakText(msg.text, msg.id)}
-                          aria-label={speakingMsgId === msg.id ? 'Stop speaking' : 'Read response aloud'}
-                          title={speakingMsgId === msg.id ? 'Stop reading' : 'Listen to response'}
-                        >
-                          {speakingMsgId === msg.id ? (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                              <rect x="6" y="6" width="12" height="12" rx="1.5" />
-                            </svg>
-                          ) : (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                            </svg>
-                          )}
-                          <span>{speakingMsgId === msg.id ? 'Stop' : 'Listen'}</span>
-                        </button>
-                      )}
-                      {!isBot && msg.status && (
-                        <span className="companion-check-icon" aria-label="Delivered">
-                          ✓
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {isTyping && (
-              <div className="companion-msg-row is-bot">
-                <div className="companion-msg-avatar" aria-hidden="true">
-                  <span className="companion-msg-avatar-char">M</span>
-                </div>
-                <div className="companion-typing-row" aria-label="Miora is typing">
-                  <span className="companion-typing-dot" />
-                  <span className="companion-typing-dot" />
-                  <span className="companion-typing-dot" />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Suggested Prompt Chips */}
-          <div className="companion-chips-row" aria-label="Suggested Prompts">
-            <button
-              type="button"
-              className="companion-prompt-chip"
-              onClick={() => handlePromptClick('Could you share some simple coping strategies?')}
-            >
-              <span className="companion-chip-icon">{Icons.leaf}</span>
-              <span>Coping Strategies</span>
-            </button>
-
-            <button
-              type="button"
-              className="companion-prompt-chip"
-              onClick={() => handlePromptClick('Can you guide me through a calming breathing exercise?')}
-            >
-              <span className="companion-chip-icon">{Icons.lotus}</span>
-              <span>Breathing Exercise</span>
-            </button>
-
-            <button
-              type="button"
-              className="companion-prompt-chip"
-              onClick={() => handlePromptClick('Should I see a doctor about how I am feeling?')}
-            >
-              <span className="companion-chip-icon">{Icons.calendarCheck}</span>
-              <span>Should I See a Doctor?</span>
-            </button>
-          </div>
-
-          {/* Voice Listening & Feedback Banner */}
-          {isListening && (
-            <div className="companion-listening-banner" role="status">
-              <span className="companion-listening-pulse" aria-hidden="true" />
-              <span className="companion-listening-text">Listening... speak naturally. Your words will appear below.</span>
-              <button
-                type="button"
-                className="companion-stop-mic-btn"
-                onClick={handleToggleVoice}
-              >
-                Stop
-              </button>
+          {backendConfigured === false && !speechError && (
+            <div className="companion-speech-error-banner" role="note" style={{ background: '#fffbeb', borderColor: '#fde68a', color: '#92400e' }}>
+              <span>ℹ️ <strong>Gemini Voice Setup:</strong> Please set your <code>GEMINI_API_KEY</code> in <code>.env</code> for live generative AI maternal support.</span>
             </div>
           )}
+
+          {/* Speech Permission or Network Error Banner */}
           {speechError && (
             <div className="companion-speech-error-banner" role="alert">
               <span>{speechError}</span>
@@ -640,64 +853,357 @@ export function AiAssistantScreen() {
             </div>
           )}
 
-          {/* Message Input Bar */}
-          <form
-            className="companion-input-capsule"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  handleSendMessage(`[Attached: ${e.target.files[0].name}]`);
-                }
-              }}
-            />
-            <button
-              type="button"
-              className="companion-attach-btn"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Attach document or note"
-            >
-              {Icons.paperclip}
-            </button>
+          {/* =============================================================== */}
+          {/* VIEW A: VOICE-FIRST INTERFACE (DEFAULT)                         */}
+          {/* =============================================================== */}
+          {mode === 'voice' && (
+            <div className="companion-voice-workspace" aria-label="Miora Voice Companion Stage">
+              {/* Central Animated Orb */}
+              <div className="miora-orb-stage">
+                <div
+                  className={`miora-orb-container is-${voiceState}`}
+                  style={{
+                    transform: voiceState === 'listening' ? `scale(${1 + audioLevel * 0.35})` : undefined,
+                  }}
+                >
+                  {/* Outer Ripple Rings for Listening/Speaking */}
+                  <div
+                    className="miora-orb-ripple ring-1"
+                    style={{
+                      opacity: voiceState === 'listening' ? 0.3 + audioLevel * 0.7 : undefined,
+                      transform: voiceState === 'listening' ? `scale(${1 + audioLevel * 0.4})` : undefined,
+                    }}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className="miora-orb-ripple ring-2"
+                    style={{
+                      opacity: voiceState === 'listening' ? 0.2 + audioLevel * 0.6 : undefined,
+                      transform: voiceState === 'listening' ? `scale(${1 + audioLevel * 0.6})` : undefined,
+                    }}
+                    aria-hidden="true"
+                  />
 
-            <input
-              type="text"
-              className="companion-text-input"
-              placeholder="Ask me anything about your maternal well-being..."
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              aria-label="Message Miora AI"
-            />
+                  {/* Core Glowing Orb */}
+                  <div className="miora-orb-core">
+                    <span className="miora-orb-initial">M</span>
+                  </div>
+                </div>
 
-            <button
-              type="button"
-              className={`companion-mic-btn ${isListening ? 'is-listening' : ''}`}
-              onClick={handleToggleVoice}
-              aria-label={isListening ? 'Stop listening' : 'Start voice dictation'}
-              title={isListening ? 'Listening... click to stop' : 'Voice input'}
-            >
-              {Icons.mic}
-            </button>
+                {/* State Title & Calm Narrative Caption */}
+                <div className="miora-orb-captions">
+                  <h2 className="miora-orb-title">
+                    {voiceState === 'listening'
+                      ? 'Miora is listening...'
+                      : voiceState === 'thinking'
+                      ? 'Let me think about that...'
+                      : voiceState === 'speaking'
+                      ? 'Miora is speaking...'
+                      : "I'm here whenever you want to talk."}
+                  </h2>
+                  <p className="miora-orb-sub">
+                    {voiceState === 'listening'
+                      ? 'Speak freely. Your words are private and supported.'
+                      : voiceState === 'thinking'
+                      ? 'Gathering supportive guidance for your maternal well-being...'
+                      : voiceState === 'speaking'
+                      ? 'Listening along with you'
+                      : 'Tap the microphone or choose a quick prompt to begin.'}
+                  </p>
+                </div>
+              </div>
 
-            <button
-              type="submit"
-              className="companion-send-btn"
-              aria-label="Send message"
-              disabled={!inputText.trim()}
-            >
-              {Icons.send}
-            </button>
-          </form>
+              {/* Live Caption / Spoken Sentence Display */}
+              <div className="miora-live-caption-box" role="region" aria-live="polite">
+                {voiceState === 'listening' && (
+                  <div className="miora-live-caption-inner is-listening">
+                    <span className="miora-caption-role">You:</span>
+                    <span className="miora-caption-text">
+                      {interimTranscript || 'Listening for your voice...'}
+                    </span>
+                  </div>
+                )}
+
+                {voiceState === 'thinking' && (
+                  <div className="miora-live-caption-inner is-thinking">
+                    <span className="miora-caption-role">You:</span>
+                    <span className="miora-caption-text">{lastUserMessage}</span>
+                    <span className="miora-caption-sub-note"> — Reflecting...</span>
+                  </div>
+                )}
+
+                {voiceState === 'speaking' && (
+                  <div className="miora-live-caption-inner is-speaking" style={{ flexDirection: 'column', gap: '6px' }}>
+                    {lastUserMessage && (
+                      <div style={{ fontSize: '12.5px', color: 'var(--patient-muted)' }}>
+                        <span className="miora-caption-role">You:</span> {lastUserMessage}
+                      </div>
+                    )}
+                    <div>
+                      <span className="miora-caption-role">Miora:</span>{' '}
+                      <span className="miora-caption-text">{currentSpeakingSentence || lastBotMessage}</span>
+                    </div>
+                  </div>
+                )}
+
+                {voiceState === 'idle' && (
+                  <div className="miora-live-caption-inner is-idle" style={{ flexDirection: 'column', gap: '6px' }}>
+                    {lastUserMessage && (
+                      <div style={{ fontSize: '12.5px', color: 'var(--patient-muted)' }}>
+                        <span className="miora-caption-role">You:</span> {lastUserMessage}
+                      </div>
+                    )}
+                    <div>
+                      <span className="miora-caption-role">Miora:</span>{' '}
+                      <span className="miora-caption-text">{lastBotMessage}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Voice Controls Toolbar */}
+              <div className="miora-voice-toolbar" role="toolbar" aria-label="Voice Controls">
+                {/* 1. Main Mic Toggle */}
+                <button
+                  type="button"
+                  className={`miora-toolbar-btn miora-btn-mic ${voiceState === 'listening' ? 'is-active' : ''}`}
+                  onClick={handleToggleMic}
+                  aria-label={voiceState === 'listening' ? 'Stop listening' : 'Start speaking'}
+                  title={voiceState === 'listening' ? 'Stop listening' : 'Tap to talk'}
+                >
+                  <span className="miora-btn-icon">
+                    {voiceState === 'listening' ? Icons.micOff : Icons.mic}
+                  </span>
+                  <span>{voiceState === 'listening' ? 'Mute' : 'Tap to Talk'}</span>
+                </button>
+
+                {/* 2. Genuine Interruption Button (Visible when speaking) */}
+                {voiceState === 'speaking' && (
+                  <button
+                    type="button"
+                    className="miora-toolbar-btn miora-btn-interrupt"
+                    onClick={handleInterrupt}
+                    aria-label="Interrupt Miora and speak"
+                    title="Stop Miora and start speaking"
+                  >
+                    <span className="miora-btn-icon">{Icons.interrupt}</span>
+                    <span>Interrupt</span>
+                  </button>
+                )}
+
+                {/* 3. Replay Button */}
+                <button
+                  type="button"
+                  className="miora-toolbar-btn"
+                  onClick={handleReplayLastResponse}
+                  disabled={!lastBotMessage || voiceState === 'thinking'}
+                  aria-label="Replay last response"
+                  title="Repeat Miora's last response aloud"
+                >
+                  <span className="miora-btn-icon">{Icons.replay}</span>
+                  <span>Replay</span>
+                </button>
+
+                {/* 4. End Session Button */}
+                <button
+                  type="button"
+                  className="miora-toolbar-btn miora-btn-end"
+                  onClick={handleEndVoiceSession}
+                  disabled={voiceState === 'idle'}
+                  aria-label="End voice session"
+                  title="End conversation and return to idle"
+                >
+                  <span className="miora-btn-icon">{Icons.endPhone}</span>
+                  <span>End</span>
+                </button>
+              </div>
+
+              {/* Quick Spoken Prompts Strip */}
+              <div className="companion-chips-row" aria-label="Suggested Prompts">
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Could you share some simple coping strategies?')}
+                >
+                  <span className="companion-chip-icon">{Icons.leaf}</span>
+                  <span>Coping Strategies</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Can you guide me through a calming breathing exercise?')}
+                >
+                  <span className="companion-chip-icon">{Icons.lotus}</span>
+                  <span>Breathing Exercise</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Should I see a doctor about how I am feeling?')}
+                >
+                  <span className="companion-chip-icon">{Icons.calendarCheck}</span>
+                  <span>Should I See a Doctor?</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* =============================================================== */}
+          {/* VIEW B: TRADITIONAL TEXT CHAT MODE (SEAMLESS HISTORY SHARE)     */}
+          {/* =============================================================== */}
+          {mode === 'text' && (
+            <div className="companion-text-workspace" aria-label="Traditional Text Chat">
+              {/* Messages Stream */}
+              <div className="companion-chat-messages" role="log" aria-live="polite">
+                {messages.map((msg) => {
+                  const isBot = msg.sender === 'bot';
+                  return (
+                    <div key={msg.id} className={`companion-msg-row ${isBot ? 'is-bot' : 'is-user'}`}>
+                      {isBot && (
+                        <div className="companion-msg-avatar" aria-hidden="true">
+                          <span className="companion-msg-avatar-char">M</span>
+                        </div>
+                      )}
+
+                      <div className="companion-msg-col">
+                        <div className="companion-msg-bubble">
+                          {msg.text.split('\n\n').map((para, i) => (
+                            <p key={i} style={{ margin: i === 0 ? 0 : '8px 0 0 0' }}>{para}</p>
+                          ))}
+                        </div>
+                        <div className="companion-msg-meta">
+                          <time>{msg.timestamp}</time>
+                          {isBot && (
+                            <button
+                              type="button"
+                              className="companion-msg-listen-btn"
+                              onClick={() => speakResponseAloud(msg.text)}
+                              aria-label="Listen to response aloud"
+                              title="Listen to response aloud"
+                            >
+                              <span style={{ fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                {Icons.mic} Listen
+                              </span>
+                            </button>
+                          )}
+                          {!isBot && msg.status && (
+                            <span className="companion-check-icon" aria-label="Delivered">
+                              ✓
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {isTyping && (
+                  <div className="companion-msg-row is-bot">
+                    <div className="companion-msg-avatar" aria-hidden="true">
+                      <span className="companion-msg-avatar-char">M</span>
+                    </div>
+                    <div className="companion-typing-row" aria-label="Miora is typing">
+                      <span className="companion-typing-dot" />
+                      <span className="companion-typing-dot" />
+                      <span className="companion-typing-dot" />
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Suggested Prompt Chips */}
+              <div className="companion-chips-row" aria-label="Suggested Prompts">
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Could you share some simple coping strategies?')}
+                >
+                  <span className="companion-chip-icon">{Icons.leaf}</span>
+                  <span>Coping Strategies</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Can you guide me through a calming breathing exercise?')}
+                >
+                  <span className="companion-chip-icon">{Icons.lotus}</span>
+                  <span>Breathing Exercise</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="companion-prompt-chip"
+                  onClick={() => handleSendTurn('Should I see a doctor about how I am feeling?')}
+                >
+                  <span className="companion-chip-icon">{Icons.calendarCheck}</span>
+                  <span>Should I See a Doctor?</span>
+                </button>
+              </div>
+
+              {/* Message Input Bar */}
+              <form
+                className="companion-input-capsule"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendTurn();
+                }}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      handleSendTurn(`[Attached note: ${e.target.files[0].name}]`);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="companion-attach-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Attach document or note"
+                >
+                  {Icons.paperclip}
+                </button>
+
+                <input
+                  type="text"
+                  className="companion-text-input"
+                  placeholder="Ask me anything about your maternal well-being..."
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  aria-label="Message Miora AI"
+                />
+
+                <button
+                  type="button"
+                  className="companion-mic-btn"
+                  onClick={handleToggleMic}
+                  aria-label="Voice input"
+                  title="Voice input"
+                >
+                  {Icons.mic}
+                </button>
+
+                <button
+                  type="submit"
+                  className="companion-send-btn"
+                  aria-label="Send message"
+                  disabled={!inputText.trim()}
+                >
+                  {Icons.send}
+                </button>
+              </form>
+            </div>
+          )}
         </section>
 
-        {/* Right Column – Information & Resource Panels */}
+        {/* Right Column – Guidance, Mood Tracker & Resources */}
         <aside className="companion-info-panels" aria-label="Companion Guidance & Resources">
           {/* Panel 1: Mood Today */}
           <section className="patient-card companion-info-card" aria-labelledby="mood-card-title">
@@ -745,21 +1251,21 @@ export function AiAssistantScreen() {
             <ul className="companion-help-list">
               <li
                 className="companion-help-item"
-                onClick={() => handlePromptClick("I'd like to talk about how I've been feeling.")}
+                onClick={() => handleSendTurn("I'd like to talk about how I've been feeling.")}
               >
                 <span className="companion-help-icon">{Icons.chatDots}</span>
                 <span>Talk about your feelings</span>
               </li>
               <li
                 className="companion-help-item"
-                onClick={() => handlePromptClick("Can you suggest some gentle self-care activities for today?")}
+                onClick={() => handleSendTurn("Can you suggest some gentle self-care activities for today?")}
               >
                 <span className="companion-help-icon">{Icons.lotus}</span>
                 <span>Suggest self-care activities</span>
               </li>
               <li
                 className="companion-help-item"
-                onClick={() => handlePromptClick("I have questions about postpartum recovery and maternal feelings.")}
+                onClick={() => handleSendTurn("I have questions about postpartum recovery and maternal feelings.")}
               >
                 <span className="companion-help-icon">{Icons.book}</span>
                 <span>Answer postpartum questions</span>

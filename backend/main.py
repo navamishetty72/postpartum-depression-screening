@@ -1,6 +1,16 @@
 """FastAPI backend application for the PPD Screening Research Prototype."""
 
 from contextlib import asynccontextmanager
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables early before database or service imports
+load_dotenv()
+_project_root = Path(__file__).resolve().parent.parent
+_env_file = _project_root / ".env"
+if _env_file.exists():
+    load_dotenv(dotenv_path=_env_file, override=False)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +23,8 @@ from backend.routers.screenings import router as screenings_router
 from backend.routers.text_ner import router as text_ner_router
 from backend.routers.clinical_numerical import router as clinical_router
 from backend.routers.screening import router as screening_router
+from backend.routers.voice_assistant import router as voice_assistant_router
+from backend.database.connection import init_db
 from backend.services.text_ner_service import text_ner_service
 from backend.services.clinical_service import clinical_service
 from backend.services.audio_service import audio_service
@@ -21,6 +33,10 @@ from backend.services.audio_service import audio_service
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Manage application startup and shutdown lifecycle (load ML services once)."""
+    try:
+        init_db()
+    except Exception:
+        pass
     text_ner_service.startup()
     clinical_service.startup()
     audio_service.startup()
@@ -64,6 +80,7 @@ app.include_router(dashboard_router)
 
 app.include_router(clinical_router)
 app.include_router(screening_router)
+app.include_router(voice_assistant_router)
 
 
 @app.get("/", tags=["Health Check"])

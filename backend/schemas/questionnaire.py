@@ -25,6 +25,7 @@ class QuestionItemSchema(BaseModel):
     reverse_scored: bool = Field(..., description="Whether the question is scored in reverse")
     safety_critical: bool = Field(..., description="Whether this is the self-harm safety item (Item 10)")
     source: QuestionSourceSchema
+    translations: Optional[Dict[str, Any]] = Field(default=None, description="Multilingual translations for question and options")
 
 
 class InstrumentMetadataSchema(BaseModel):
@@ -70,6 +71,8 @@ class ScoringGuidanceSchema(BaseModel):
 
 
 class EPDSQuestionnaireResponse(BaseModel):
+    language: str = Field(default="en", description="Current language of question and response wording")
+    supported_languages: List[Dict[str, str]] = Field(default_factory=list, description="Available regional language translations")
     instrument: InstrumentMetadataSchema
     instructions: Dict[str, Any]
     questions: List[QuestionItemSchema]
@@ -86,6 +89,7 @@ class AnswerSubmissionItem(BaseModel):
 
 
 class EPDSSubmissionRequest(BaseModel):
+    language: Optional[str] = Field(default="en", description="Language used for questionnaire administration")
     answers: List[AnswerSubmissionItem] = Field(
         ...,
         min_length=10,

@@ -251,7 +251,7 @@ export function UploadAnalyzePage({ analyzer = submitMultimodalAnalysis }) {
     });
 
     clearUploadDraft(activeMother.id);
-    navigate(`/results/${created.motherId}`);
+    navigate(`/results/${created?.motherId || activeMother.id}`);
   };
 
   const derivedIndicators = useMemo(() => {

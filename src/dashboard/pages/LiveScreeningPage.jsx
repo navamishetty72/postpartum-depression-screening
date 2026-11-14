@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useClinicalData } from '../context/ClinicalContext.jsx';
 import { DashboardIcon } from '../components/DashboardIcon.jsx';
 import { RiskBadge } from '../components/Badges.jsx';
@@ -355,7 +355,7 @@ export function LiveScreeningPage() {
     navigate('/dashboard');
   };
 
-  const handleCompleteScreening = () => {
+  const handleCompleteScreening = async () => {
     if (!textCaptured && !voiceCaptured && !videoCaptured) {
       setValidationError(
         'Please record at least one conversation response or media capture before completing the screening.'
@@ -417,7 +417,7 @@ export function LiveScreeningPage() {
     stopMediaTracks();
     clearScreeningDraft(activeMother.id);
     setAnalysisState('ready');
-    navigate(`/results/${created.motherId}`);
+    navigate(`/results/${created?.motherId || activeMother.id}`);
   };
 
   // Truthful signal summaries (no fabricated emotional classifications)
@@ -567,6 +567,28 @@ export function LiveScreeningPage() {
             <DashboardIcon name="upload" size={16} />
             <span>Upload &amp; Analyze</span>
           </button>
+        </div>
+
+        {/* Access Banner: Maternal 10-Question EPDS Screening */}
+        <div className="miora-screening-route-banner" role="region" aria-label="Maternal EPDS Screening access">
+          <div className="miora-route-banner-text">
+            <span className="miora-route-banner-icon" aria-hidden="true">
+              <DashboardIcon name="sparkle" size={16} />
+            </span>
+            <div className="miora-route-banner-copy">
+              <strong>Patient 10-Question EPDS Instrument:</strong>
+              <span>
+                Looking for the patient-facing conversational screening? The validated 10-item EPDS with Indian languages is live in the Patient Portal.
+              </span>
+            </div>
+          </div>
+          <NavLink
+            to="/patient/screening"
+            className="miora-route-banner-btn"
+          >
+            <span>Launch Patient EPDS Screening</span>
+            <DashboardIcon name="arrowRight" size={14} />
+          </NavLink>
         </div>
 
         {/* Patient Information Strip */}

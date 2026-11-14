@@ -6,9 +6,10 @@ Exposes:
 """
 
 import logging
+from typing import List
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from backend.database.connection import get_db
@@ -87,4 +88,21 @@ def upsert_care_plan(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update care plan.",
         ) from exc
+
+
+@router.get(
+    "/api/care-plans",
+    response_model=List[CarePlanResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List all care plans across mothers",
+)
+def list_care_plans(
+    skip: int = Query(default=0, ge=0, description="Offset for pagination"),
+    limit: int = Query(default=50, ge=1, le=200, description="Page limit"),
+    db: Session = Depends(get_db),
+    service: CarePlanService = Depends(lambda: care_plan_service),
+) -> List[CarePlanResponse]:
+    """Retrieve all care plans, ordered newest first."""
+    plans = service.list_care_plans(db, skip=skip, limit=limit)
+    return [CarePlanResponse.model_validate(p) for p in plans]
 

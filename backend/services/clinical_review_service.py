@@ -118,6 +118,29 @@ class ClinicalReviewService:
         )
         return list(db.scalars(stmt).all())
 
+    @staticmethod
+    def list_reviews(
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[ClinicalReview]:
+        """Retrieve all clinical reviews across all mothers, newest first."""
+        stmt = (
+            select(ClinicalReview)
+            .order_by(desc(ClinicalReview.reviewed_at), desc(ClinicalReview.created_at))
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def get_review_by_id(
+        db: Session,
+        review_id: uuid.UUID,
+    ) -> Optional[ClinicalReview]:
+        """Retrieve an individual clinical review by UUID."""
+        return db.get(ClinicalReview, review_id)
+
 
 clinical_review_service = ClinicalReviewService()
 

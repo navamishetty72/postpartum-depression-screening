@@ -136,6 +136,21 @@ class ScreeningService:
         )
         return list(db.scalars(stmt).all())
 
+    @staticmethod
+    def list_screenings(
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[Screening]:
+        """Retrieve all screening records across all mothers, newest first."""
+        stmt = (
+            select(Screening)
+            .order_by(desc(Screening.screening_date), desc(Screening.created_at))
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
+
 
 screening_service = ScreeningService()
 """Service layer for central multimodal screening orchestration.
